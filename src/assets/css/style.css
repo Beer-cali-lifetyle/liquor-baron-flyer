@@ -1958,7 +1958,7 @@ div#v-pills-tab button.active {
 
 .body-forms .type-form select.form-select,
 .body-forms .type-form input {
-  height: 53px !important;
+  /* height: 53px !important; */
   border: 1px solid #8c8c8c;
 }
 

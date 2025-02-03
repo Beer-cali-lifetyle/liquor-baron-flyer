@@ -23,11 +23,7 @@ export class MainComponent extends AppBase implements OnInit {
   @ViewChild('addressModal', { static: true }) addressModal!: TemplateRef<any>;
   address: any;
   user: any;
-  CanadianProvincesAndTerritories = [
-    "Alberta", "British Columbia", "Manitoba", "New Brunswick", "Newfoundland and Labrador",
-    "Nova Scotia", "Ontario", "Prince Edward Island", "Quebec", "Saskatchewan",
-    "Northwest Territories", "Nunavut", "Yukon"
-  ];
+  CanadianProvincesAndTerritories: any = [];
   
   public editId: any = null;
   constructor(
@@ -108,8 +104,16 @@ export class MainComponent extends AppBase implements OnInit {
       altPhoneNumber: ['', Validators.pattern(/^\+?[1-9]\d{1,14}$/)],
       defaultAddress: [true]
     });
+    await this.fetchStates();
     await this.fetchAddres();
   }
+
+  async fetchStates() {
+    await this.ApiService.fetchStates().then((res) => {
+      this.CanadianProvincesAndTerritories = res
+    })
+  }
+
 
   openModal(content: any) {
     const modalRef: NgbModalRef = this.modalService.open(content, {

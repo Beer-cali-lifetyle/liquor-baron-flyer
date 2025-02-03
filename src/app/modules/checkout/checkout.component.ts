@@ -9,7 +9,7 @@ import { ContextService } from '../../core/services/context.service';
 import { environment } from '../../../environments/environment';
 import { PaymentComponent } from "../payment/payment.component";
 import { GooglePlacesAutocompleteDirective } from '../../core/directives/google-places.directive';
-import { AutocompleteComponent } from '../../shared/ui/google-places/google-places.component';
+import { GooglePlacesAutocompleteComponent } from '../../shared/ui/google-places/google-places.component';
 import Swal from 'sweetalert2';
 // declare const google: any;
 @Component({
@@ -19,10 +19,11 @@ import Swal from 'sweetalert2';
   standalone: true,
   imports: [
     CommonModule, FormsModule, ReactiveFormsModule, NgbNavModule,
-    PaymentComponent, PaymentComponent, AutocompleteComponent
+    PaymentComponent, PaymentComponent, GooglePlacesAutocompleteComponent
   ]
 })
 export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit {
+  selectedLocation: any = null;
   total_tax = 0;
   public searchElementRef!: ElementRef;
   tax_percentage = 0;
@@ -70,9 +71,9 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
   }
 
 
-  onPlaceChange(place: any) {
-    // Handle the selected place
-    console.log('Place details:', place);
+  handlePlaceSelection(place: any) {
+    this.selectedLocation = place;
+    console.log('Selected Place:', place);
   }
 
   async ngOnInit() {
@@ -129,21 +130,32 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
 
   initSwal() {
     Swal.fire({
-      title: 'Confirm you age',
+      title: 'Confirm your age',
       text: `I am of legal drinking age in my province/territory of residence.`,
       showCancelButton: true,
       confirmButtonText: 'Yes',
       cancelButtonText: 'No',
+      allowOutsideClick: false,  // Prevent clicking outside to close
+      allowEscapeKey: false,  // Prevent Esc key from closing
       customClass: {
         confirmButton: 'btn btn-maroon rounded-5',
         cancelButton: 'btn btn-secondary rounded-5'
       },
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-      } else {
-        
+    }).then((result) => {
+      if (!result.isConfirmed) {
+        Swal.fire({
+          title: 'Access Denied',
+          html: `<span style="color: red; font-weight: bold;">
+                  You cannot proceed due to not fulfilling the age requirement.
+                 </span>`,
+          icon: 'error',
+          showConfirmButton: false,
+          allowOutsideClick: false,  // Prevents closing when clicking outside
+          allowEscapeKey: false  // Prevents closing on Escape key
+        });
       }
     });
+    
   }
 
   async getAddress(event: Event) {
