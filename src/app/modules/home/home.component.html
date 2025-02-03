@@ -60,8 +60,8 @@
         </div>
       </div>
     </div>
-    <div class="row">
-      <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 product-card-container" *ngFor="let product of products; let i=index">
+    <div class="row row-product">
+      <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 product-card-container cards-porduct" *ngFor="let product of products; let i=index">
 
         <div class="product-card" [routerLink]="['/product', product?.id]">
           <div class="product-tumb pt-4 pb-1">

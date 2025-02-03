@@ -1720,6 +1720,62 @@ section.newsletter-section {
     font-weight: 400;
     vertical-align: middle;
   }
+
+  .message-empty h4 {
+    font-size: 26px !important;
+  }
+
+  .shipping .padding-equal {
+    padding: 30px 15px !important;
+  }
+
+  .shipping .detailed-confirm {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .shipping .first-confirm {
+    width: 100%;
+  }
+
+  .shipping .padding-equal .text-check.inputting-check.success-pot {
+    flex-wrap: wrap;
+    justify-content: center !important;
+  }
+
+
+  .shipping .padding-equal .text-check.inputting-check.success-pot .button-flex.button-return button.btn.btn-primary {
+    background: #faf1ea;
+  }
+}
+
+@media (min-width: 576px) and (max-width: 767px) {
+  .shipping .padding-equal .text-check.inputting-check.success-pot {
+    flex-wrap: wrap;
+    justify-content: space-between !important;
+  }
+}
+
+
+@media (min-width: 768px) and (max-width:1024px) {
+  .message-empty h4 {
+    font-size: 32px !important;
+  }
+
+  .shipping .padding-equal .text-check.inputting-check.success-pot {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+
+  .shipping .padding-equal .text-check.inputting-check.success-pot .button-flex.button-return button.btn.btn-primary {
+    background: #faf1ea;
+  }
+
+  .shipping .detailed-confirm {
+    flex-direction: column;
+    gap: 10px;
+  }
 }
 
 @media (min-width: 992px) and (max-width: 1350px) {
@@ -1746,6 +1802,10 @@ section.newsletter-section {
   div#navbar-content ul.navbar-nav:last-child li a {
     font-size: 12px !important;
   }
+
+  .message-empty h4 {
+    font-size: 42px !important;
+  }
 }
 
 @media (min-width: 1200px) and (max-width: 1400px) {
@@ -1759,18 +1819,30 @@ section.newsletter-section {
 }
 
 
+.shipping .padding-equal .text-check.inputting-check.success-pot {
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
 
+
+.shipping .padding-equal .text-check.inputting-check.success-pot .button-flex.button-return button.btn.btn-primary {
+  background: #faf1ea;
+}
 
 .row {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center; /* Center align products */
-  gap: 15px; /* Maintain equal spacing */
+  justify-content: center;
+  /* Center align products */
+  /* Maintain equal spacing */
+}
+
+.row-product {
+  gap: 0px !important;
 }
 
 .product-card-container {
   width: 100%;
-  max-width: 300px; /* Maintain a fixed max width */
 }
 
 .product-card {
@@ -1780,30 +1852,40 @@ section.newsletter-section {
   align-items: center;
 }
 
-/* Responsive Grid Alignment without Resizing Product Cards */
-@media (min-width: 1200px) {
-  .row {
-    justify-content: center;
-  }
-  .product-card-container {
-    flex: 0 0 calc(33.33% - 15px); /* 4 items per row on large screens */
+
+@media (min-width: 992px) and (max-width: 1300px) {
+  .collection-section.info-collect-section .product-card-container.product-info-container .product-card .product-tumb img {
+    min-height: 199px !important;
   }
 }
 
-@media (max-width: 992px) {
-  .product-card-container {
-    flex: 0 0 calc(33.33% - 15px); /* 3 items per row on tablets */
-  }
-}
 
-@media (max-width: 768px) {
-  .product-card-container {
-    flex: 0 0 calc(50% - 15px); /* 2 items per row on smaller screens */
+@media (min-width: 992px) and (max-width: 5000px) {
+  .product-card-container.cards-porduct {
+    width: 33% !important;
+    gap: 0px !important;
   }
-}
 
-@media (max-width: 480px) {
-  .product-card-container {
-    flex: 0 0 100%; /* 1 item per row on mobile */
+  .collection-section.info-collect-section {
+    gap: 0;
+  }
+
+  .collection-section.info-collect-section .product-card-container.product-info-container {
+    width: 33%;
+    gap: 0 !important;
+  }
+
+  .collection-section.info-collect-section .product-card-container.product-info-container .product-card {
+    width: 100% !important;
+    min-width: 100% !important;
+  }
+
+  .collection-section.info-collect-section .product-card-container.product-info-container .product-card .product-tumb {
+    width: 100%;
+    height: auto;
+  }
+
+  .collection-section.info-collect-section .product-card-container.product-info-container .product-card .product-tumb img {
+    min-height: 272px;
   }
 }

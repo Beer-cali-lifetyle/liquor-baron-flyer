@@ -292,6 +292,10 @@
     padding-top: 5px;
     padding-bottom: 5px;
   }
+
+  .message-empty h4 {
+    font-size: 38px !important;
+  }
 }
 
 @media (min-width: 768px) and (max-width: 991px) {
@@ -438,6 +442,10 @@
     padding-top: 5px;
     padding-bottom: 5px;
   }
+
+  .message-empty h4 {
+    font-size: 30px !important;
+  }
 }
 
 @media (min-width: 576px) and (max-width: 767px) {
@@ -583,6 +591,10 @@
   aside.payment-de .accordion-body {
     padding-top: 5px;
     padding-bottom: 5px;
+  }
+
+  .message-empty h4 {
+    font-size: 26px !important;
   }
 }
 
@@ -741,5 +753,9 @@
   aside.payment-de .accordion-body {
     padding-top: 5px;
     padding-bottom: 5px;
+  }
+
+  .message-empty h4 {
+    font-size: 26px !important;
   }
 }

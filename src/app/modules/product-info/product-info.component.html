@@ -113,10 +113,10 @@
             <hr>
           </div>
 
-          <div class="row mb-5 collection-section">
+          <div class="row mb-5 collection-section info-collect-section">
 
             <h2>You May Also Like </h2>
-            <div class="col-4 product-card-container" *ngFor="let product of relatedProducts; let i=index">
+            <div class="col-lg-4 col-sm-6 col-md-6 col-xs-12 product-card-container product-info-container" *ngFor="let product of relatedProducts; let i=index">
 
               <div class="product-card" [routerLink]="['/product', product?.id]">
                 <div class="product-tumb pt-4 pb-1">

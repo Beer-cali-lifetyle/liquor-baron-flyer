@@ -2,3 +2,32 @@
     max-height: 25px;
     max-width: 25px;
 }
+
+@media (min-width: 320px) and (max-width: 767px) {
+    .left-white {
+        width: 100%;
+        background: #faf1ea;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+    .left-white {
+        width: 70%;
+        background: #faf1ea;
+    }
+
+    .padding-equal {
+        padding: 40px;
+    }
+}
+
+@media (min-width: 1025px) and (max-width: 5000px) {
+    .left-white {
+        width: 60%;
+        background: #faf1ea;
+    }
+
+    .padding-equal {
+        padding: 40px;
+    }
+}
