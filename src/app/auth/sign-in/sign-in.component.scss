@@ -1,0 +1,104 @@
+.video-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -1;
+}
+
+.form-width {
+  width: 62%;
+}
+
+.main-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.left-section {
+  flex: 1;
+  text-align: center;
+  color: rgb(0, 0, 0);
+  animation: slideInFromLeft 1s ease-out;
+}
+
+.right-section {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: slideInFromRight 1.2s ease-out;
+}
+
+@keyframes slideInFromLeft {
+  from {
+    transform: translateX(-50%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInFromRight {
+  from {
+    transform: translateX(50%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+
+.login-form {
+  margin: auto;
+  // background-color: rgba(14, 8, 8, 0.774);
+  background-color: rgba(250, 241, 234, 0.822);
+  border-radius: 30px;
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+.btn-block {
+  background-color: #840029;
+  border:#740226 ;
+}
+
+.input-group-prepend {
+  font-size: 20px;
+}
+
+.custom-input {
+  // color: white; 
+  background-color: transparent; /* Transparent background to keep form clean */
+}
+
+/* Styling the placeholder */
+.custom-input::placeholder {
+  font-size: 0.85rem; /* Make placeholder text smaller */
+}
+
+/* Adjust input focus to ensure the design looks clean */
+.custom-input:focus {
+  box-shadow: none;
+  border-color: #007bff;
+}
+
+/* Ensure the text in buttons remains readable */
+.text-decoration-none {
+  color: #007bff; /* Bootstrap primary color for links */
+}
+
+.pointer {
+  cursor: pointer;
+}

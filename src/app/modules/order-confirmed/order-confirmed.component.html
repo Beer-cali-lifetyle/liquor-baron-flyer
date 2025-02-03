@@ -1,0 +1,133 @@
+<section class="shipping">
+  <div class="row row-left-right">
+
+    <div class="col-md-6 col-sm-12 col-md-offset-2">
+      <div class="padding-equal">
+
+        <div class="confirm-tick">
+          <div class="tick-right">
+            <img src="assets/image/shipping/right.png" alt="confirm">
+          </div>
+          <div class="detail-confirm">
+            <p class="light-shade">Order #{{orders?.order_number}} </p>
+            <p class="dark-shade">Thank you, {{contextService.user()?.name}}!</p>
+          </div>
+        </div>
+
+        <div class="confirmation">
+          <div class="card-confirm">
+            <img src="assets/image/shipping/map-phone.png" alt="map">
+            <div class="alert-success alerting">
+              <div class="image-green">
+                <img src="assets/image/shipping/green-tick.png" alt="green-tick">
+              </div>
+              <div class="para-alert">
+                <p class="first-alert">Your Order Is Confirmed</p>
+                <p class="second-alert">Your Order will be delivered on Tuesday, 27 August 2024 1:00 pm </p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="confirmation">
+          <div class="card-confirm">
+            <div class="box-confirmed">
+              <div class="detailed-confirm">
+                <div class="first-confirm">
+                  <p class="confirmed"><strong>Contact Information:</strong><br><span>Local Delivery</span></p>
+                </div>
+                <div class="first-confirm second-confirm">
+                  <p class="confirmed"><strong>Payment Method:</strong><br><span>{{orders?.payment_method | titlecase}}</span></p>
+                </div>
+              </div>
+
+              <div class="detailed-confirm">
+                <div class="first-confirm">
+                  <p class="confirmed"><strong>Address:</strong><br>{{orders?.delivery_address}}</p>
+                </div>
+                <!-- <div class="first-confirm second-confirm">
+                  <p class="confirmed"><strong>Billing Address:</strong><br><span>Kolkata, West Bengal</span></p>
+                </div> -->
+              </div>
+
+              <div class="detailed-confirm">
+                <div class="first-confirm">
+                  <p class="confirmed"><strong>Shipping Method:</strong><br><span>Local Delivery</span></p>
+                </div>
+              </div>
+            </div>
+            <!-- <div class="alert-success alerting">
+              <div class="image-green">
+                <input type="checkbox" name="" id="">
+              </div>
+              <div class="para-alert">
+                <p class="second-alert">Save this information for faster checkout </p>
+              </div>
+            </div> -->
+
+          </div>
+        </div>
+
+
+
+        <div class="text-check inputting-check success-pot">
+          <div class="button-flex button-return">
+            <button type="submit" class="btn btn-primary"> Need Help?<span class="contactor"><a routerLink="/contact">Contact Us</a></span></button>
+          </div>
+          <div class="button-flex">
+            <button type="submit" class="btn btn-primary" routerLink="/home">Continue Shopping</button>
+          </div>
+        </div>
+
+        <div class="foot-shipping">
+          <hr>
+          <p>All rights reserved LIQUOR BARON</p>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="col-md-6 col-sm-12 mt-md-5">
+      <div class="padding-equal-right position-sticky top-0">
+        <div class="right-starting">
+          <div class="listing-right mb-1" *ngFor="let item of contextService?.cart()?.data">
+            <div class="img-bottle">
+              <img [src]="imgBaseUrl + item?.product?.product_image" alt="old">
+              <p class="one">{{item?.quantity}}</p>
+            </div>
+            <p>{{item?.product?.name}}</p>
+            <p>{{item?.product?.price * item?.quantity | currency}}</p>
+          </div>
+        </div>
+        <!-- <div class="apply-but">
+          <input type="text" placeholder="Discount Code">
+          <button type="button">Apply</button>
+        </div> -->
+
+        <div class="apply-total">
+
+          <!-- <div class="p-total">
+            <p>Subtotal :</p>
+            <p>${{calculateSubTotal(contextService.cart())}}</p>
+          </div> -->
+
+          <!-- <div class="p-total d-total">
+            <p>Shipping :</p>
+            <p>Enter Shipping Address</p>
+          </div> -->
+
+          <div class="p-total free-grand">
+            <p><span class="grandone">Total</span></p>
+            <p>CAD<span class="cad">${{orders?.total_amount}}</span></p>
+          </div>
+
+          <div class="p-total free-grand icluding">
+            <!-- <p>Including $6.00 in taxes</p> -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>

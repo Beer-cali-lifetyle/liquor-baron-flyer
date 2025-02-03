@@ -1,0 +1,147 @@
+<div class="my-order-history">
+  <div class="my-account">
+    <h2>My Orders</h2>
+    <br>
+    <div class="col">
+      <div class="title-with-forms">
+        <div class="title-forms">
+          <h3>PENDING ORDERS</h3>
+          <hr>
+        </div>
+      </div>
+    </div>
+
+    <div *ngFor="let order of orders">
+      <div class="row card-wi-border">
+        <div class="col-lg-2">
+          <div class="align-items-center">
+            <img [src]="imgBaseUrl + order?.items[0]?.product_image" width="180px" alt="Thumbnail">
+          </div>
+        </div>
+        <div class="col-lg-10 align-self-center">
+          <div class="d-flex justify-content-between">
+            <h5 class="name-text">
+              <a class="text-maroon">Liquor Baron</a>
+              <p>{{getOrderType(order?.delivery_type)}}</p>
+              <p class="mb-1">
+                <span class="text-body-secondary">{{order?.order_number}} | {{order?.created_at | date}}</span>
+              </p>
+              <!-- <a class="button_view" href="#">View Details</a> -->
+            </h5>
+            <div class="list-unstyled gap-1 fs-xs mb-0 d-flex">
+              <div class="remove-productss d-block">
+                <span>
+                  <b>Delivery Time: </b>Tuesday, 27 August 2024 | 1:00 pm </span>
+              </div>
+            </div>
+          </div>
+          <p class="text-maroon fw-bold mb-1" (click)="openModal(orderModal, order)">View Details</p>
+        </div>
+        <hr>
+        <div class="col-12">
+          <div class="d-flex justify-content-between">
+            <div class="select-products">
+              <p>
+                <b class="fw-bold">Item :</b> <span *ngFor="let item of order?.items">{{item?.product_name}} &times;
+                  {{item?.quantity}}, </span>
+              </p>
+            </div>
+            <div class="d-flex">
+              <!-- <div class="gap-1 mb-0 d-flex price-text me-3"> Price:$ {{item?.price}} </div> -->
+              <div class="list-unstyled gap-1 fs-xs mb-0 d-flex price-text"> Total Paid:$ {{order?.total_amount}} </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <section class="empty-checkout text-center pt-90 pb-90" *ngIf="!(orders.length > 0)">
+      <div class="container-baron container-fluid">
+        <div class="row">
+          <div class="col">
+            <div class="message-empty">
+              <h4>Nothing to see – or drink – here. Start shopping and add something to your basket. It’s free shipping
+                if you spend over £60!</h4>
+              <button class="btn btn-continue" routerLink="/shop">
+                Continue shopping
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</div>
+
+
+
+
+
+
+
+
+<ng-template #orderModal let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title color-white">{{currentOrder?.order_number}}</h4>
+    <button type="button" class="btn-close color-white" aria-label="Close" (click)="closeModal()"></button>
+  </div>
+  <div 
+  [ngClass]="{
+    'order-pending': currentOrder?.order_status === 'new',
+    'order-confirmed': currentOrder?.order_status === 'confirmed',
+    'order-success': currentOrder?.order_status === 'shipped',
+    'order-reject': currentOrder?.order_status === 'cancelled'
+  }"
+  class="p-3">
+    <div class="d-flex">
+      <div class="image-green">
+        <img src="assets/image/shipping/green-tick.png" alt="green-tick" class="mt-2 pe-3">
+      </div>
+      <p class="fs-4 mb-1">Your Order is {{currentOrder?.order_status}}</p>
+    </div>
+    <p class="mb-0">Your Order will be delivered on Tuesday, 27 August 2024 1:00 pm </p>
+  </div>
+  <div class="modal-body">
+    <div class="col">
+      <div class="padding-equal-right position-sticky top-0">
+        <div class="right-starting">
+          <div class="listing-right mb-1" *ngFor="let item of currentOrder?.items">
+            <div class="img-bottle">
+              <img [src]="imgBaseUrl + item?.product_image" alt="old">
+              <p class="one">{{item?.quantity}}</p>
+            </div>
+            <p>{{item?.product_name}}</p>
+            <p>{{item?.price * item?.quantity | currency}}</p>
+          </div>
+        </div>
+        <!-- <div class="apply-but">
+        <input type="text" placeholder="Discount Code">
+        <button type="button">Apply</button>
+      </div> -->
+        <hr>
+        <div class="apply-total">
+
+          <div class="p-total">
+            <!-- <p>Subtotal :</p> -->
+            <!-- <p>${{calculateSubTotal(contextService.cart())}}</p> -->
+          </div>
+
+          <!-- <div class="p-total d-total">
+          <p>Shipping :</p>
+          <p>Enter Shipping Address</p>
+        </div> -->
+
+          <div class="p-total free-grand">
+            <p><span class="grandone">Total</span></p>
+            <p>CAD<span class="cad">${{currentOrder?.total_amount}}</span></p>
+          </div>
+
+          <div class="p-total free-grand icluding">
+            <!-- <p>Including $6.00 in taxes</p> -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>

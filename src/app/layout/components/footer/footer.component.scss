@@ -1,0 +1,136 @@
+@media (min-width: 320px) and (max-width: 991px) {
+    .footer-big {
+        padding: 40px 0px 30px;
+    }
+
+    .footer-big p {
+        font-size: 14px;
+        color: #fff;
+    }
+
+    .footer-big img.img-fluid {
+        margin-bottom: 15px;
+    }
+
+    h4.footer-widget-title {
+        font-size: 20px !important;
+        margin-bottom: 5px;
+    }
+
+    .footer-menu ul a {
+        font-size: 15px !important;
+    }
+
+    .footer-menu ul img {
+        margin-top: 5px;
+    }
+
+    .footer-ends p {
+        text-align: center;
+    }
+
+    .footer-ends img {
+        margin: 0 auto !important;
+    }
+
+    .footer-ends.text-end {
+        text-align: center !important;
+        margin-top: 20px;
+    }
+
+    .container-baron.container-fluid .row:last-child {
+        flex-direction: column;
+    }
+
+
+}
+
+@media (min-width: 601px) and (max-width: 991px) {
+
+    .container-baron.container-fluid .col-lg-2.col-sm-6 {
+        width: 33%;
+    }
+
+    .container-baron.container-fluid .col-lg-4.col-sm-6 {
+        width: 67%;
+    }
+}
+
+
+@media (min-width: 992px) and (max-width: 1600px) {
+    .footer-big {
+        padding: 50px 0px 30px;
+    }
+
+    .footer-big p {
+        font-size: 14px;
+        color: #fff;
+    }
+
+    .footer-big img.img-fluid {
+        margin-bottom: 15px;
+    }
+
+    .footer-menu ul a {
+        font-size: 14px !important;
+    }
+
+    .footer-menu ul img {
+        margin-top: 5px;
+    }
+
+    .footer-ends p {
+        text-align: center;
+    }
+
+    .footer-ends img {
+        margin: 0 auto !important;
+    }
+
+    .footer-ends.text-end {
+        text-align: center !important;
+        margin-top: 20px;
+    }
+
+    .container-baron.container-fluid .row:last-child {
+        flex-direction: column;
+    }
+
+
+}
+
+
+@media (min-width: 992px) and (max-width: 1200px) {
+    h4.footer-widget-title {
+        font-size: 17px !important;
+        margin-bottom: 5px;
+        min-height: 66px;
+    }
+}
+
+@media (min-width: 1201px) and (max-width: 1600px) {
+    h4.footer-widget-title {
+        font-size: 17px !important;
+        margin-bottom: 5px;
+        min-height: 40px;
+    }
+}
+
+@media (max-width: 600px) {
+    .widget-about img {
+        margin: 0 auto;
+    }
+
+    .footer-big p {
+        text-align: center;
+    }
+
+    .footer-menu {
+        text-align: center;
+    }
+
+    .footer-menu ul {
+        justify-content: center;
+        gap: 10px;
+    }
+}

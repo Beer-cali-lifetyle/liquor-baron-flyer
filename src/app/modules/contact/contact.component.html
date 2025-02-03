@@ -1,0 +1,57 @@
+<section class="text-gray-600 body-font bg-yellow-100 pt-50 pb-50 contact-page">
+  <div class="container" id="contact-form">
+    <div class="row">
+      <div class="col-12">
+        <h1 class="text-4xl text-gray-800 sm:text-4xl font-bold font-clarity mb-9">Contact Us</h1>
+      </div>
+      <div class="col-6">
+        <h4 class="font-clarity">LIQUOR BARON</h4>
+        <p><b>Opening Hours:</b>Monday - Friday: 09.00 - 18.00</p>
+        <p><b>Call Us:</b>0208 951 9840 </p>
+        <a href="mailto:liquorbaren&#64;gmail.com">liquorbaren&#64;gmail.com</a>
+        <p>Or complete the 'Contact Us' form below and we will aim to respond to your query within 24 hours.</p>
+        <p><b>Follow us:</b> &#64;AmathusDrinks for all the latest news and offers.</p>
+        <p><b>Visit Us:</b>Pop into any of our eight stores in London, Bath and Brighton or meet us in person at our offices by prior appointment at our</p>
+        <p><b>Head Office Address:</b>309 Elveden Road, Park Royal, London, NW10 7ST</p>
+      </div>
+      <div class="col-6">
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" class="contact-form">
+          <div class="mb-3">
+            <label for="name" class="form-label">Name *</label>
+            <input type="text" class="form-control" id="name" formControlName="name" />
+            <div *ngIf="form.get('name')?.invalid && form.get('name')?.touched" class="text-danger">
+              Name is required.
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="phNo" class="form-label">Phone Number</label>
+            <input type="text" class="form-control" id="phNo" formControlName="phNo" />
+          </div>
+          <div class="mb-3">
+            <label for="email" class="form-label">Email address *</label>
+            <input type="email" class="form-control" id="email" formControlName="email" />
+            <div *ngIf="form.get('email')?.invalid && form.get('email')?.touched" class="text-danger">
+              <div *ngIf="form.get('email')?.errors?.['required']">Email is required.</div>
+              <div *ngIf="form.get('email')?.errors?.['email']">Please enter a valid email address.</div>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="subject" class="form-label">Subject *</label>
+            <input type="text" class="form-control" id="subject" formControlName="subject" />
+            <div *ngIf="form.get('subject')?.invalid && form.get('subject')?.touched" class="text-danger">
+              Subject is required.
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="message" class="form-label">Message *</label>
+            <textarea class="form-control" id="message" formControlName="message" rows="3"></textarea>
+            <div *ngIf="form.get('message')?.invalid && form.get('message')?.touched" class="text-danger">
+              Message is required.
+            </div>
+          </div>
+          <button type="submit" class="btn btn-dark btn-lg br-0" [disabled]="form.invalid">Submit</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>

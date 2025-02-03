@@ -1,0 +1,22 @@
+label {
+    color: gray;
+}
+
+@media (min-width: 320px) and (max-width: 767px) {
+
+    .row.account-setting .title-with-forms {
+        margin-top: 10px;
+    }
+
+    .row.account-setting .col-6 {
+        width: 100%;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 5000px) {
+
+    .row.account-setting .title-with-forms {
+        margin-top: 10px;
+    }
+
+}

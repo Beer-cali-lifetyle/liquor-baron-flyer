@@ -1,0 +1,86 @@
+<div class="sicky-nav">
+  <section class="top-section">
+    <header>
+      <div class="container">
+        <div class="col-12">
+          <div class="text-top-section text-center">
+            <p>SUMMER SALE FOR ALL SWIM SUITS AND FREE EXPRESS INTERNATIONAL DELIVERY - OFF 50%! SHOP NOW</p>
+          </div>
+        </div>
+      </div>
+    </header>
+  </section>
+
+  <nav class="main-nav navbar navbar-expand-lg shadow">
+    <div class="container-baron container-fluid">
+      <div class="logo">
+        <a class="navbar-brand" routerLink="/home">
+          <img src="assets/image/logo/Logo.png" alt="logo">
+        </a>
+      </div>
+      <button class="navbar-toggler" type="button" [attr.aria-expanded]="!isNavbarCollapsed" (click)="toggleNavbar()">
+        <div class="hamburger-toggle">
+          <div class="hamburger" [class.active]="!isNavbarCollapsed">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+      </button>
+
+      <div class="collapse navbar-collapse align-middle" [ngClass]="{ show: !isNavbarCollapsed }" id="navbar-content">
+        <ul class="navbar-nav main-navs ms-auto mb-2 mb-lg-0">
+          <li class="nav-item" *ngFor="let item of contextService.sub_categories() ||  subCategories | slice: 0:3"
+            (click)="redirectToShopList('subcategory', item?.id, item?.subcategory_name)">
+            <a class="nav-link active" aria-current="page">{{ item?.subcategory_name }}</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" routerLink="auth/sign-in"
+              *ngIf="(this.contextService.user()?.is_guest === true) || !(this.contextService.user())">E-Flyer Sign
+              up</a>
+            <a class="nav-link active" aria-current="page" routerLink="my-account"
+              *ngIf="(this.contextService.user()?.is_guest === 'false')">E-Flyer Sign up</a>
+          </li>
+        </ul>
+        <ul class="navbar-nav ms-auto extra-menus">
+          <li class="nav-item" routerLink="/our-store">
+            <img src="assets/image/icons/location.png">
+            <a class="nav-link active" aria-current="page" (click)="toggleNavbar()">OUR STORES</a>
+          </li>
+          <li class="nav-item" routerLink="/my-account">
+            <img src="assets/image/icons/user.png">
+            <a class="nav-link" (click)="toggleNavbar()">MY ACCOUNT</a>
+          </li>
+          <!-- <li class="nav-item" routerLink="/auth/sign-in"
+            *ngIf="(this.contextService.user()?.is_guest === true) || !(this.contextService.user())">
+            <img src="assets/image/icons/user.png">
+            <a class="nav-link" (click)="toggleNavbar()">MY ACCOUNT</a>
+          </li>
+          <li class="nav-item" routerLink="/my-account" *ngIf="(this.contextService.user()?.is_guest === 'false')">
+            <img src="assets/image/icons/user.png">
+            <a class="nav-link" (click)="toggleNavbar()">MY ACCOUNT</a>
+          </li> -->
+          <li class="nav-item" routerLink="/cart">
+            <img src="assets/image/icons/basket.png" alt="Cart">
+            <a class="nav-link" (click)="toggleNavbar()">CART</a>
+            <span class="cart-badge" *ngIf="contextService.cart()?.data.length > 0">{{contextService.cart()?.data.length
+              > 0 ? getCartNumber() : 0}}</span>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link">
+              <img src="assets/image/icons/canada.png" alt="canada">
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="cart-show">
+        <p class="nav-item" routerLink="/cart">
+          <a class="nav-link"><img src="assets/image/icons/basket.png" alt="Cart"></a>
+          <span class="cart-badge" *ngIf="contextService.cart()?.data.length > 0">{{contextService.cart()?.data.length >
+            0 ? getCartNumber() : 0}}</span>
+        </p>
+      </div>
+    </div>
+  </nav>
+</div>

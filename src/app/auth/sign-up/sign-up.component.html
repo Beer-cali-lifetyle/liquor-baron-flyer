@@ -1,0 +1,125 @@
+<Section class="signin">
+
+  <div class="container">
+    <div class="col-12">
+      <h1 class="text-4xl text-gray-800 sm:text-4xl font-bold font-clarity">Create New Customer Account</h1>
+    </div>
+    <div class="row gap-increase">
+      <form class="col-md-5 col-12" [formGroup]="form" (ngSubmit)="onSignup()">
+        <div class="upper-create">
+          <div class="head-retail">
+            <h4>Personal Information</h4>
+          </div>
+          <div class="form-register">
+            <div class="register-form">
+              <div class="form-labels">
+                <label class="form-label">First Name <span class="red">*</span></label>
+                <input type="text" class="form-control" placeholder="Enter first name" formControlName="firstName">
+                <div *ngIf="form.get('firstName')?.invalid && form.get('firstName')?.touched" class="text-danger">
+                  <small *ngIf="form.get('firstName')?.errors?.['required']">First Name is required.</small>
+                </div>
+
+              </div>
+
+              <div class="form-labels">
+                <label class="form-label">Last Name <span class="red">*</span></label>
+                <input type="text" class="form-control" placeholder="Enter last name" formControlName="lastName">
+                <div *ngIf="form.get('lastName')?.invalid && form.get('lastName')?.touched" class="text-danger">
+                  <small *ngIf="form.get('lastName')?.errors?.['required']">Last Name is required.</small>
+                </div>
+              </div>
+
+              <!-- <div class="form-labels">
+                              <input type="checkbox" name="show" value="show">
+                              <label>Allow remote shopping assistant <span>?</span></label>
+                          </div> -->
+
+            </div>
+          </div>
+        </div>
+        <div class="lower-create">
+          <div class="head-retail">
+            <h4>Sign-in Information</h4>
+          </div>
+          <div class="form-register">
+            <div class="register-form">
+
+              <div class="form-labels">
+                <label class="form-label">Email <span class="red">*</span></label>
+                <input type="email" class="form-control" formControlName="email" placeholder="Enter email">
+                <div *ngIf="form.get('email')?.invalid && form.get('email')?.touched" class="text-danger mt-1">
+                  <small *ngIf="form.get('email')?.errors?.['required']">
+                    Email is required.
+                  </small>
+                  <small *ngIf="form.get('email')?.errors?.['email']">
+                    Please enter a valid email address.
+                  </small>
+                </div>
+              </div>
+
+              <div class="form-labels">
+                <label class="form-label">Password <span class="red">*</span></label>
+                <input [type]="passwordFieldType" class="form-control" formControlName="password"
+                  placeholder="Please Enter Password">
+                <div *ngIf="form.get('password')?.invalid && form.get('password')?.touched" class="text-danger mt-1">
+                  <small *ngIf="form.get('password')?.errors?.['required']">
+                    Password is required.
+                  </small>
+                </div>
+                <div *ngIf="form.get('password')?.hasError('minlength') && form.get('password')?.touched" class="text-danger mt-1">
+                  <small>Password must be at least 8 characters long.</small>
+                </div>
+                <div *ngIf="form.get('password')?.hasError('pattern') && form.get('password')?.touched" class="text-danger mt-1">
+                  <small>
+                    Password must include at least one uppercase letter, one lowercase letter, one number, and one special character.
+                  </small>
+                </div>
+                <div *ngIf="form.get('password_confirmation')?.hasError('mustMatch') && form.get('password_confirmation')?.touched" class="text-danger mt-1">
+                  <small>Passwords must match.</small>
+                </div>
+              </div>
+
+              <div class="form-labels">
+                <label class="form-label">Confirm Password <span class="red">*</span></label>
+                <input [type]="passwordFieldType" class="form-control" formControlName="password_confirmation"
+                  placeholder="Confirm Password">
+                  <div *ngIf="form.get('password_confirmation')?.hasError('mustMatch') && form.get('password_confirmation')?.touched" class="text-danger mt-1">
+                    <small>
+                      Passwords must match.
+                    </small>
+                  </div>
+                  
+              </div>
+
+              <div class="form-labels">
+                <input type="checkbox" (input)="togglePasswordVisibility()" name="show"
+                  class="me-2 form-check-input p-0" value="show" id="show">
+                <label for="show">Show Password</label>
+              </div>
+
+              <!-- <div class="form-labels">
+                <p><strong>What’s this?</strong></p>
+                <div class="captcha">
+                  <img src="image/Recapcha.png" alt="">
+                </div>
+              </div> -->
+
+              <div class="form-labels">
+                <button type="submit" class="btn-border">Create An Account</button>
+              </div>
+
+              <!-- <div class="form-labels">
+                              <p class="red-color">* Required Fields</p>
+                          </div> -->
+
+            </div>
+          </div>
+        </div>
+      </form>
+
+      <div class="col-md-6 col-12">
+
+      </div>
+    </div>
+  </div>
+</Section>

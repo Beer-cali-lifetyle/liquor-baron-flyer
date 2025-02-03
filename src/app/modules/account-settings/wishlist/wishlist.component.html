@@ -1,0 +1,65 @@
+<section class="pt-0 ps-6 pe-6 lg-ps-2 lg-pe-2 sm-ps-0 sm-pe-0 mt-5 collection-section">
+  <div class="container-fluid">
+    <h2>My Wishlist</h2>
+    <div class="row">
+      <!-- Loop through wishListItems array -->
+      <div class="col-3 product-card-container" *ngFor="let product of wishLstItems?.data; let i=index">
+  
+        <div class="product-card" [routerLink]="['/product', product?.product?.id]">
+          <div class="product-tumb pt-4 pb-1">
+            <img [src]="imgBaseUrl + product?.product?.product_image" class="img-fluid uniform-img" alt="product">
+            <!-- <div class="badge-wrapper"> -->
+              <div class="badge"   [ngClass]="{
+                'bg-auccess': product.product?.producttag === '3', 
+                'badge-yellow': product.product?.producttag !== '3'
+              }">{{product.producttag === '3' ? 'New Item' : 'Limited Edition'}}</div>
+            <!-- </div> -->
+          </div>
+          <div class="product-details p-2">
+            <h4>{{product?.product?.name}}</h4>
+            <p>{{product?.product?.description}}</p>
+            <div class="product-bottom-details d-flex justify-content-between">
+              <div class="product-price">
+                ${{product?.product?.price}}
+              </div>
+              <div class="bag-container" *ngIf="!product?.cart_details">
+                <i class="bi bi-lg bi-bag-plus bag-icon" *ngIf="!product?.product?.cart_details" 
+                   (click)="addToCart($event, product?.product?.id)">
+                </i>
+                <span class="hover-text">Add</span>
+              </div>
+            <div class="qty-container" *ngIf="product?.product?.cart_details">
+              <button class="minus-round btn-light" type="button"
+                (click)="decrementProductCard(product?.product?.cart_details?.id, product?.product?.cart_details?.quantity, i, $event)"><i
+                  class="bi bi-dash"></i></button>
+              <div class="quantity-round">{{product?.product?.cart_details?.quantity}}</div>
+              <button class="plus-round btn-light" type="button"
+                (click)="incrementProductCard(product?.product?.cart_details?.id, product?.product?.cart_details?.quantity, i, $event)"><i
+                  class="bi bi-plus-lg"></i></button>
+            </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <section class="empty-checkout text-center pt-90 pb-90" *ngIf="!(wishLstItems?.data?.length > 0)">
+        <div class="container-baron container-fluid">
+            <div class="row">
+                <div class="col">
+                    <div class="message-empty">
+                        <h4>Nothing to see – or drink – here. Start shopping and add something to your basket. It’s free shipping if you spend over £60!</h4>
+                        <button class="btn btn-continue" routerLink="/shop">
+                            Continue shopping
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </section>
+      <!-- Add all to cart button -->
+      <div class="col-12 mt-4 text-center">
+        <!-- <button (click)="addAllToCart()" class="btn btn-dark">Add all to Cart</button> -->
+      </div>
+    </div>
+  </div>
+</section>

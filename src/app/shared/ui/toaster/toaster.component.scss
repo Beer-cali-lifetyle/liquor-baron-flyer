@@ -1,0 +1,54 @@
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+.toast-container {
+    position: fixed;
+    top: 0;
+    right: 0;
+    padding: 3px;
+    z-index: 1200;
+}
+
+.toast-container .ngb-toast {
+    animation: slideInRight 0.5s ease-out, fadeOut 0.5s ease-in 5s forwards;
+    /* Adjust timing (e.g., 5s) to match your toast delay */
+    will-change: transform, opacity;
+}
+
+.toast-container .message-container {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px; /* Adjust the max-width to your preference */
+}
+
+.toast-container .ngb-toast-header {
+    display: flex;
+    align-items: center;
+}
+
+.toast-container .ngb-toast-header small {
+    margin-left: auto;
+}
+
+.toast-container .error-message {
+    display: inline;
+    white-space: nowrap;
+}

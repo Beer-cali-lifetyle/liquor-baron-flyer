@@ -1,0 +1,410 @@
+<section class="payment-section pt-90 pb-90">
+  <div class="container-baron container-fluid">
+    <div class="row">
+      <div class="col">
+        <div class="d-flex align-items-start">
+          <div class="nav flex-column nav-pills me-3 text-start" id="v-pills-tab" role="tablist"
+            aria-orientation="vertical">
+            <button class="nav-link active" id="v-pills-home-tab" data-bs-toggle="pill" data-bs-target="#v-pills-home"
+              type="button" role="tab" aria-controls="v-pills-home" aria-selected="true" (click)="setActiveTab(1, 'account')" fragment="account">My
+              Account</button>
+            <button class="nav-link" id="v-pills-profile-tab" data-bs-toggle="pill" data-bs-target="#v-pills-profile"
+              type="button" role="tab" aria-controls="v-pills-profile" aria-selected="false"
+              (click)="setActiveTab(2, 'orders')" fragment="orders">My Orders</button>
+            <button class="nav-link" id="v-pills-wishlist-tab" data-bs-toggle="pill" data-bs-target="#v-pills-wishlist"
+              type="button" role="tab" aria-controls="v-pills-wishlist" aria-selected="false"
+              (click)="setActiveTab(3, 'wishlist')" fragment="wishlist">My Wish List</button>
+            <hr>
+            <button class="nav-link" id="v-pills-disabled-tab" data-bs-toggle="pill" data-bs-target="#v-pills-personal-info"
+            type="button" role="tab" aria-controls="v-pills-disabled" aria-selected="false"
+            (click)="setActiveTab(4, 'info')" fragment="info">My Account Information</button>
+            <button class="nav-link" id="v-pills-messages-tab" data-bs-toggle="pill" data-bs-target="#v-pills-messages"
+              type="button" role="tab" aria-controls="v-pills-messages" aria-selected="false"
+              (click)="logout()">Logout</button>
+            <hr>
+          </div>
+          <div class="tab-content" id="v-pills-tabContent">
+            <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab"
+              tabindex="0" *ngIf="activeTab === 1">
+              <div class="my-account">
+                <div class="row">
+                  <div class="col">
+                    <h2>MY ACCOUNT</h2>
+                    <div class="title-with-forms">
+                      <div class="title-forms">
+                        <h3>ACCOUNT INFORMATION</h3>
+                        <hr>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="detail_account">
+                    <p>Contact Information</p>
+                    <p class="mb-1">{{user?.name}}</p>
+                    <p>{{user?.email}}</p>
+                    <!-- <p>sidherthsid@gmail.com</p> -->
+                    <ul class="d-flex ">
+                      <li><a (click)="setActiveTab(4, 'info')" class="text-maroon" seta id="v-pills-disabled-tab" data-bs-toggle="pill" data-bs-target="#v-pills-personal-info"
+                        type="button" role="tab" aria-controls="v-pills-disabled" aria-selected="false">Edit</a></li>
+                      <li><a  (click)="setActiveTab(4, 'info')" class="text-maroon" id="v-pills-disabled-tab" data-bs-toggle="pill" data-bs-target="#v-pills-personal-info"
+                        type="button" role="tab" aria-controls="v-pills-disabled" aria-selected="false">Change password</a></li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="title-with-forms  d-flex justify-content-between">
+                    <div class="title-forms w-100">
+                      <h3>Address Book <span  class="text-maroon"><a>Manage Addresses</a></span></h3>
+                      <hr>
+                    </div>
+                    <button class="btn-maroon" type="button" (click)="openModal(addressModal)">Add</button>
+                  </div>
+                  <div class="list-group mt-4">
+                    <label class="" *ngFor="let item of address; let i=index">
+                      <div class="d-flex w-100">
+                        <div class="billing-radio me-2">
+                          <div class="form-check">
+                            <input type="radio" name="billingAddress" class="mt-3 me-2" id="billingAddress1" [checked]="item?.is_default">
+                          </div>
+                        </div>
+                        <div class="billing-content">
+                          <div class="fw-bold fs-5">{{item?.full_name}}</div>
+                          <p>{{item?.address}}, {{item?.locality}}, {{item?.city}}, {{item?.state}}, {{item?.mobile_number}}</p>
+                        </div>
+                        <div class="billing-edit align-self-center ms-auto">
+                          <svg (click)="(editMode(item))" class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                            width="24" height="24" fill="none" viewBox="0 0 24 24">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="m14.304 4.844 2.852 2.852M7 7H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h11a1 1 0 0 0 1-1v-4.5m2.409-9.91a2.017 2.017 0 0 1 0 2.853l-6.844 6.844L8 14l.713-3.565 6.844-6.844a2.015 2.015 0 0 1 2.852 0Z" />
+                          </svg>
+                          <svg (click)="deleteAddress(item?.id)" class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M5 7h14m-9 3v8m4-8v8M10 3h4a1 1 0 0 1 1 1v3H9V4a1 1 0 0 1 1-1ZM6 7h12v13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7Z" />
+                          </svg>
+                        </div>
+                      </div>
+                    </label>
+                    <label class="ms-3 text-maroon" *ngIf="address.length < 1">You have not added any address yet.</label>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+            <div class="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab"
+              tabindex="0">
+              <app-orders *ngIf="activeTab === 2"></app-orders>
+            </div>
+            <div class="tab-pane fade" id="v-pills-wishlist" role="tabpanel" aria-labelledby="v-pills-wishlist-tab"
+              tabindex="0">
+              <app-wishlist *ngIf="activeTab === 3"></app-wishlist>
+            </div>
+            <div class="tab-pane fade" id="v-pills-personal-info" role="tabpanel" aria-labelledby="v-pills-personal-info-tab"
+              tabindex="0" >
+              <app-personal-details *ngIf="activeTab === 4"></app-personal-details>
+            </div>
+            <!-- <div class="tab-pane fade" id="v-pills-messages" role="tabpanel" aria-labelledby="v-pills-messages-tab"
+              tabindex="0" *ngIf="activeTab === 4">
+              <div class="my-account">
+                <div class="row">
+                  <h2>Add New Address</h2>
+                  <br>
+                  <div class="col">
+                    <div class="title-with-forms">
+                      <div class="title-forms">
+                        <h3>Personal Information</h3>
+                        <hr>
+                      </div>
+                      <div class="body-forms">
+                        <form class="row g-3">
+                          <div class="col-md-12 type-form">
+                            <label class="form-label flex-">First Name *</label>
+                            <input type="text" class="form-control" id="inputZip">
+                          </div>
+                          <div class="col-md-12 type-form">
+                            <label class="form-label flex-">Last Name *</label>
+                            <input type="text" class="form-control" id="inputZip">
+                          </div>
+                          <div class="col-md-12 type-form">
+                            <label class="form-label flex-">Company</label>
+                            <input type="text" class="form-control" id="inputZip">
+                          </div>
+                          <div class="col-md-12 type-form">
+                            <label class="form-label flex-">Phone Number *</label>
+                            <input type="text" class="form-control" id="inputZip">
+                          </div>
+                          <div class="col-12">
+                            <button type="submit" class="btn btn-dark ">Save Address</button>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+          
+                </div>
+              </div>
+            </div> -->
+            <div class="tab-pane fade" id="v-pills-settings" role="tabpanel" aria-labelledby="v-pills-settings-tab"
+              tabindex="0" *ngIf="activeTab === 5">
+
+            </div>
+            <div class="tab-pane fade" id="account-information" role="tabpanel" aria-labelledby="account-information"
+              tabindex="0" *ngIf="activeTab === 6">
+              <div class="my-account">
+                <div class="row">
+                  <h2>Edit Account Information</h2>
+                  <br>
+                  <div class="col">
+                    <div class="title-with-forms">
+                      <div class="title-forms">
+                        <h3>Account Information</h3>
+                        <hr>
+                      </div>
+                      <div class="body-forms">
+                        <form class="row g-3">
+                          <div class="col-md-12 type-form">
+                            <label class="form-label flex-">First Name *</label>
+                            <input type="text" class="form-control" id="inputZip">
+                          </div>
+                          <div class="col-md-12 type-form">
+                            <label class="form-label flex-">Last Name *</label>
+                            <input type="text" class="form-control" id="inputZip">
+                          </div>
+                          <div class="col-md-12 form-check">
+                            <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                            <label class="form-check-label" for="exampleCheck1">Change Email</label>
+                          </div>
+                          <div class="col-md-12 form-check">
+                            <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                            <label class="form-check-label" for="exampleCheck1">Change Password</label>
+                          </div>
+                          <div class="col-12">
+                            <button type="submit" class="btn btn-dark ">Save</button>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <div class="title-with-forms">
+                      <div class="title-forms">
+                        <h3>Change Email and Password</h3>
+                        <hr>
+                      </div>
+                      <div class="body-forms">
+                        <form class="row g-3">
+                          <div class="col-md-12 type-form">
+                            <label class="form-label flex-">Email *</label>
+                            <input type="email" class="form-control" id="inputZip" placeholder="example@gmail.com">
+                          </div>
+                          <div class="col-md-12 type-form">
+                            <label class="form-label flex-">Current Password *</label>
+                            <input type="password" class="form-control" id="inputZip">
+                          </div>
+                          <div class="col-md-12 type-form">
+                            <label class="form-label flex-">New Password *</label>
+                            <input type="text" class="form-control" id="inputZip">
+                          </div>
+                          <div class="col-md-12 type-form">
+                            <label class="form-label flex-">Confirm New Password *</label>
+                            <input type="text" class="form-control" id="inputZip">
+                          </div>
+                          <div class="col-md-12 form-check">
+                            <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                            <label class="form-check-label" for="exampleCheck1">Show Password</label>
+                          </div>
+                          <div class="col-12">
+                            <button type="submit" class="btn btn-dark ">Save</button>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="tab-pane fade" id="payment-methode" role="tabpanel" aria-labelledby="payment-methode"
+              tabindex="0" *ngIf="activeTab === 7">
+              <div class="my-account">
+                <div class="row">
+                  <div class="col">
+                    <h2>My Payment Methods</h2>
+                    <div class="error-payment">
+                      <div class="alert alert-warning alert-dismissible fade show" role="alert"> You do not have any
+                        saved payment methods. <button type="button" class="btn-close" data-bs-dismiss="alert"
+                          aria-label="Close"></button>
+                      </div>
+                    </div>
+                    <div class="title-with-forms">
+                      <div class="title-forms">
+                        <h3>Add a new payment method</h3>
+                        <hr>
+                      </div>
+                      <div class="body-forms">
+                        <form class="row g-3">
+                          <div class="col-md-6 type-form">
+                            <label class="form-label flex-">Card Number *</label>
+                            <div class="input-group">
+                              <input type="text" class="form-control" id="card" placeholder="XXXX XXXX XXXX XXXX">
+                              <span class="input-group-text">
+                                <img src="image/icons/visa.png" alt="visa">
+                                <img src="image/icons/master.png" alt="visa">
+                                <img src="image/icons/rupee.png" alt="visa">
+                                <img src="image/icons/amex.png" alt="visa">
+                              </span>
+                            </div>
+                          </div>
+                          <div class="col-md-4 type-form">
+                            <label for="inputState" class="form-label">Expiry Date *</label>
+                            <input type="date" class="form-control" id="inputZip">
+                          </div>
+                          <div class="col-md-2 type-form">
+                            <label for="inputZip" class="form-label">Security Code *</label>
+                            <input type="text" class="form-control" id="inputZip">
+                          </div>
+                          <div class="col-md-12 type-form">
+                            <label for="inputState" class="form-label">Country *</label>
+                            <select id="inputState" class="form-select">
+                              <option selected>Choose...</option>
+                              <option>Australia</option>
+                              <option>India</option>
+                              <option>United State</option>
+                              <option>Canada</option>
+                              <option>Brazil</option>
+                              <option>Russia</option>
+                              <option>United Kingdom</option>
+                              <option>Germany</option>
+                            </select>
+                          </div>
+                          <div class="col-md-12">
+                            <p>By providing your card information, you allow Amathus Drinks PLC to charge your card for
+                              future payments in accordance with their terms.</p>
+                          </div>
+                          <div class="col-12">
+                            <div class="forms-buttons">
+                              <button type="submit" class="btn btn-dark ">Save</button>
+                            </div>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="tab-pane fade" id="v-pills-settings" role="tabpanel" aria-labelledby="v-pills-settings-tab"
+              tabindex="0" *ngIf="activeTab === 8">...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+
+<ng-template #addressModal let-modal>
+<div class="modal-header">
+  <h4 class="modal-title">Address</h4>
+  <button type="button" class="btn-close" aria-label="Close" (click)="closeModal()"></button>
+</div>
+<div class="modal-body">
+  <div class="col">
+    <div class="title-with-forms">
+      <div class="body-forms">
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" class="row g-3 general-info">
+          <div class="col-md-6 type-form">
+            <label class="form-label flex-">Full Name *</label>
+            <input type="text" class="form-control" formControlName="fullName" placeholder="Full Name">
+            <div *ngIf="form.get('fullName')?.touched && form.get('fullName')?.invalid">
+              <div class="text-danger p-small" *ngIf="form.get('fullName')?.errors?.['required']">Full name is required.</div>
+            </div>
+          </div>
+      
+          <div class="col-md-6 type-form">
+            <label class="form-label flex-">Mobile Number *</label>
+            <input type="text" class="form-control" formControlName="mobileNumber" placeholder="Mobile Number">
+            <div *ngIf="form.get('mobileNumber')?.touched && form.get('mobileNumber')?.invalid">
+              <div class="text-danger p-small" *ngIf="form.get('mobileNumber')?.errors?.['required']">Mobile number is required.</div>
+            </div>
+          </div>
+      
+          <div class="col-md-6 type-form">
+            <label class="form-label flex-">Pin Code *</label>
+            <input type="text" class="form-control" formControlName="pinCode" placeholder="Pin Code">
+            <div *ngIf="form.get('pinCode')?.touched && form.get('pinCode')?.invalid">
+              <div class="text-danger p-small" *ngIf="form.get('pinCode')?.errors?.['required']">Pin code is required.</div>
+            </div>
+          </div>
+
+          <div class="col-md-6 type-form">
+            <label class="form-label flex-">Alternate Phone Number *</label>
+            <input type="text" class="form-control" formControlName="altPhoneNumber" placeholder="Alternate Phone Number">
+            <div *ngIf="form.get('altPhoneNumber')?.touched && form.get('altPhoneNumber')?.invalid">
+              <div class="text-danger p-small" *ngIf="form.get('altPhoneNumber')?.errors?.['required']">Alternate phone number is required.</div>
+            </div>
+          </div>
+      
+          <div class="col-md-12 type-form">
+            <label class="form-label flex-">Address *</label>
+            <textarea class="form-control" formControlName="address" placeholder="Address"></textarea>
+            <div *ngIf="form.get('address')?.touched && form.get('address')?.invalid">
+              <div class="text-danger p-small" *ngIf="form.get('address')?.errors?.['required']">Address is required.</div>
+            </div>
+          </div>
+      
+          <div class="col-md-6 type-form">
+            <label class="form-label flex-">Locality *</label>
+            <input type="text" class="form-control" formControlName="locality" placeholder="Locality">
+            <div *ngIf="form.get('locality')?.touched && form.get('locality')?.invalid">
+              <div class="text-danger p-small" *ngIf="form.get('locality')?.errors?.['required']">Locality is required.</div>
+            </div>
+          </div>
+      
+          <div class="col-md-6 type-form">
+            <label class="form-label flex-">City/District/Town *</label>
+            <input type="text" class="form-control" formControlName="city" placeholder="City/District/Town">
+            <div *ngIf="form.get('city')?.touched && form.get('city')?.invalid">
+              <div class="text-danger p-small" *ngIf="form.get('city')?.errors?.['required']">City/District/Town is required.</div>
+            </div>
+          </div>
+      
+          <div class="col-md-6 type-form">
+            <label class="form-label flex-">State *</label>
+            <select class="form-control" formControlName="state">
+              <option value="" disabled class="ms-2">Select State</option>
+              <option class="ms-2" *ngFor="let state of CanadianProvincesAndTerritories" [value]="state">{{ state }}</option>
+            </select>
+            <div *ngIf="form.get('state')?.touched && form.get('state')?.invalid">
+              <div class="text-danger p-small" *ngIf="form.get('state')?.errors?.['required']">State is required.</div>
+            </div>
+          </div>
+      
+          <div class="col-md-6 type-form">
+            <label class="form-label flex-">Landmark *</label>
+            <input type="text" class="form-control" formControlName="landmark" placeholder="Landmark">
+            <div *ngIf="form.get('landmark')?.touched && form.get('landmark')?.invalid">
+              <div class="text-danger p-small" *ngIf="form.get('landmark')?.errors?.['required']">Landmark is required.</div>
+            </div>
+          </div>
+      
+          <!-- <div class="col-md-12 mt-1 type-form">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" formControlName="defaultAddress" id="customCheck1">
+              <label class="form-check-label" for="customCheck1">Make this my default address</label>
+            </div>
+          </div> -->
+      
+          <div class="col-md-12 modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="closeModal()">Close</button>
+            <button type="submit" class="btn-maroon">{{ editId ? 'Save changes' : 'Add' }}</button>
+          </div>
+        </form>
+      </div>
+      
+    </div>
+  </div>
+</div>
+</ng-template>

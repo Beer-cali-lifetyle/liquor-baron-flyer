@@ -1,0 +1,38 @@
+.my-order-history br {
+    display: none;
+}
+
+@media (min-width: 320px) and (max-width: 5000px) {
+    .message-empty h4 {
+        font-size: 27px;
+    }
+
+    section.empty-checkout {
+        padding: 0;
+    }
+}
+
+.color-white {
+    color: white;
+}
+
+.modal-header {
+    background-color: #58151c
+}
+
+.order-pending  {
+    color: rgba(255, 166, 0, 0.664);
+    background-color: rgba(255, 166, 0, 0.329);
+}
+.order-success  {
+    color: rgba(0, 128, 0, 0.603);
+    background-color: rgba(0, 128, 0, 0.349);
+}
+.order-confirmed  {
+    color: #fff;
+    background-color: #58151c;
+}
+.order-reject  {
+    color: rgba(255, 0, 0, 0.678);
+    background-color: rgba(255, 0, 0, 0.322);
+}

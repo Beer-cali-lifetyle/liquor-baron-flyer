@@ -1,0 +1,158 @@
+@media (min-width: 320px) and (max-width: 575px) {
+    section.newsletter-section {
+        padding: 30px 0px !important;
+    }
+
+    section.newsletter-section .title-form.text-center {
+        max-width: 100%;
+    }
+
+    section.newsletter-section h3 {
+        font-size: 28px !important;
+    }
+
+    section.newsletter-section p {
+        font-size: 18px !important;
+        line-height: 20px !important;
+    }
+
+    section.newsletter-section .input-group {
+        max-width: 100%;
+        height: auto;
+    }
+
+    section.newsletter-section .input-group input {
+        font-size: 15px !important;
+    }
+
+    section.newsletter-section .input-group button {
+        padding: 10px 20px !important;
+        font-size: 18px !important;
+    }
+
+    section.newsletter-section .input-group input::placeholder {
+        font-size: 18px !important;
+        height: auto !important;
+    }
+}
+
+@media (min-width: 576px) and (max-width: 767px) {
+
+    section.newsletter-section {
+        padding: 40px 0px !important;
+    }
+
+    section.newsletter-section .title-form.text-center {
+        max-width: 100%;
+    }
+
+    section.newsletter-section h3 {
+        font-size: 30px !important;
+    }
+
+    section.newsletter-section p {
+        font-size: 18px !important;
+        line-height: 20px !important;
+    }
+
+    section.newsletter-section .input-group {
+        max-width: 60%;
+        height: auto;
+    }
+
+    section.newsletter-section .input-group input {
+        font-size: 15px !important;
+    }
+
+    section.newsletter-section .input-group button {
+        padding: 10px 20px !important;
+        font-size: 18px !important;
+    }
+
+    section.newsletter-section .input-group input::placeholder {
+        font-size: 18px !important;
+        height: auto !important;
+    }
+}
+
+
+
+@media (min-width: 768px) and (max-width: 991px) {
+    
+    section.newsletter-section {
+        padding: 50px 0px !important;
+    }
+
+    section.newsletter-section .title-form.text-center {
+        max-width: 100%;
+    }
+
+    section.newsletter-section h3 {
+        font-size: 32px !important;
+    }
+
+    section.newsletter-section p {
+        font-size: 18px !important;
+        line-height: 20px !important;
+    }
+
+    section.newsletter-section .input-group {
+        max-width: 60%;
+        height: auto;
+    }
+
+    section.newsletter-section .input-group input {
+        font-size: 15px !important;
+    }
+
+    section.newsletter-section .input-group button {
+        padding: 10px 20px !important;
+        font-size: 18px !important;
+    }
+
+    section.newsletter-section .input-group input::placeholder {
+        font-size: 18px !important;
+        height: auto !important;
+    }
+}
+
+
+@media (min-width: 992px) and (max-width: 1600px) {
+    
+    section.newsletter-section {
+        padding: 50px 0px !important;
+    }
+
+    section.newsletter-section .title-form.text-center {
+        max-width: 100%;
+    }
+
+    section.newsletter-section h3 {
+        font-size: 43px !important;
+    }
+
+    section.newsletter-section p {
+        font-size: 22px !important;
+        line-height: 20px !important;
+    }
+
+    section.newsletter-section .input-group {
+        max-width: 36%;
+        height: auto;
+        margin-top: 20px;
+    }
+
+    section.newsletter-section .input-group input {
+        font-size: 15px !important;
+    }
+
+    section.newsletter-section .input-group button {
+        padding: 10px 20px !important;
+        font-size: 18px !important;
+    }
+
+    section.newsletter-section .input-group input::placeholder {
+        font-size: 18px !important;
+        height: auto !important;
+    }
+}

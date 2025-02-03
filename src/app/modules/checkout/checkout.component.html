@@ -1,0 +1,497 @@
+<section class="shipping">
+  <div class="row row-left-right">
+
+    <div class="left-white" *ngIf="!showPayment">
+      <div class="padding-equal">
+        <div class="listing-adresses">
+          <div class="contact-addresses">
+            <p class="1st-contact">Contact</p>
+            <p class="2nd-contact">{{contextService.user()?.is_guest ? 'Guest' : contextService.user()?.email}}</p>
+            <!-- <p class="3rd-contact"><a href="#">Change</a></p> -->
+          </div>
+          <!-- <hr>
+          <div class="contact-addresses">
+            <p class="1st-contact">Shipto</p>
+            <p class="2nd-contact">Forest Hill Family Health Centre, Toronto ON M5N 1A8, Canada</p>
+            <p class="3rd-contact"><a href="#">Change</a></p>
+          </div> -->
+        </div>
+
+        <div class="contact-payment">
+          <h4>Shipping Method</h4>
+          <div class="three-section">
+
+            <div class="one-box select-one" [class.active]="activeTab === 1" (click)="setActiveTab(1)">
+              <i class="bi bi-shop-window fs-1"></i>
+              <p>Store Pickup</p>
+              <hr>
+              <button type="button">{{activeTab === 1 ? 'Selected' : 'Select'}}</button>
+            </div>
+
+            <div class="one-box select-one" [class.active]="activeTab === 2" (click)="setActiveTab(2)">
+              <i class="bi bi-truck fs-1"></i>
+              <p>Home Delivery</p>
+              <hr>
+              <button type="button">{{activeTab === 2 ? 'Selected' : 'Select'}}</button>
+            </div>
+
+            <div class="one-box select-one" [class.active]="activeTab === 3" (click)="setActiveTab(3)">
+              <i class="bi bi-globe-europe-africa fs-1"></i>
+              <p>Shipping</p>
+              <hr>
+              <button type="button">{{activeTab === 3 ? 'Selected' : 'Select'}}</button>
+            </div>
+
+
+          </div>
+        </div>
+        <div class="pickup-locally" id="picked-locally" *ngIf="activeTab === 1">
+          <form [formGroup]="storePickupForm" (ngSubmit)="onSubmit()">
+            <!-- Pickup Location -->
+            <div class="pickup-location mb-4">
+              <p class="pickup-heading mb-2">Select pickup location:</p>
+              <div class="picking-location">
+                <div class="inputting-pickup active d-flex align-items-center mb-2"
+                  *ngFor="let item of stores?.data?.data">
+                  <input type="radio" [id]="item?.id" formControlName="selectedStore"
+                    (input)="setAddress($event, item?.state_id)" [value]="item?.id" class="me-2" />
+                  <label [for]="item?.id" class="m-0 fw-bold">{{ item?.head_office_address }}</label>
+                </div>
+                <div
+                  *ngIf="storePickupForm.get('selectedStore')?.invalid && storePickupForm.get('selectedStore')?.touched"
+                  class="text-danger">
+                  Please select a pickup location.
+                </div>
+              </div>
+            </div>
+
+            <!-- Pickup Date and Time -->
+            <div class="pickup-location mb-4">
+              <p class="pickup-heading mb-2">Choose pickup date and time:</p>
+              <div class="row row-selector">
+                <!-- Date -->
+                <div class="col-6">
+                  <div class="form-floating mb-3">
+                    <input [min]="today" type="date" class="form-control border-2" id="datepicker1"
+                      formControlName="pickupDate" />
+                    <label for="datepicker1">Select Date</label>
+                  </div>
+                  <div *ngIf="storePickupForm.get('pickupDate')?.invalid && storePickupForm.get('pickupDate')?.touched"
+                    class="text-danger">
+                    Please select a valid date.
+                  </div>
+                </div>
+
+                <!-- Time -->
+                <div class="col-6">
+                  <div class="form-floating mb-3">
+                    <input type="time" class="form-control border-2" id="timepicker1"
+                      (change)="formatTime(storePickupForm, 'pickupTime')" formControlName="pickupTime" />
+                    <label for="timepicker1">Select Time</label>
+                  </div>
+                  <div *ngIf="storePickupForm.get('pickupTime')?.invalid && storePickupForm.get('pickupTime')?.touched"
+                    class="text-danger">
+                    Please select a valid time.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Store Pickup Info -->
+            <div class="store-pickup text-center mb-4">
+              <p class="store-light m-0">Store pickup</p>
+              <p class="store-dark m-0">Free</p>
+            </div>
+
+            <!-- Submit Button -->
+            <!-- <div class="text-center">
+              <button type="submit" class="btn btn-primary" [disabled]="storePickupForm.invalid">
+                Confirm Pickup
+              </button>
+            </div> -->
+          </form>
+        </div>
+
+        <div class="locally-deliver" id="deliver-local" *ngIf="activeTab === 2">
+          <form [formGroup]="deliveryForm">
+            <div class="pickup-location">
+              <p class="pickup-heading">Choose a delivery date and time:</p><br>
+              <div class="row row-selector">
+
+                <div class="row">
+                  <div class="col-6">
+                    <div class="form-floating mb-3">
+                      <input [min]="today" type="date" class="form-control border-2" id="datepicker1"
+                        formControlName="deliveryDate" />
+                      <label for="datepicker1">Select Date</label>
+                    </div>
+                    <div *ngIf="deliveryForm.get('deliveryDate')?.invalid && deliveryForm.get('deliveryDate')?.touched"
+                      class="text-danger">
+                      Please select a valid date.
+                    </div>
+                  </div>
+                  <!-- Time -->
+                  <div class="col-6">
+                    <div class="form-floating mb-3">
+                      <input type="time" class="form-control border-2" id="timepicker1"
+                        (change)="formatTime(deliveryForm, 'deliveryTime')" formControlName="deliveryTime" />
+                      <label for="timepicker1">Select Time</label>
+                    </div>
+                    <div *ngIf="deliveryForm.get('deliveryTime')?.invalid && deliveryForm.get('deliveryTime')?.touched"
+                      class="text-danger">
+                      Please select a valid time.
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+            <div class="row">
+              <div class="title-with-forms  d-flex justify-content-between">
+                <div class="title-forms w-100">
+                  <h3>Address Book <span class="text-maroon"><a></a></span></h3>
+                  <hr>
+                </div>
+                <button class="btn-maroon" type="button" (click)="openModal(addressModal)"
+                  *ngIf="!(addresses.length < 1)">Add</button>
+              </div>
+              <button class="btn btn-maroon" *ngIf="addresses.length < 1" (click)="openModal(addressModal)">Add
+                Address</button>
+              <div class="list-group mt-4">
+                <label class="" *ngFor="let item of addresses; let i=index">
+                  <div class="d-flex w-100">
+                    <div class="billing-radio me-2">
+                      <div class="form-check">
+                        <input type="radio" (input)="setAddress($event, item?.state_id)" class="mt-3 me-2"
+                          name="deliveryAddress" [id]="'deliveryAddress' + i" [value]="item?.id"
+                          formControlName="deliveryAddress">
+                      </div>
+                    </div>
+                    <div class="billing-content">
+                      <div class="fw-bold fs-5">{{item?.full_name}}</div>
+                      <p>{{item?.address}}, {{item?.locality}}, {{item?.city}}, {{item?.state?.NAME}},
+                        {{item?.mobile_number}}
+                      </p>
+                    </div>
+                  </div>
+                </label>
+                <div
+                  *ngIf="deliveryForm.get('deliveryAddress')?.invalid && deliveryForm.get('deliveryAddress')?.touched"
+                  class="text-danger">
+                  Please select Address.
+                </div>
+                <label class="ms-3 text-maroon" *ngIf="addresses.length < 1">You have not added any address yet.</label>
+              </div>
+
+            </div>
+          </form>
+        </div>
+
+        <!-- <div class="locally-deliver shipping" id="shipping-locally" *ngIf="activeTab === 3">
+          <div class="pickup-location">
+            <div class="picking-location">
+              <div class="inputting-pickup active">
+                <input type="radio" name="select-address">
+                <label>Local Delivery North/Central</label>
+                <p>$9.99</p>
+              </div>
+              <div class="inputting-pickup">
+                <input type="radio" name="select-address">
+                <label>Local Delivery North/Central</label>
+                <p>$9.99</p>
+              </div>
+              <div class="inputting-pickup">
+                <input type="radio" name="select-address">
+                <label>Local Delivery North/Central</label>
+                <p>$9.99</p>
+              </div>
+              <div class="inputting-pickup">
+                <input type="radio" name="select-address">
+                <label>Local Delivery North/Central</label>
+                <p>$9.99</p>
+              </div>
+            </div>
+          </div>
+        </div> -->
+
+
+        <form [formGroup]="shippingForm" class="row" *ngIf="activeTab === 3">
+          <div class="title-with-forms  d-flex justify-content-between">
+            <div class="title-forms w-100">
+              <h3>Address Book <span class="text-maroon"><a></a></span></h3>
+              <hr>
+            </div>
+            <button class="btn-maroon" type="button" (click)="openModal(addressModal)"
+              *ngIf="!(addresses.length < 1)">Add</button>
+          </div>
+          <button class="btn btn-maroon" *ngIf="addresses.length < 1" (click)="openModal(addressModal)">Add
+            Address</button>
+          <div class="list-group mt-4">
+            <label class="" *ngFor="let item of addresses; let i=index">
+              <div class="d-flex w-100">
+                <div class="billing-radio me-2">
+                  <div class="form-check">
+                    <input type="radio" class="mt-3 me-2" name="shippingAddress"
+                      (input)="setAddress($event, item?.state_id)" [id]="'shippingAddress' + i" [value]="item?.id"
+                      formControlName="shippingAddress">
+                  </div>
+                </div>
+                <div class="billing-content">
+                  <div class="fw-bold fs-5">{{item?.full_name}}</div>
+                  <p>{{item?.address}}, {{item?.locality}}, {{item?.city}}, {{item?.state?.NAME}},
+                    {{item?.mobile_number}}
+                  </p>
+                </div>
+              </div>
+            </label>
+            <div *ngIf="deliveryForm.get('deliveryAddress')?.invalid && deliveryForm.get('deliveryAddress')?.touched"
+              class="text-danger">
+              Please select Address.
+            </div>
+            <label class="ms-3 text-maroon" *ngIf="addresses.length < 1">You have not added any address yet.</label>
+          </div>
+
+        </form>
+
+        <div class="text-check inputting-check">
+          <div class="button-flex button-return">
+            <!-- <button type="submit" class="btn btn-primary"><img src="image/shipping/Vector.png" alt="vector"> Return To
+              Payment</button> -->
+          </div>
+          <div class="button-flex">
+            <button class="btn btn-primary" (click)="placeOrder()">Continue to Payment</button>
+          </div>
+        </div>
+
+        <div class="foot-shipping">
+          <hr>
+          <p>All rights reserved LIQUOR BARON</p>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="left-white" *ngIf="showPayment"><app-payment></app-payment></div>
+
+
+    <div class="right-red">
+      <div class="padding-equal-right position-sticky top-0">
+        <div class="right-starting">
+          <div class="listing-right mb-1" *ngFor="let item of contextService?.cart()?.data">
+            <div class="img-bottle">
+              <img [src]="imgBaseUrl + item?.product?.product_image" alt="old">
+              <p class="one">{{item?.quantity}}</p>
+            </div>
+            <p>{{item?.product?.name}}</p>
+            <p>{{item?.product?.price * item?.quantity | currency}}</p>
+          </div>
+        </div>
+        <!-- <div class="apply-but">
+          <input type="text" placeholder="Discount Code">
+          <button type="button">Apply</button>
+        </div> -->
+
+        <div class="apply-total">
+
+          <div class="p-total">
+            <p>Subtotal :</p>
+            <p>${{subTotal}}</p>
+          </div>
+
+          <div class="p-total">
+            <p>Tax :</p>
+            <p>${{total_tax}}</p>
+          </div>
+
+          <!-- <div class="p-total d-total">
+            <p>Shipping :</p>
+            <p>Enter Shipping Address</p>
+          </div> -->
+
+          <div class="p-total free-grand">
+            <p><span class="grandone">Total</span></p>
+            <p>CAD<span class="cad">${{total}}</span></p>
+          </div>
+
+          <div class="p-total free-grand icluding">
+            <!-- <p>Including $6.00 in taxes</p> -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<ng-template #addressModal let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">Address</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="closeModal()"></button>
+  </div>
+  <div class="modal-body">
+    <div class="col">
+      <div class="title-with-forms">
+        <div class="body-forms">
+          <form [formGroup]="form" (ngSubmit)="onSubmit()" class="row g-3 general-info">
+            <div class="col-md-6 type-form">
+              <label class="form-label flex-">Full Name *</label>
+              <input type="text" class="form-control" formControlName="fullName" placeholder="Full Name">
+              <div *ngIf="form.get('fullName')?.touched && form.get('fullName')?.invalid">
+                <div class="text-danger p-small" *ngIf="form.get('fullName')?.errors?.['required']">Full name is
+                  required.</div>
+              </div>
+            </div>
+
+            <div class="col-md-6 type-form">
+              <label class="form-label flex-">Mobile Number *</label>
+              <input type="text" class="form-control" formControlName="mobileNumber" placeholder="Mobile Number">
+              <div *ngIf="form.get('mobileNumber')?.touched && form.get('mobileNumber')?.invalid">
+                <div class="text-danger p-small" *ngIf="form.get('mobileNumber')?.errors?.['required']">Mobile number is
+                  required.</div>
+              </div>
+            </div>
+
+            <div class="col-md-6 type-form">
+              <label class="form-label flex-">Pin Code *</label>
+              <input type="text" class="form-control" formControlName="pinCode" placeholder="Pin Code">
+              <div *ngIf="form.get('pinCode')?.touched && form.get('pinCode')?.invalid">
+                <div class="text-danger p-small" *ngIf="form.get('pinCode')?.errors?.['required']">Pin code is required.
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-6 type-form">
+              <label class="form-label flex-">State *</label>
+              <select class="form-control" formControlName="state">
+                <option value="" selected disabled class="ms-2">Select State</option>
+                <option class="ms-2" *ngFor="let state of CanadianProvincesAndTerritories" [value]="state.id">{{
+                  state.NAME }}
+                </option>
+              </select>
+              <div *ngIf="form.get('state')?.touched && form.get('state')?.invalid">
+                <div class="text-danger p-small" *ngIf="form.get('state')?.errors?.['required']">State is required.
+                </div>
+              </div>
+            </div>
+
+            <!-- <div class="col-md-12 type-form">
+              <label class="form-label flex-">Address *</label>
+              <input placeholder="search for location" autocorrect="off" autocapitalize="off" spellcheck="off"
+                type="text" googlePlacesAutocomplete
+                [types]="['cafe']"
+                [country]="['CA']" class="form-control"
+                formControlName="address"/>
+              <div *ngIf="form.get('address')?.touched && form.get('address')?.invalid">
+                <div class="text-danger p-small" *ngIf="form.get('address')?.errors?.['required']">
+                  Address is required.
+                </div>
+              </div>
+            </div> -->
+
+            <!-- <AutocompleteComponent (setAddress)="getAddress($event)" adressType="geocode"></AutocompleteComponent> -->
+
+
+            <div class="col-md-12 type-form">
+              <label class="form-label flex-">Address *</label>
+              <textarea class="form-control search-input" id="search-input" formControlName="address" placeholder="Address"></textarea>
+              <div *ngIf="form.get('address')?.touched && form.get('address')?.invalid">
+                <div class="text-danger p-small" *ngIf="form.get('address')?.errors?.['required']">Address is required.</div>
+              </div>
+            </div>
+
+
+
+            <!-- <div class="col-md-12 type-form">
+              <label class="form-label flex-">Address *</label>
+              <textarea
+                class="form-control"
+                #addresstext
+                formControlName="address"
+                placeholder="Address"
+              ></textarea>
+              <div *ngIf="form.get('address')?.touched && form.get('address')?.invalid">
+                <div class="text-danger p-small" *ngIf="form.get('address')?.errors?.['required']">
+                  Address is required.
+                </div>
+              </div>
+            </div> -->
+
+            <div class="col-md-12 type-form">
+              <label class="form-label flex-">Address *</label>
+              <textarea class="form-control"  #addresstext formControlName="address" placeholder="Address"></textarea>
+              <div *ngIf="form.get('address')?.touched && form.get('address')?.invalid">
+                <div class="text-danger p-small" *ngIf="form.get('address')?.errors?.['required']">Address is required.
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-6 type-form">
+              <label class="form-label flex-">Locality *</label>
+              <input type="text" class="form-control" formControlName="locality" placeholder="Locality">
+              <div *ngIf="form.get('locality')?.touched && form.get('locality')?.invalid">
+                <div class="text-danger p-small" *ngIf="form.get('locality')?.errors?.['required']">Locality is
+                  required.</div>
+              </div>
+            </div>
+
+            <div class="col-md-6 type-form">
+              <label class="form-label flex-">City/District/Town *</label>
+              <input type="text" class="form-control" formControlName="city" placeholder="City/District/Town">
+              <div *ngIf="form.get('city')?.touched && form.get('city')?.invalid">
+                <div class="text-danger p-small" *ngIf="form.get('city')?.errors?.['required']">City/District/Town is
+                  required.</div>
+              </div>
+            </div>
+
+
+            <div class="col-md-6 type-form">
+              <label class="form-label flex-">Alternate Phone Number *</label>
+              <input type="text" class="form-control" formControlName="altPhoneNumber"
+                placeholder="Alternate Phone Number">
+              <div *ngIf="form.get('altPhoneNumber')?.touched && form.get('altPhoneNumber')?.invalid">
+                <div class="text-danger p-small" *ngIf="form.get('altPhoneNumber')?.errors?.['required']">Alternate
+                  phone number is required.</div>
+              </div>
+            </div>
+
+
+            <div class="col-md-6 type-form">
+              <label class="form-label flex-">Landmark *</label>
+              <input type="text" class="form-control" formControlName="landmark" placeholder="Landmark">
+              <div *ngIf="form.get('landmark')?.touched && form.get('landmark')?.invalid">
+                <div class="text-danger p-small" *ngIf="form.get('landmark')?.errors?.['required']">Landmark is
+                  required.</div>
+              </div>
+            </div>
+
+            <!-- <div class="col-md-12 mt-1 type-form">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" formControlName="defaultAddress" id="customCheck1">
+                <label class="form-check-label" for="customCheck1">Make this my default address</label>
+              </div>
+            </div> -->
+
+            <div class="col-md-12 modal-footer">
+              <button type="button" class="btn btn-secondary" (click)="closeModal()">Close</button>
+              <button type="submit" class="btn-maroon">{{ 'Add' }}</button>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</ng-template>

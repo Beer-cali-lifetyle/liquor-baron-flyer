@@ -1,0 +1,9 @@
+@media (max-width: 992px) {
+    .padding-equal {
+        padding-left: 40px !important;
+    }
+}
+
+.padding-equal-right {
+      padding: 4px 20px !important; 
+}

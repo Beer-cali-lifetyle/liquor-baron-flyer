@@ -1,0 +1,32 @@
+<section class="main-section">
+  <div class="container-baron container-fluid">
+    <div class="row">
+      <div class="col-12">
+        <div class="title-text our-stores">
+          <h2>OUR STORES</h2>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+       
+          <div class="col-lg-6" *ngFor="let item of stores?.data?.data">
+                <div class="store-addrss">
+                    <div class="sr-one">
+                      <span><b>Opening Hours:</b>  Monday - Friday: 09.00 - 18.00</span>
+                        <span><b>Call Us:</b> {{item?.call_us}} </span>
+                          <span><b>Email Us:</b> {{item?.email}}</span>
+                            <span><b>Head Office Address:</b>  {{item?.head_office_address}} </span>
+                      <div class="forms-buttons">
+                        <button type="submit" class="btn btn-dark " [routerLink]="['/shop']" routerLinkActive="router-link-active" >Continue shopping</button>
+                      </div>
+                    </div>
+                </div>
+          </div>
+          <div class="col-lg-12">
+              <div class="map-img">
+                  <img src="assets/image/map.png" class="w-100">
+              </div>
+          </div>   
+    </div>
+  </div>
+</section>

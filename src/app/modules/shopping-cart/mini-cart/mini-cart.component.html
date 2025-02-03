@@ -1,0 +1,83 @@
+
+
+
+
+<div class="container my-4">
+  <div class="mini-cart-header text-center">
+    My Cart
+  </div>
+  <!-- Mini Cart -->
+  <div class="mini-cart-container">
+    <!-- Header -->
+
+    <!-- Cart Items -->
+    <div class="row my-3">
+      <!-- First Item -->
+      <div class="cart-item col-12 d-flex" *ngFor="let item of contextService.cart()?.data">
+        <div class="d-flex">
+          <img [src]="imgBaseUrl + item?.product?.product_image" alt="Product Image" class="img-fluid" />
+          <div class="ms-2">
+            <div class="fw-bold">{{item?.product?.name}}</div>
+            <div class="quantity-controls">
+              <button type="button" (click)="decrement(item?.quantity, item?.id)">-</button>
+              <span>{{item?.quantity}}</span>
+              <button type="button" (click)="increment(item?.quantity, item?.id)">+</button>
+            </div>
+          </div>
+        </div>
+        <span class="text-danger fs-4 remove-cart" (click)="removeItemFromCart(item?.id)">&times;</span>
+      </div>
+
+    </div>
+
+    <!-- You may also like -->
+    <div class="also-like-section" *ngIf="relatedProducts?.length > 0">
+      <h5 class="text-center mb-3 text-maroon">You may also like</h5>
+      <div class="row mb-5">
+        <div class="col-6 product-card-container" *ngFor="let product of relatedProducts; let i=index">
+
+          <div class="product-card" [routerLink]="['/product', product?.id]">
+            <div class="product-tumb pt-4 pb-1">
+              <img [src]="imgBaseUrl + product?.product_image" class="img-fluid uniform-img" alt="product">
+              <!-- <div class="badge-wrapper"> -->
+              <div class="badge" [ngClass]="{
+                  'bg-auccess': product.producttag === '3', 
+                  'badge-yellow': product.producttag !== '3'
+                }">{{product.producttag === '3' ? 'New Item' : 'Limited Edition'}}</div>
+              <!-- </div> -->
+            </div>
+            <div class="product-details p-2">
+              <h4>{{product?.name}}</h4>
+              <p>{{product?.description}}</p>
+              <div class="product-bottom-details d-flex justify-content-between">
+                <div class="product-price">
+                  ${{product?.price}}
+                </div>
+                <i class="bi bi-lg bi-bag-plus" *ngIf="!product?.cart_details"
+                  (click)="addToCartRelated($event, product?.id, i)"></i>
+                <i class="bi bi-bag-check" *ngIf="product?.cart_details"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="text-center mt-3">
+      <div class="d-flex justify-content-between subtotal">
+        <p class="mb-0 pb-0">Cart Subtotal:</p>
+        <span>{{calculateSubTotal(contextService.cart()) |
+          currency}}</span>
+      </div>
+      <!-- <div class="whitebg">
+        Continue Shopping
+      </div> -->
+      <div routerLink="/cart" class="whitebg">
+        View and Edit Cart
+      </div>
+      <div class="checkout" routerLink="/checkout">Go to Checkout</div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,33 @@
+@media (min-width: 320px) and (max-width: 575px) {
+    .contact-page {
+        padding: 30px 0;
+    }
+
+    .contact-page h1 {
+        margin-bottom: 30px;
+    }
+
+    .contact-page .row {
+        flex-direction: column;
+    }
+
+    .contact-page .col-6 {
+        width: 100%;
+    }
+}
+
+@media (min-width: 576px) and (max-width: 1199px) {
+
+    .contact-page h1 {
+        margin-bottom: 30px;
+    }
+
+}
+
+@media (min-width: 1200px) and (max-width: 5000px) {
+
+    .contact-page h1 {
+        margin-bottom: 40px;
+    }
+
+}

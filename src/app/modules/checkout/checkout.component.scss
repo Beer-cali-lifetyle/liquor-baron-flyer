@@ -1,0 +1,359 @@
+.nav-pills .nav-link {
+    background-color: white;
+    color: black;
+    margin: 10px;
+    border: 1px solid #dee2e6;
+    /* Optional: for a subtle border */
+}
+
+.nav-pills .nav-link:hover {
+    background-color: #f8f9fa;
+    /* Optional: light gray hover effect */
+    color: black;
+}
+
+.nav-pills .nav-link.active {
+    background-color: #fee300;
+    color: black;
+    border-color: #fee300;
+    /* Ensures the border also changes to yellow */
+}
+
+.layout-top-spacing {
+    margin-top: 20vh;
+}
+
+/* Style the checkbox */
+.form-check-in {
+    width: 20px;
+    height: 20px;
+    background-color: #fff;
+    border: 2px solid #dee2e6;
+    border-radius: 4px;
+    /* Optional: make the checkbox rounded */
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+/* When checkbox is checked */
+.form-check-in:checked {
+    background-color: #007bff;
+    /* Customize checked background color */
+    border-color: #007bff;
+    /* Customize checked border color */
+}
+
+/* Add checkmark when checked (optional for modern browsers) */
+.form-check-in:checked::before {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 7px;
+    width: 6px;
+    height: 12px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+/* Optional: Hover effect */
+.form-check-in:hover {
+    border-color: #007bff;
+}
+
+/* Style the label */
+.form-check-label {
+    font-size: 16px;
+    color: #333;
+    /* Label text color */
+    margin-left: 10px;
+}
+
+.clover {
+    max-height: 25px;
+}
+
+.summary {
+    background-color: #0d997e14;
+    padding: 5px;
+}
+
+h6 {
+    margin: 0;
+    padding: 5px 5px;
+}
+
+h5 {
+    margin: 0;
+    padding: 5px 5px;
+}
+
+label {
+    font-weight: 400;
+    font-size: 13px;
+}
+
+input {
+    height: 35px;
+    font-size: 12px !important;
+}
+
+select {
+    // height: 35px;
+
+    font-size: 12px !important;
+    padding: 7px 15px !important;
+}
+
+.right-starting {
+    border-bottom:5px solid #840029;
+    margin-bottom: 10px;
+}
+
+.icon_box {
+    position: relative;
+}
+
+/* jh */
+.bxs-show {
+    position: absolute;
+    font-size: 20px;
+    top: 38px;
+    right: 25px;
+    color: #777;
+    z-index: 9;
+    height: 25px;
+    width: 40px;
+}
+
+.payment_outer {
+    padding: 40px;
+    text-align: center;
+}
+
+.pay_card img {
+    width: 35px;
+    padding-right: 5px;
+}
+
+.pay_card {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.pay_card p {
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.card_payment .card {
+    background-color: #ecf7f5;
+}
+
+.cont_text {
+    font-size: 14px;
+    margin: 10px 0 0;
+    text-align: center;
+    font-style: italic;
+}
+
+.register_account h2 {
+    font-size: 34px;
+}
+
+
+.btn-continue {
+    margin: 20px auto;
+    background-color: #840029;
+    color: white;
+}
+
+
+@media (min-width: 320px) and (max-width: 575px) {
+    .row.row-left-right {
+        flex-direction: column-reverse;
+    }
+
+    .right-red {
+        width: 100%;
+    }
+
+    .padding-equal-right {
+        padding: 30px 15px !important;
+        position: relative !important;
+    }
+
+    .left-white {
+        width: 100%;
+    }
+
+    .padding-equal {
+        padding: 30px 15px !important;
+    }
+
+    app-payment .padding-equal {
+        padding: 30px 15px;
+    }
+
+    .three-section {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .three-section .one-box {
+        width: 100%;
+    }
+
+    .row.row-selector {
+        flex-wrap: wrap;
+        gap: 0px;
+    }
+
+    .row.row-selector .col-6 {
+        width: 100%;
+    }
+
+    .inputting-pickup {
+        align-items: center !important;
+    }
+}
+
+@media (min-width: 576px) and (max-width: 767px) {
+    .row.row-left-right {
+        flex-direction: column-reverse;
+    }
+
+    .right-red {
+        width: 100%;
+    }
+
+    .padding-equal-right {
+        padding: 30px 15px;
+        position: relative !important;
+    }
+
+    .left-white {
+        width: 100%;
+    }
+
+    .padding-equal {
+        padding: 30px 15px;
+    }
+
+    .three-section {
+        gap: 10px;
+    }
+
+    .three-section .one-box {
+        width: 31%;
+    }
+
+    .row.row-selector {
+        flex-wrap: wrap;
+        gap: 0px;
+    }
+
+    .inputting-pickup {
+        align-items: center !important;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 5000px) {
+
+    .right-red {
+        width: 40%;
+    }
+
+    .padding-equal-right {
+        padding: 60px 50px 60px 30px !important
+    }
+
+    .left-white {
+        width: 60%;
+    }
+
+    .padding-equal {
+        padding: 60px 30px 60px 50px;
+    }
+
+    .three-section {
+        gap: 10px;
+    }
+
+    .three-section .one-box {
+        width: 31%;
+    }
+
+    .row.row-selector {
+        flex-wrap: wrap;
+        gap: 0px;
+    }
+
+    .inputting-pickup {
+        align-items: center !important;
+    }
+
+    .row.row-selector .col-6 {
+        padding: 0;
+        width: 48%;
+    }
+
+    .row.row-selector {
+        gap: 15px !important;
+    }
+
+    .apply-but input {
+        height: auto;
+        font-size: 13px !important;
+    }
+
+    .one-box p {
+        margin: 10px 0 0 0;
+        min-height: 51px;
+    }
+
+    .pickup-location br {
+        display: none;
+    }
+
+    .row.row-selector .row {
+        justify-content: space-between;
+        margin: 0;
+        padding: 0;
+    }
+}
+
+@media (min-width: 1100px) and (max-width: 1199px) {
+
+    .right-red {
+        width: 50%;
+    }
+
+    .padding-equal-right {
+        padding: 60px 50px 60px 30px !important
+    }
+
+    .left-white {
+        width: 50%;
+    }
+}
+
+@media (min-width: 1200px) and (max-width: 5000px) {
+
+    .right-red {
+        width: 50%;
+    }
+
+    .left-white {
+        width: 50%;
+    }
+
+    .padding-equal {
+        padding: 60px 30px 60px 95px;
+    }
+
+    .padding-equal-right {
+        padding: 60px 95px 60px 30px;
+    }
+}

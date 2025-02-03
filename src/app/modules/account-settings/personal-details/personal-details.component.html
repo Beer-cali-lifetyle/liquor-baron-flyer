@@ -1,0 +1,103 @@
+<div class="row account-setting" >
+  <h2>Edit Account Information</h2>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="row">
+      <div class="col-6">
+        <div class="title-with-forms">
+          <div class="title-forms">
+            <h3>Account Information</h3>
+            <hr>
+          </div>
+        </div>
+        <div class="col-md-12 type-form my-3">
+          <label class="form-label flex-">First Name</label>
+          <input type="text" class="form-control" formControlName="firstName" placeholder="Enter your first name">
+          <div *ngIf="form.get('firstName')?.touched && form.get('firstName')?.invalid">
+            <div class="text-danger p-small" *ngIf="form.get('firstName')?.errors?.['required']">First name is
+              required.</div>
+          </div>
+        </div>
+        <div class="col-md-12 type-form my-3">
+          <label class="form-label flex-">Last Name</label>
+          <input type="text" class="form-control" formControlName="lastName" placeholder="Enter your last name">
+          <div *ngIf="form.get('lastName')?.touched && form.get('lastName')?.invalid">
+            <div class="text-danger p-small" *ngIf="form.get('lastName')?.errors?.['required']">Last name is required.
+            </div>
+          </div>
+        </div>
+        <div class="form-check mt-1">
+          <input type="checkbox" class="form-check-input" id="change-email" formControlName="changeEmail" (change)="updateTitle()">
+          <label class="form-check-label" for="change-email">Change Email</label>
+        </div>
+        <div class="form-check mt-2">
+          <input type="checkbox" class="form-check-input" id="change-password" formControlName="changePassword" (change)="updateTitle()">
+          <label class="form-check-label" for="change-password">Change Password</label>
+        </div>
+      </div>
+
+
+    <div class="col-6">
+      <div class="title-with-forms">
+        <div *ngIf="title" class="title-forms">
+          <h3>{{ title }}</h3>
+          <hr>
+        </div>
+      </div>
+      <!-- Conditional fields for Change Email -->
+      <div *ngIf="form.get('changeEmail')?.value" class="col-12">
+        <div class="col-md-12 type-form my-3">
+          <label class="form-label">New Email</label>
+          <input type="email" class="form-control" formControlName="newEmail" placeholder="Enter your new email">
+          <div *ngIf="form.get('newEmail')?.touched && form.get('newEmail')?.invalid">
+            <div class="text-danger p-small" *ngIf="form.get('newEmail')?.errors?.['required']">Email is required.
+            </div>
+            <div class="text-danger p-small" *ngIf="form.get('newEmail')?.errors?.['email']">Enter a valid email.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Conditional fields for Change Password -->
+      <div *ngIf="form.get('changePassword')?.value" class="col-12">
+        <div class="col-md-12 type-form my-3">
+          <label class="form-label">New Password</label>
+          <input type="password" class="form-control" formControlName="newPassword" placeholder="Enter new password">
+          <div *ngIf="form.get('newPassword')?.touched && form.get('newPassword')?.invalid">
+            <div class="text-danger p-small" *ngIf="form.get('newPassword')?.errors?.['required']">New password is
+              required.</div>
+          </div>
+        </div>
+        <div class="col-md-12 type-form my-3">
+          <label class="form-label">Confirm Password</label>
+          <input type="password" class="form-control" formControlName="confirmPassword"
+            placeholder="Confirm new password">
+          <div *ngIf="form.get('confirmPassword')?.touched && form.get('confirmPassword')?.invalid">
+            <div class="text-danger p-small" *ngIf="form.get('confirmPassword')?.errors?.['required']">Confirmation is
+              required.</div>
+            <div class="text-danger p-small" *ngIf="form.errors?.['passwordMismatch']">Passwords do not match.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Common field for current password -->
+      <div *ngIf="form.get('changeEmail')?.value || form.get('changePassword')?.value" class="col-12">
+        <div class="col-md-12 type-form my-3">
+          <label class="form-label">Current Password</label>
+          <input type="password" class="form-control" formControlName="currentPassword"
+            placeholder="Enter current password">
+          <div *ngIf="form.get('currentPassword')?.touched && form.get('currentPassword')?.invalid">
+            <div class="text-danger p-small" *ngIf="form.get('currentPassword')?.errors?.['required']">Current
+              password is required.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+</div>
+<div class="mt-4">
+<button class="btn-maroon" type="submit">Save</button></div>
+  </form>
+
+
+</div>

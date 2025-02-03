@@ -1,0 +1,68 @@
+<section class="main-section pb-3">
+  <div class="container-baron container-fluid shop-class collection-section">
+    <div class="row">
+      <div class="col-12">
+        <div class="title-text text-center">
+          <h2>{{subcategoryTitle}}</h2>
+        </div>
+      </div>
+    </div>
+    <section class="pt-0 ps-6 pe-6 lg-ps-2 lg-pe-2 sm-ps-0 sm-pe-0">
+      <div class="container-fluid">
+        <div class="row flex-row-reverse">
+          <!-- Products Section -->
+          <div class="col-12 ps-5 md-ps-15px md-mb-60px nil-padding">
+            <div class="row mb-5">
+              <div class="col-3 product-card-container" *ngFor="let product of products; let i=index">
+          
+                <div class="product-card" [routerLink]="['/product', product?.id]">
+                  <div class="product-tumb pt-4 pb-1">
+                    <img [src]="imgBaseUrl + product?.product_image" class="img-fluid uniform-img" alt="product">
+                    <!-- <div class="badge-wrapper"> -->
+                      <div class="badge"   [ngClass]="{
+                        'bg-auccess': product.producttag === '3', 
+                        'badge-yellow': product.producttag !== '3'
+                      }">{{product.producttag === '3' ? 'New Item' : 'Limited Edition'}}</div>
+                    <!-- </div> -->
+                  </div>
+                  <div class="product-details p-2">
+                    <h4>{{product?.name}}</h4>
+                    <p>{{product?.description}}</p>
+                    <div class="product-bottom-details d-flex justify-content-between">
+                      <div class="product-price">
+                        ${{product?.price}}
+                      </div>
+                      <div class="bag-container" *ngIf="!product?.cart_details">
+                        <i class="bi bi-lg bi-bag-plus bag-icon" *ngIf="!product?.product?.cart_details" 
+                           (click)="addToCart($event, product?.id, i)">
+                        </i>
+                        <span class="hover-text">Add</span>
+                      </div>
+                    <div class="qty-container" *ngIf="product?.cart_details">
+                      <button class="minus-round btn-light" type="button"
+                        (click)="decrementProductCard(product?.cart_details?.id, product?.cart_details?.quantity, i, $event)"><i
+                          class="bi bi-dash"></i></button>
+                      <div class="quantity-round">{{product?.cart_details?.quantity}}</div>
+                      <button class="plus-round btn-light" type="button"
+                        (click)="incrementProductCard(product?.cart_details?.id, product?.cart_details?.quantity, i, $event)"><i
+                          class="bi bi-plus-lg"></i></button>
+                    </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+        
+            </div>
+            <!-- Pagination Section -->
+            <!-- <div class="w-100 d-flex mt-4 justify-content-center md-mt-30px">
+              <ngb-pagination [page]="currentPage" [collectionSize]="products?.total" [pageSize]="pageSize"
+                [maxSize]="5" [boundaryLinks]="true" [ellipses]="true" (pageChange)="onPageChange($event)"
+                class="pagination-style-01 fs-13 fw-500 mb-0">
+              </ngb-pagination>
+            </div> -->
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</section>

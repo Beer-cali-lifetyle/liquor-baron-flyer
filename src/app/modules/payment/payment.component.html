@@ -1,0 +1,183 @@
+<div class="padding-equal">
+  <div class="listing-adresses">
+    <div class="contact-addresses">
+      <p class="1st-contact">Contact</p>
+      <p class="2nd-contact">{{contextService.user()?.email}}</p>
+      <p class="3rd-contact"><a href="#">Change</a></p>
+    </div>
+    <hr>
+    <div class="contact-addresses">
+      <p class="1st-contact">Shipto</p>
+      <p class="2nd-contact">Forest Hill Family Health Centre, Toronto ON M5N 1A8, Canada</p>
+      <p class="3rd-contact"><a href="#">Change</a></p>
+    </div>
+    <hr>
+    <div class="contact-addresses">
+      <p class="1st-contact">Shipto</p>
+      <p class="2nd-contact">Store pickup - <strong>FREE</strong></p>
+    </div>
+  </div>
+
+  <div class="contact-payment payment-product">
+    <h4>Payment</h4>
+    <p class="m-0">All transactions are secure and encrypted.</p>
+    <div class="pickup-location">
+      <div class="picking-location">
+        <div class="inputting-pickup active">
+          <input type="radio" name="select-address">
+          <label>Credit Card</label>
+          <div class="images-cards">
+            <img src="assets/image/shipping/visa.png" alt="visa">
+            <img src="assets/image/shipping/master.png" alt="master">
+            <img src="assets/image/shipping/debit.png" alt="debit">
+            <img src="assets/image/shipping/Group.png" alt="amex">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="form-shipping">
+      <form class="delivery-form">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="form-group">
+              <input type="text" class="form-control" placeholder="Card Number">
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <input type="text" class="form-control" id="first-name" placeholder="Expiration Date(MM/YY)">
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <input type="text" class="form-control" id="last-name" placeholder="Security Code">
+            </div>
+          </div>
+          <div class="col-md-12">
+            <div class="form-group">
+              <input type="text" class="form-control" placeholder="Name On Card">
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="pickup-location plucking-location">
+      <div class="picking-location">
+        <div class="inputting-pickup">
+          <input type="radio" name="select-address">
+          <label></label>
+          <div class="images-cards">
+            <img src="assets/image/shipping/Paypal 2.png" alt="visa">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="contact-payment payment-product">
+    <h4>Billing address</h4>
+    <p class="m-0">Select the address that matches your card or payment method.</p>
+
+    <div class="pickup-location">
+      <div class="picking-location">
+        <div class="inputting-pickup">
+          <input type="radio" name="select-address">
+          <label>Same As Shipping Address</label>
+        </div>
+      </div>
+      <div class="picking-location">
+        <div class="inputting-pickup active">
+          <input type="radio" name="select-address">
+          <label>Use a different billing address</label>
+          <div class="images-cards">
+            <img src="assets/image/shipping/visa.png" alt="visa">
+            <img src="assets/image/shipping/master.png" alt="master">
+            <img src="assets/image/shipping/debit.png" alt="debit">
+            <img src="assets/image/shipping/Group.png" alt="amex">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="form-shipping">
+      <form class="delivery-form">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="form-group">
+              <select placeholder="country/region">
+                <option value="select country">country/region</option>
+                <option value="India">India</option>
+                <option value="Australia">Australia</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <input type="text" class="form-control" id="first-name" placeholder="First name">
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="form-group">
+              <input type="text" class="form-control" id="last-name" placeholder="Last name">
+            </div>
+          </div>
+          <div class="col-md-12">
+            <div class="form-group">
+              <textarea placeholder="Address"></textarea>
+            </div>
+          </div>
+          <div class="col-md-12">
+            <div class="form-group">
+              <input type="text" class="form-control" placeholder="Company(Optional)">
+            </div>
+          </div>
+          <div class="col-md-12">
+            <div class="form-group">
+              <input type="text" class="form-control" placeholder="Appartment, Suit etc.(Optional)">
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <input type="text" class="form-control" placeholder="City">
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <select placeholder="Province">
+                <option value="select country">Province</option>
+                <option value="California">California</option>
+                <option value="Newyork">Newyork</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group">
+              <input type="text" class="form-control" placeholder="Postal Code">
+            </div>
+          </div>
+          <div class="col-md-12">
+            <div class="form-group">
+              <input type="text" class="form-control" placeholder="Phone Number">
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+  <div class="text-check inputting-check">
+    <div class="button-flex button-return">
+      <button type="submit" class="btn btn-primary"><img src="assets/image/shipping/Vector.png" alt="vector"> Return To
+        Shipping</button>
+    </div>
+    <div class="button-flex">
+      <button type="submit" class="btn btn-primary">Pay Now</button>
+    </div>
+  </div>
+
+  <div class="foot-shipping">
+    <hr>
+    <p>All rights reserved LIQUOR BARON</p>
+  </div>
+
+</div>
