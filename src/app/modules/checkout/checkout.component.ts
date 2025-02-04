@@ -209,6 +209,10 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
     })
   }
 
+  triggerClick(inputElement: HTMLInputElement) {
+    inputElement.showPicker(); // Triggers the native date/time picker
+  }
+
   async fetchTaxes() {
     await this.ApiService.fetchTax(this.selectedState).then((res) => {
       this.tax_percentage = parseFloat(res[0]?.total_tax)

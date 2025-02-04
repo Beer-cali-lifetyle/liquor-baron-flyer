@@ -167,7 +167,7 @@ body {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  max-height: 15em;
+  min-height: 319px !important;
   /* Ensures images fill the area while maintaining aspect ratio */
 }
 
@@ -438,6 +438,7 @@ button.btn-add {
 
   .collection-section .product-card-container .product-tumb {
     padding: 20px 20px 20px !important;
+    width: 100% !important;
   }
 
   .collection-section .product-card-container .product-card {
@@ -1058,7 +1059,9 @@ button.btn-add {
     background: #faf1ea;
   }
 
-
+  .uniform-img {
+    min-height: 200px !important;
+  }
 
   .collection-section .product-card-container .product-tumb {
     padding: 20px 20px 20px !important;

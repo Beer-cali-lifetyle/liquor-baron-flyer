@@ -12,10 +12,10 @@
         <div class="row flex-row-reverse">
           <!-- Products Section -->
           <div class="col-12 ps-5 md-ps-15px md-mb-60px nil-padding">
-            <div class="row mb-5">
+            <div class="row mb-5  row-product">
               <div class="col-3 product-card-container" *ngFor="let product of products; let i=index">
           
-                <div class="product-card" [routerLink]="['/product', product?.id]">
+                <div class="product-card mx-2" [routerLink]="['/product', product?.id]">
                   <div class="product-tumb pt-4 pb-1">
                     <img [src]="imgBaseUrl + product?.product_image" class="img-fluid uniform-img" alt="product">
                     <!-- <div class="badge-wrapper"> -->
@@ -53,6 +53,7 @@
               </div>
         
             </div>
+            
             <!-- Pagination Section -->
             <!-- <div class="w-100 d-flex mt-4 justify-content-center md-mt-30px">
               <ngb-pagination [page]="currentPage" [collectionSize]="products?.total" [pageSize]="pageSize"

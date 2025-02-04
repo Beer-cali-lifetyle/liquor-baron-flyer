@@ -1164,6 +1164,7 @@ textarea {
   display: flex;
   align-items: center;
   justify-content: center;
+  max-width: 150px;
   border: 1.5px solid white;
 }
 
@@ -1829,28 +1830,36 @@ section.newsletter-section {
   background: #faf1ea;
 }
 
-.row {
+.row-product {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  /* Center align products */
-  /* Maintain equal spacing */
-}
-
-.row-product {
-  gap: 0px !important;
+  margin: 0; /* Removes Bootstrap's row margins */
+  padding: 0;
 }
 
 .product-card-container {
-  width: 100%;
+  padding: 5px; /* Ensures spacing inside but removes outer gaps */
+  margin: 0; /* Removes unwanted gaps */
 }
 
 .product-card {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  width: 100%; /* Ensures responsiveness */
+  max-width: 100%;
 }
+
+@media (max-width: 767px) {
+  .product-card-container {
+    flex: 0 0 50%; /* Two items per row on small screens */
+  }
+}
+
+@media (max-width: 576px) {
+  .product-card-container {
+    flex: 0 0 100%; /* Full width on extra small screens */
+  }
+}
+
 
 
 @media (min-width: 992px) and (max-width: 1300px) {

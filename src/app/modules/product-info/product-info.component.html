@@ -113,20 +113,19 @@
             <hr>
           </div>
 
-          <div class="row mb-5 collection-section info-collect-section">
-
+          <div class="row row-product mb-5">
             <h2>You May Also Like </h2>
-            <div class="col-lg-4 col-sm-6 col-md-6 col-xs-12 product-card-container product-info-container" *ngFor="let product of relatedProducts; let i=index">
-
-              <div class="product-card" [routerLink]="['/product', product?.id]">
+            <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 product-card-container cards-porduct" *ngFor="let product of relatedProducts; let i=index">
+      
+              <div class="product-card mx-2" [routerLink]="['/product', product?.id]">
                 <div class="product-tumb pt-4 pb-1">
                   <img [src]="imgBaseUrl + product?.product_image" class="img-fluid uniform-img" alt="product">
-                  <!-- <div class="badge-wrapper"> -->
+      
                   <div class="badge" [ngClass]="{
                       'bg-auccess': product.producttag === '3', 
                       'badge-yellow': product.producttag !== '3'
                     }">{{product.producttag === '3' ? 'New Item' : 'Limited Edition'}}</div>
-                  <!-- </div> -->
+      
                 </div>
                 <div class="product-details p-2">
                   <h4>{{product?.name}}</h4>
@@ -154,7 +153,7 @@
                 </div>
               </div>
             </div>
-
+      
           </div>
 
         </div>
