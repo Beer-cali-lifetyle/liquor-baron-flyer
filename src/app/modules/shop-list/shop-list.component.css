@@ -1,116 +1,127 @@
 .heart-filled {
-    background-color: red; /* Make background red */
-    border-radius: 50%; /* Make it rounded */
-    padding: 3px; /* Adjust padding to fit icon */
-    color: white; /* Change icon color */
-  }
-  
-  
-  
-  .shop-box {
-    position: relative;
-    overflow: hidden;
-    width: 100%; /* Ensure it takes the full width of its parent */
-  }
-  
-  .shop-image {
-    position: relative;
-    transition: all 0.3s ease-in-out;
-    height: 250px; /* Ensures consistent card height */
-  }
-  
-  .uniform-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    max-height: 15em; /* Ensures images fill the area while maintaining aspect ratio */
-  }
-  
-  .product-bottom-details {
-    margin-top: auto; /* Keeps the price and icons at the bottom */
-  }
-  
-  .product-price {
-    font-size: 18px;
-    font-weight: bold;
-  }
-  
-  .product-links {
-    margin-top: 10px;
-  }
-  
-  .shop-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    opacity: 0;
-    transition: opacity 0.3s ease-in-out;
-  }
-  
-  .shop-box:hover .shop-overlay {
-    opacity: 1;
-  }
-  
-  .shop-buttons-wrap {
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    opacity: 0;
-    transition: opacity 0.3s ease-in-out;
-    z-index: 10;
-  }
-  
-  .shop-hover.top-right {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    opacity: 0;
-    transition: opacity 0.3s ease-in-out;
-    z-index: 10;
-  }
-  
-  .shop-box:hover .shop-hover,
-  .shop-box:hover .shop-buttons-wrap {
-    opacity: 1;
-  }
-  
-  
-  .product-slider .swiper-slide {
-    display: flex;
-    justify-content: center;
-    width: 25%; 
-    box-sizing: border-box;
-    padding: 10px; 
-  }
-  
-  .shop-box .img-fluid {
-    width: 100%;
-    height: auto;
-    transition: transform 0.3s ease-in-out;
-  }
-  
-  .shop-box:hover .img-fluid {
-    transform: scale(1.1);
-  }
-  
-  /* Fix height differences due to different text content */
-  .shop-footer {
-    min-height: 80px; /* Ensures consistent footer height */
-  }
-  
+  background-color: red;
+  /* Make background red */
+  border-radius: 50%;
+  /* Make it rounded */
+  padding: 3px;
+  /* Adjust padding to fit icon */
+  color: white;
+  /* Change icon color */
+}
+
+
+
+.shop-box {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  /* Ensure it takes the full width of its parent */
+}
+
+.shop-image {
+  position: relative;
+  transition: all 0.3s ease-in-out;
+  height: 250px;
+  /* Ensures consistent card height */
+}
+
 .uniform-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  min-height: 319px !important;/* Ensures images fill the area while maintaining aspect ratio */
+  max-height: 15em;
+  /* Ensures images fill the area while maintaining aspect ratio */
 }
 
 .product-bottom-details {
-  margin-top: auto; /* Keeps the price and icons at the bottom */
+  margin-top: auto;
+  /* Keeps the price and icons at the bottom */
+}
+
+.product-price {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.product-links {
+  margin-top: 10px;
+}
+
+.shop-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.shop-box:hover .shop-overlay {
+  opacity: 1;
+}
+
+.shop-buttons-wrap {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  z-index: 10;
+}
+
+.shop-hover.top-right {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+  z-index: 10;
+}
+
+.shop-box:hover .shop-hover,
+.shop-box:hover .shop-buttons-wrap {
+  opacity: 1;
+}
+
+
+.product-slider .swiper-slide {
+  display: flex;
+  justify-content: center;
+  width: 25%;
+  box-sizing: border-box;
+  padding: 10px;
+}
+
+.shop-box .img-fluid {
+  width: 100%;
+  height: auto;
+  transition: transform 0.3s ease-in-out;
+}
+
+.shop-box:hover .img-fluid {
+  transform: scale(1.1);
+}
+
+/* Fix height differences due to different text content */
+.shop-footer {
+  min-height: 80px;
+  /* Ensures consistent footer height */
+}
+
+.uniform-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  min-height: 270px !important;
+  /* Ensures images fill the area while maintaining aspect ratio */
+}
+
+.product-bottom-details {
+  margin-top: auto;
+  /* Keeps the price and icons at the bottom */
 }
 
 .product-price {
@@ -135,11 +146,6 @@
 
   .collection-section .product-card-container {
     width: 25%;
-  }
-
-  .collection-section .product-card-container .product-details {
-       background: #f9fcff;
-    border-top: 1px solid #ddd;
   }
 
   .collection-section .product-card-container .product-tumb {
@@ -214,6 +220,12 @@
 
 }
 
+@media (min-width: 500px) and (max-width: 575px) {
+  .new-container-fluid .uniform-img {
+    min-height: 337px !important;
+  }
+}
+
 @media (min-width: 768px) and (max-width: 991px) {
 
   section.main-section {
@@ -226,11 +238,6 @@
 
   .collection-section .product-card-container {
     width: 50%;
-  }
-
-  .collection-section .product-card-container .product-details {
-       background: #f9fcff;
-    border-top: 1px solid #ddd;
   }
 
   .collection-section .product-card-container .product-tumb {
@@ -285,12 +292,7 @@
   }
 
   .collection-section .product-card-container {
-    width: 50%;
-  }
-
-  .collection-section .product-card-container .product-details {
-       background: #f9fcff;
-    border-top: 1px solid #ddd;
+    width: 33%;
   }
 
   .collection-section .product-card-container .product-tumb {
@@ -332,6 +334,10 @@
     font-size: 18px;
   }
 
+  .new-container-fluid .uniform-img {
+    min-height: 337px !important;
+  }
+
 }
 
 @media (min-width: 320px) and (max-width: 575px) {
@@ -346,11 +352,6 @@
 
   .collection-section .product-card-container {
     width: 100%;
-  }
-
-  .collection-section .product-card-container .product-details {
-       background: #f9fcff;
-    border-top: 1px solid #ddd;
   }
 
   .collection-section .product-card-container .product-tumb {
@@ -414,11 +415,6 @@
 
   .collection-section .product-card-container {
     width: 50%;
-  }
-
-  .collection-section .product-card-container .product-details {
-       background: #f9fcff;
-    border-top: 1px solid #ddd;
   }
 
   .collection-section .product-card-container .product-tumb {
