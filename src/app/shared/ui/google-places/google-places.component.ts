@@ -1,13 +1,16 @@
-import { Component, ElementRef, EventEmitter, NgZone, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, NgZone, OnInit, Output, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-declare const google: any; // Declare google object to avoid TypeScript errors
+declare const google: any;
 
 @Component({
   selector: 'app-google-places-autocomplete',
   standalone: true,
   imports: [CommonModule],
-  template: ` <label class="form-label">Address</label><input #searchInput type="text" class="form-control" placeholder="Enter a location" />`,
+  template: `
+    <label class="form-label">Address</label>
+    <input #searchInput type="text" class="form-control" placeholder="Enter a location" />
+  `,
   styles: [
     `
       .form-control {
@@ -20,11 +23,14 @@ declare const google: any; // Declare google object to avoid TypeScript errors
     `,
   ],
 })
-export class GooglePlacesAutocompleteComponent implements OnInit {
+export class GooglePlacesAutocompleteComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('searchInput', { static: true }) searchInput!: ElementRef;
   @Output() locationSelected = new EventEmitter<any>();
 
   private autocomplete!: any;
+  private pacContainer!: HTMLElement | null;
+  private scrollableParent!: HTMLElement | null;
+  private scrollListener!: () => void;
 
   constructor(private ngZone: NgZone) {}
 
@@ -32,9 +38,35 @@ export class GooglePlacesAutocompleteComponent implements OnInit {
     this.loadGoogleMaps().then(() => this.initializeAutocomplete());
   }
 
+  ngAfterViewInit(): void {
+    setTimeout(() => {
+      this.pacContainer = document.querySelector('.pac-container') as HTMLElement;
+      if (this.pacContainer) {
+        this.pacContainer.style.zIndex = '9999';
+        this.pacContainer.style.position = 'absolute';
+        document.body.appendChild(this.pacContainer);
+        this.adjustDropdownPosition();
+      }
+
+      // Attach scroll listener
+      this.scrollableParent = this.getScrollableParent(this.searchInput.nativeElement);
+      if (this.scrollableParent) {
+        this.scrollListener = () => this.adjustDropdownPosition();
+        this.scrollableParent.addEventListener('scroll', this.scrollListener);
+      }
+    }, 500);
+  }
+
+  ngOnDestroy(): void {
+    // Remove scroll listener when component is destroyed
+    if (this.scrollableParent && this.scrollListener) {
+      this.scrollableParent.removeEventListener('scroll', this.scrollListener);
+    }
+  }
+
   private async loadGoogleMaps(): Promise<void> {
     if (typeof google !== 'undefined' && google.maps) {
-      return; // Google Maps API is already loaded
+      return;
     }
 
     return new Promise<void>((resolve) => {
@@ -59,4 +91,26 @@ export class GooglePlacesAutocompleteComponent implements OnInit {
       });
     });
   }
+
+  private adjustDropdownPosition(): void {
+    if (!this.pacContainer || !this.searchInput) return;
+
+    const inputRect = this.searchInput.nativeElement.getBoundingClientRect();
+    this.pacContainer.style.top = `${inputRect.bottom + window.scrollY}px`;
+    this.pacContainer.style.left = `${inputRect.left + window.scrollX}px`;
+    this.pacContainer.style.width = `${inputRect.width}px`;
+  }
+
+  private getScrollableParent(element: HTMLElement): HTMLElement | null {
+    let parent: HTMLElement | null = element.parentElement;
+    while (parent) {
+      const overflowY = window.getComputedStyle(parent).overflowY;
+      if (overflowY === 'auto' || overflowY === 'scroll') {
+        return parent;
+      }
+      parent = parent.parentElement;
+    }
+    return null;
+  }
+  
 }

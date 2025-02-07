@@ -398,17 +398,17 @@
 
 
 
-            <div class="col-md-12 type-form">
+            <!-- <div class="col-md-12 type-form">
               <label class="form-label flex-">Address *</label>
               <textarea class="form-control"  #addresstext formControlName="address" placeholder="Address"></textarea>
               <div *ngIf="form.get('address')?.touched && form.get('address')?.invalid">
                 <div class="text-danger p-small" *ngIf="form.get('address')?.errors?.['required']">Address is required.
                 </div>
               </div>
-            </div>
+            </div> -->
 
-            <!-- <app-google-places-autocomplete (locationSelected)="handlePlaceSelection($event)"></app-google-places-autocomplete>
-            <p *ngIf="selectedLocation">Selected Location: {{ selectedLocation?.formatted_address }}</p> -->
+            <app-google-places-autocomplete (locationSelected)="handlePlaceSelection($event)"></app-google-places-autocomplete>
+            <p *ngIf="selectedLocation">Selected Location: {{ selectedLocation?.formatted_address }}</p>
 
             <div class="col-md-6 type-form">
               <label class="form-label flex-">Locality *</label>
