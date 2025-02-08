@@ -88,7 +88,7 @@ export class ProductInfoComponent extends AppBase implements OnInit {
   }
 
   add12() {
-    this.quantity = this.quantity === 'Add' ? 0: this.quantity + 12;
+    this.quantity = this.quantity === 'Add' ? 0 + 12 : this.quantity + 12;
     if (this.cartInfo?.id) {
       this.updateQuantity();
     }

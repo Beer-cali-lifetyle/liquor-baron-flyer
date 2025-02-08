@@ -156,3 +156,20 @@
         height: auto !important;
     }
 }
+
+
+
+.newsletter-input {
+    color: #fff;
+}
+
+input:focus {
+    caret-color: #fff !important; 
+    animation: blinkCursor 1s steps(2, start) infinite;
+  }
+  
+  @keyframes blinkCursor {
+    50% {
+      caret-color: transparent;
+    }
+  }

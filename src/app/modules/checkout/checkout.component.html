@@ -407,8 +407,12 @@
               </div>
             </div> -->
 
-            <app-google-places-autocomplete (locationSelected)="handlePlaceSelection($event)"></app-google-places-autocomplete>
-            <p *ngIf="selectedLocation">Selected Location: {{ selectedLocation?.formatted_address }}</p>
+            <app-google-places-autocomplete  [address]="form.controls['address'].value" (locationSelected)="handlePlaceSelection($event)"></app-google-places-autocomplete>
+            <div *ngIf="form.get('address')?.touched && form.get('address')?.invalid">
+              <div class="text-danger p-small" *ngIf="form.get('address')?.errors?.['required']">Address is required.
+              </div>
+            </div>
+            <!-- <p *ngIf="selectedLocation">Selected Location: {{ selectedLocation?.formatted_address }}</p> -->
 
             <div class="col-md-6 type-form">
               <label class="form-label flex-">Locality *</label>

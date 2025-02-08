@@ -1,4 +1,4 @@
-import { Component, OnInit, TemplateRef } from '@angular/core';
+import { AfterViewInit, Component, OnInit, TemplateRef } from '@angular/core';
 import { UiToasterService } from '../../../core/services/toaster.service';
 import { NgbToastModule } from '@ng-bootstrap/ng-bootstrap';
 import { CommonModule } from '@angular/common';
@@ -48,7 +48,16 @@ import { MiniCartComponent } from "../../../modules/shopping-cart/mini-cart/mini
   host: { 'class': 'toast-container position-fixed top-0 end-0 p-3' }
 })
 
-export class ToasterComponent {
+export class ToasterComponent implements AfterViewInit {
+
+  ngAfterViewInit() {
+    setTimeout(() => {
+      document.querySelectorAll('.ngb-toast').forEach((toast) => {
+        toast.classList.add('ng-animating');
+      });
+    }, 100);
+  }
+  
 
   isTemplate(toast: { textOrTpl: any; }) { return toast.textOrTpl instanceof TemplateRef; }
 

@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, NgZone, OnInit, Output, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, ElementRef, EventEmitter, NgZone, OnInit, Output, ViewChild, AfterViewInit, OnDestroy, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 declare const google: any;
@@ -8,8 +8,8 @@ declare const google: any;
   standalone: true,
   imports: [CommonModule],
   template: `
-    <label class="form-label">Address</label>
-    <input #searchInput type="text" class="form-control" placeholder="Enter a location" />
+    <label class="form-label flex-">Address</label>
+    <input #searchInput type="text" class="form-control" [value]="address" placeholder="Enter a location" />
   `,
   styles: [
     `
@@ -26,6 +26,7 @@ declare const google: any;
 export class GooglePlacesAutocompleteComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('searchInput', { static: true }) searchInput!: ElementRef;
   @Output() locationSelected = new EventEmitter<any>();
+  @Input() address: string = '';
 
   private autocomplete!: any;
   private pacContainer!: HTMLElement | null;
@@ -82,6 +83,7 @@ export class GooglePlacesAutocompleteComponent implements OnInit, AfterViewInit,
   private initializeAutocomplete(): void {
     this.autocomplete = new google.maps.places.Autocomplete(this.searchInput.nativeElement, {
       types: ['geocode'],
+      componentRestrictions: { country: 'CA' }
     });
 
     this.autocomplete.addListener('place_changed', () => {

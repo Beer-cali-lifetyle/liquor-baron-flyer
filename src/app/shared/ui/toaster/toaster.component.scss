@@ -18,37 +18,48 @@
     }
 }
 
+/* Toast Container - Fixed at the top right */
 .toast-container {
     position: fixed;
-    top: 0;
-    right: 0;
-    padding: 3px;
+    top: 10px;
+    right: 10px;
+    padding: 1rem;
     z-index: 1200;
+    max-width: 350px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
+/* Apply animation on toast appearance */
 .toast-container .ngb-toast {
-    animation: slideInRight 0.5s ease-out, fadeOut 0.5s ease-in 5s forwards;
-    /* Adjust timing (e.g., 5s) to match your toast delay */
+    animation: slideInRight 0.4s ease-out, fadeOut 0.4s ease-in 5s forwards;
     will-change: transform, opacity;
+    margin-bottom: 0.75rem;
+    max-width: 100%;
+    box-sizing: border-box;
+    transform: translateX(100%); /* Initial off-screen position */
+    opacity: 0;
+    animation-fill-mode: forwards;
 }
 
-.toast-container .message-container {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 200px; /* Adjust the max-width to your preference */
+/* Ensure proper animation trigger */
+.toast-container .ngb-toast.show {
+    animation: slideInRight 0.4s ease-out forwards, fadeOut 0.4s ease-in 5s forwards;
 }
 
-.toast-container .ngb-toast-header {
-    display: flex;
-    align-items: center;
-}
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .toast-container {
+        right: 5px;
+        top: 5px;
+        padding: 0.5rem;
+        max-width: 280px;
+    }
 
-.toast-container .ngb-toast-header small {
-    margin-left: auto;
-}
-
-.toast-container .error-message {
-    display: inline;
-    white-space: nowrap;
+    .toast-container .ngb-toast {
+        width: 100%;
+        max-width: 280px;
+        font-size: 12px;
+        padding: 8px;
+    }
 }

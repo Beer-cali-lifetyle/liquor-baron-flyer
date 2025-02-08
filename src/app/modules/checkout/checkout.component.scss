@@ -6,6 +6,8 @@
     /* Optional: for a subtle border */
 }
 
+
+
 .nav-pills .nav-link:hover {
     background-color: #f8f9fa;
     /* Optional: light gray hover effect */
@@ -105,7 +107,7 @@ select {
 }
 
 .right-starting {
-    border-bottom:5px solid #840029;
+    border-bottom: 5px solid #840029;
     margin-bottom: 10px;
 }
 
@@ -197,12 +199,19 @@ select {
     }
 
     .three-section {
-        flex-direction: column;
+        // flex-direction: column;
         gap: 10px;
     }
 
     .three-section .one-box {
         width: 100%;
+        padding: 20px 2px;
+    }
+
+    .one-box button {
+        margin-top: auto;
+        bottom: 0px !important;
+
     }
 
     .row.row-selector {

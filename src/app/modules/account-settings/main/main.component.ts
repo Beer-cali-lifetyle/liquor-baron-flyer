@@ -11,13 +11,14 @@ import { NgbModal, NgbModalRef, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
 import { ContextService } from '../../../core/services/context.service';
 import { PersonalDetailsComponent } from "../personal-details/personal-details.component";
+import { GooglePlacesAutocompleteComponent } from '../../../shared/ui/google-places/google-places.component';
 
 @Component({
   selector: 'app-main',
   templateUrl: './main.component.html',
   styleUrls: ['./main.component.css'],
   standalone: true,
-  imports: [CommonModule, OrdersComponent, WishlistComponent, NgbModule, ReactiveFormsModule, FormsModule, PersonalDetailsComponent]
+  imports: [CommonModule, OrdersComponent, WishlistComponent, NgbModule, ReactiveFormsModule, FormsModule, PersonalDetailsComponent, GooglePlacesAutocompleteComponent]
 })
 export class MainComponent extends AppBase implements OnInit {
   @ViewChild('addressModal', { static: true }) addressModal!: TemplateRef<any>;
@@ -115,6 +116,15 @@ export class MainComponent extends AppBase implements OnInit {
   }
 
 
+  handlePlaceSelection(place: any) {
+    debugger
+    this.form.patchValue({
+      address: place?.formatted_address
+    })
+    console.log(this.form.value)
+  }
+
+
   openModal(content: any) {
     const modalRef: NgbModalRef = this.modalService.open(content, {
       centered: true,
@@ -167,7 +177,7 @@ export class MainComponent extends AppBase implements OnInit {
         address: this.form.value.address,
         locality: this.form.value.locality,
         city: this.form.value.city,
-        state: this.form.value.state,
+        state_id: this.form.value.state,
         landmark: this.form.value.landmark,
         alternate_phone_number: this.form.value.altPhoneNumber,
         is_default: this.form.value.defaultAddress ? 1 : 0
@@ -203,7 +213,7 @@ export class MainComponent extends AppBase implements OnInit {
       address: item?.address,
       locality: item?.locality,
       city: item?.city,
-      state: item?.state,
+      state: item?.state?.id,
       landmark: item?.landmark,
       altPhoneNumber: item?.alternate_phone_number,
       defaultAddress: item?.is_default == 1 ? true : false

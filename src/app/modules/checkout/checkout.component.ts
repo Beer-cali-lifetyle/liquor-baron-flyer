@@ -73,7 +73,9 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
 
   handlePlaceSelection(place: any) {
     this.selectedLocation = place;
-    console.log('Selected Place:', place);
+    this.form.patchValue({
+      address: place?.formatted_address
+    })
   }
 
   async ngOnInit() {
@@ -106,6 +108,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
     })
     await this.fetchStores();
     await this.getCart();
+    await this.calculateSubTotal();
   }
 
   ngAfterViewInit() {
@@ -186,7 +189,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
 
   }
 
-  setActiveTab(tabNumber: number): void {
+  async setActiveTab(tabNumber: number) {
     this.activeTab = tabNumber;
     console.log('Active Tab Number:', this.activeTab); // Optional for debugging
     this.selectedTime = null;
@@ -195,6 +198,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
     this.shippingForm.reset();
     this.total_tax = 0;
     this.total = 0;
+    await this.calculateSubTotal();
   }
 
   async fetchStores() {
