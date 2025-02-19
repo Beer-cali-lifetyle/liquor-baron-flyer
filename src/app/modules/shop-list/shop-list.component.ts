@@ -39,7 +39,7 @@ export class ShopListComponent extends AppBase implements OnInit, AfterViewInit 
     this.route.queryParams.subscribe(async params => {
       this.categoryId = params['categoryId'] || null;
       this.subcategoryId = params['subcategoryId'] || null;
-      this.flyerId = params['subcategoryId'] || null;
+      this.flyerId = params['flyerId'] || null;
       this.subcategoryTitle = params['title'] || null;
 
       if (this.categoryId) {
@@ -51,9 +51,10 @@ export class ShopListComponent extends AppBase implements OnInit, AfterViewInit 
         console.log('Subcategory ID:', this.subcategoryId);
         await this.fetchproductsWithFilter({ subcategoryId: this.subcategoryId, perPage: this.pageSize, page: this.currentPage })
       }
+      
       if (this.flyerId) {
-        console.log('Flyer ID:', this.categoryId);
-        await this.fetchproductsWithFilter({ flyerName: this.flyerId, perPage: this.pageSize, page: this.currentPage })
+        console.log('Flyer ID:', this.flyerId);
+        await this.fetchproductsWithFilter({ flyername: this.flyerId, perPage: this.pageSize, page: this.currentPage })
       }
     });
     if (!(this.categoryId || this.subcategoryId || this.flyerId)) {
@@ -150,8 +151,8 @@ export class ShopListComponent extends AppBase implements OnInit, AfterViewInit 
         await this.fetchproductsWithFilter({ categoryId: this.categoryId, perPage: this.pageSize, page: this.currentPage })
       }
       if (this.flyerId) {
-        console.log('Flyer ID:', this.categoryId);
-        await this.fetchproductsWithFilter({ flyerName: this.flyerId, perPage: this.pageSize, page: this.currentPage })
+        console.log('Flyer ID:', this.flyerId);
+        await this.fetchproductsWithFilter({ flyername: this.flyerId, perPage: this.pageSize, page: this.currentPage })
       }
     }
   }

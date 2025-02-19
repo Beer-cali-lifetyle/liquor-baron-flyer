@@ -79,7 +79,7 @@ export class HomeComponent extends AppBase implements OnInit, AfterViewInit {
 
   async fetchCategories() {
     await this.ApiService.getCategories().then(async (res) => {
-      debugger;
+      
       this.categories = res?.categories;
     })
   }

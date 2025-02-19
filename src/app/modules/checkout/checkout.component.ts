@@ -172,7 +172,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
 
   async markAgeverified(data: any) {
     await this.ApiService.markAgeVerified(data).then((res) => {
-      debugger;
+      
       this.contextService.user.set(res?.user);
       localStorage.setItem('user', JSON.stringify(res?.user));
     })

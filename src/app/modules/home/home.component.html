@@ -135,7 +135,7 @@
   <div class="container overflow-hidden">
     <div class="row gy-5">
       <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12  align-self-center text-center" *ngFor="let category of categories">
-        <div class="blend-container">
+        <div class="blend-container" (click)="redirectToShopList('category', category?.id, category?.catname)">
           <img [src]="imgBaseUrl + category?.image_file" class="blend-image" />
           <p class="fw-bold mt-2">{{category?.catname}}</p>
         </div>
