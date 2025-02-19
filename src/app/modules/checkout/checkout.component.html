@@ -6,7 +6,7 @@
         <div class="listing-adresses">
           <div class="contact-addresses">
             <p class="1st-contact">Contact</p>
-            <p class="2nd-contact">{{contextService.user()?.is_guest === true ? 'Guest' : contextService.user()?.email}}</p>
+            <p class="2nd-contact">{{(contextService.user()?.is_guest=== true  || contextService.user()?.is_guest === '1') ? 'Guest' : contextService.user()?.email}}</p>
             <!-- <p class="3rd-contact"><a href="#">Change</a></p> -->
           </div>
           <!-- <hr>
@@ -22,22 +22,25 @@
           <div class="three-section">
 
             <div class="one-box select-one" [class.active]="activeTab === 1" (click)="setActiveTab(1)">
+              <div class="content">
               <i class="bi bi-shop-window fs-1"></i>
-              <p>Store Pickup</p>
+              <p>Store Pickup</p></div>
               <hr>
               <button type="button">{{activeTab === 1 ? 'Selected' : 'Select'}}</button>
             </div>
 
             <div class="one-box select-one" [class.active]="activeTab === 2" (click)="setActiveTab(2)">
+              <div class="content">
               <i class="bi bi-truck fs-1"></i>
-              <p>Home Delivery</p>
+              <p>Home Delivery</p></div>
               <hr>
               <button type="button">{{activeTab === 2 ? 'Selected' : 'Select'}}</button>
             </div>
 
             <div class="one-box select-one" [class.active]="activeTab === 3" (click)="setActiveTab(3)">
+              <div class="content">
               <i class="bi bi-globe-europe-africa fs-1"></i>
-              <p>Shipping</p>
+              <p>Shipping</p></div>
               <hr>
               <button type="button">{{activeTab === 3 ? 'Selected' : 'Select'}}</button>
             </div>
@@ -295,12 +298,13 @@
 
           <div class="p-total">
             <p>Subtotal :</p>
-            <p>${{subTotal}}</p>
+            <p>{{subTotal | currency:'CAD'}}</p>
           </div>
 
           <div class="p-total">
             <p>Tax :</p>
-            <p>${{total_tax}}</p>
+            <p *ngIf="total_tax !== 0">{{total_tax | currency:'CAD'}}</p>
+            <p *ngIf="total_tax === 0">Select location to calculate tax</p>
           </div>
 
           <!-- <div class="p-total d-total">
@@ -310,7 +314,7 @@
 
           <div class="p-total free-grand">
             <p><span class="grandone">Total</span></p>
-            <p>CAD<span class="cad">${{total}}</span></p>
+            <p> <span class="cad">{{total | currency:'CAD'}}</span></p>
           </div>
 
           <div class="p-total free-grand icluding">

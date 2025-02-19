@@ -5,6 +5,7 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 import { ContextService } from '../../../core/services/context.service';
 import { environment } from '../../../../environments/environment';
 import { FormsModule, NgModel } from '@angular/forms';
+import { CartService } from '../../../shared/services/cart.service';
 
 @Component({
   selector: 'app-mini-cart',
@@ -22,6 +23,7 @@ export class MiniCartComponent implements OnInit {
   quantityOptions: number[] = Array.from({ length: 100 }, (_, i) => i + 1);
   constructor(
     private ApiService: ApiService,
+    private cartService: CartService,
     public contextService: ContextService,
     private cdr: ChangeDetectorRef
   ) { }
@@ -39,6 +41,7 @@ export class MiniCartComponent implements OnInit {
     await this.ApiService.getCartProducts().then((res) => {
       this.contextService.cart.set(res)
       this.cdr.detectChanges();
+      this.cartService.triggerCartUpdate();
     })
   }
 

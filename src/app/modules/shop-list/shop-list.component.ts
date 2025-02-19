@@ -21,6 +21,7 @@ export class ShopListComponent extends AppBase implements OnInit, AfterViewInit 
   stars = [1, 2, 3, 4, 5];
   categoryId: string | null = null;
   subcategoryId: string | null = null;
+  flyerId: string | null = null;
   subcategoryTitle: string | null = null;
   categories: any[] = [];
   imgBaseUrl: string = environment.api.base_url;
@@ -38,6 +39,7 @@ export class ShopListComponent extends AppBase implements OnInit, AfterViewInit 
     this.route.queryParams.subscribe(async params => {
       this.categoryId = params['categoryId'] || null;
       this.subcategoryId = params['subcategoryId'] || null;
+      this.flyerId = params['subcategoryId'] || null;
       this.subcategoryTitle = params['title'] || null;
 
       if (this.categoryId) {
@@ -49,8 +51,12 @@ export class ShopListComponent extends AppBase implements OnInit, AfterViewInit 
         console.log('Subcategory ID:', this.subcategoryId);
         await this.fetchproductsWithFilter({ subcategoryId: this.subcategoryId, perPage: this.pageSize, page: this.currentPage })
       }
+      if (this.flyerId) {
+        console.log('Flyer ID:', this.categoryId);
+        await this.fetchproductsWithFilter({ flyerName: this.flyerId, perPage: this.pageSize, page: this.currentPage })
+      }
     });
-    if (!(this.categoryId || this.subcategoryId)) {
+    if (!(this.categoryId || this.subcategoryId || this.flyerId)) {
       await this.ApiService.fetcHlatestProducts({ perPage: this.pageSize, page: this.currentPage }).then((res) => {
         this.products = res?.data
         console.log(this.products)
@@ -142,6 +148,10 @@ export class ShopListComponent extends AppBase implements OnInit, AfterViewInit 
       if (this.categoryId) {
         console.log('Category ID:', this.categoryId);
         await this.fetchproductsWithFilter({ categoryId: this.categoryId, perPage: this.pageSize, page: this.currentPage })
+      }
+      if (this.flyerId) {
+        console.log('Flyer ID:', this.categoryId);
+        await this.fetchproductsWithFilter({ flyerName: this.flyerId, perPage: this.pageSize, page: this.currentPage })
       }
     }
   }

@@ -6,13 +6,13 @@
         <div class="carousel-liquor px-5 px-md-0 px-sm-0">
           <div class="carousel-inner">
             <!-- Third slide -->
-            <div class="carousel-item " *ngFor="let item of subCategories">
-              <img [src]="imgBaseUrl + item?.image_file" class="d-block w-100" alt="Banner 3">
+            <div class="carousel-item " *ngFor="let item of flyers">
+              <img [src]="imgBaseUrl + item?.flyerimage" class="d-block w-100" alt="Banner 3">
               <div class="carousel-caption d-none d-md-block text-start start-0">
                 <p>{{item?.description}}</p>
-                <h2>{{item?.subcategory_name}}</h2>
+                <h2>{{item?.name}}</h2>
                 <button class="btn btn-transparent shop-btn"
-                  (click)="redirectToShopList('subcategory', item?.id, item?.subcategory_name)">Shop Now</button>
+                  (click)="redirectToShopList('flyer', item?.id, item?.flyerimage)">Shop Now</button>
               </div>
             </div>
 
@@ -78,7 +78,10 @@
             <p>{{product?.description}}</p>
             <div class="product-bottom-details d-flex justify-content-between">
               <div class="product-price">
-                ${{product?.price}}
+                <span [class.text-danger]="product?.discount"> ${{ product?.price }}  </span>
+                <span *ngIf="product?.discount">
+                  <del>  ${{ product?.discount }}</del>
+                </span>
               </div>
               <div class="bag-container" *ngIf="!product?.cart_details" (click)="addToCart($event, product?.id, i)">
                 <i class="bi bi-lg bi-bag-plus bag-icon" *ngIf="!product?.product?.cart_details" >
@@ -119,20 +122,20 @@
 </section> -->
 
 <!-- Client 1 - Bootstrap Brain Component -->
-<!-- <section class="py-3 py-md-5 py-xl-8">
-  <div class="container container-baron">
-    <div class="row justify-content-md-center">
-      <div class="col-12 col-md-10 col-lg-8 col-xl-7 col-xxl-6 mb-5">
-        <div class="title-text">
-          <h2 class="mb-4 text-center">Shop By Category</h2>
+<section class="mb-3 collection-section">
+  <div class="container-baron container-fluid new-container-fluid">
+    <div class="row mb-3">
+      <div class="col-12">
+        <div class="title-text text-center">
+          <h2>Shop By Category</h2>
         </div>
       </div>
     </div>
   </div>
   <div class="container overflow-hidden">
     <div class="row gy-5">
-      <div class="col-6 col-md-3 align-self-center text-center" *ngFor="let category of categories">
-        <div class="blend-container" (click)="redirectToShopList('category', category.id)">
+      <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12  align-self-center text-center" *ngFor="let category of categories">
+        <div class="blend-container">
           <img [src]="imgBaseUrl + category?.image_file" class="blend-image" />
           <p class="fw-bold mt-2">{{category?.catname}}</p>
         </div>
@@ -140,4 +143,4 @@
 
     </div>
   </div>
-</section> -->
+</section>

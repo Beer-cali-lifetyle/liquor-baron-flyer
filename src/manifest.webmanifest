@@ -1,7 +1,7 @@
 {
   "name": "liquor-baron",
   "short_name": "liquor-baron",
-  "theme_color": "#840029e0",
+  "theme_color": "#840029",
   "background_color": "#fafafa",
   "display": "standalone",
   "scope": "./",

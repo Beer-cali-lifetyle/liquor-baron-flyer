@@ -30,13 +30,13 @@
 
       <div class="collapse navbar-collapse align-middle" [ngClass]="{ show: !isNavbarCollapsed }" id="navbar-content">
         <ul class="navbar-nav main-navs ms-auto mb-2 mb-lg-0">
-          <li class="nav-item" *ngFor="let item of contextService.sub_categories() ||  subCategories | slice: 0:3"
-            (click)="redirectToShopList('subcategory', item?.id, item?.subcategory_name)">
-            <a class="nav-link active" aria-current="page">{{ item?.subcategory_name }}</a>
+          <li class="nav-item" *ngFor="let item of contextService.flyers() ||  subCategories | slice: 0:3"
+            (click)="redirectToShopList('flyer', item?.id, item?.name)">
+            <a class="nav-link active" aria-current="page">{{ item?.name }}</a>
           </li>
           <li class="nav-item">
             <a class="nav-link active" aria-current="page" routerLink="auth/sign-in"
-              *ngIf="(this.contextService.user()?.is_guest === true) || !(this.contextService.user())" (click)="toggleNavbar()">E-Flyer Sign
+              *ngIf="(this.contextService.user()?.is_guest === true || contextService.user()?.is_guest === '1') || !(this.contextService.user())" (click)="toggleNavbar()">E-Flyer Sign
               up</a>
             <a class="nav-link active" aria-current="page" routerLink="my-account"
               *ngIf="(this.contextService.user()?.is_guest === 'false' || this.contextService.user()?.is_guest === '0')" (click)="toggleNavbar()">E-Flyer Sign up</a>

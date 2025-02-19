@@ -110,8 +110,12 @@
   .shopping-productss h5.name-text {
     font-size: 25px;
     font-weight: 600;
-    color: #84004b;
+    color: #84004b !important;
     line-height: 22px;
+  }
+
+  .shopping-productss h5.name-text a {
+    color: #84004b !important;
   }
 
   .shopping-productss a {
@@ -182,6 +186,9 @@
     font-weight: 600;
     color: #84004b;
     line-height: 22px;
+  }
+  .shopping-productss h5.name-text a {
+    color: #84004b !important;
   }
 
   .shopping-productss a {
@@ -328,6 +335,9 @@
     font-weight: 600;
     color: #84004b;
     line-height: 22px;
+  }
+  .shopping-productss h5.name-text a {
+    color: #84004b !important;
   }
 
   .shopping-productss a {
@@ -478,6 +488,9 @@
     font-weight: 600;
     color: #84004b;
     line-height: 22px;
+  }
+  .shopping-productss h5.name-text a {
+    color: #84004b !important;
   }
 
   .shopping-productss a {
@@ -630,6 +643,9 @@
     line-height: 22px;
   }
 
+  .shopping-productss h5.name-text a {
+    color: #84004b !important;
+  }
   .shopping-productss a {
     cursor: pointer;
   }

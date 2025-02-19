@@ -70,7 +70,7 @@
                         </div>
                         <div class="billing-content">
                           <div class="fw-bold fs-5">{{item?.full_name}}</div>
-                          <p>{{item?.address}}, {{item?.locality}}, {{item?.city}}, {{item?.state}}, {{item?.mobile_number}}</p>
+                          <p>{{item?.address}}, {{item?.locality}}, {{item?.city}}, {{item?.state?.NAME}}, {{item?.mobile_number}}</p>
                         </div>
                         <div class="billing-edit align-self-center ms-auto">
                           <svg (click)="(editMode(item))" class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"

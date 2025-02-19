@@ -112,7 +112,9 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
   }
 
   ngAfterViewInit() {
-    this.initSwal();
+    console.log(this.contextService.user())
+    if(!this.contextService.user()?.is_age_verified) {
+    this.initSwal();}
     // this.googleMapsService
     //   .loadGoogleMaps('AIzaSyBFtrosISezP-8z2NwTWKhD_5pNHoi0wRw')
     //   .then(() => {
@@ -144,7 +146,14 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
         confirmButton: 'btn btn-maroon rounded-5',
         cancelButton: 'btn btn-secondary rounded-5'
       },
-    }).then((result) => {
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        const agePayload = {
+          user_id: this.contextService.user()?.id,
+          is_age_verified: true
+        }
+        await this.markAgeverified(agePayload);
+      }
       if (!result.isConfirmed) {
         Swal.fire({
           title: 'Access Denied',
@@ -158,7 +167,15 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
         });
       }
     });
-    
+
+  }
+
+  async markAgeverified(data: any) {
+    await this.ApiService.markAgeVerified(data).then((res) => {
+      debugger;
+      this.contextService.user.set(res?.user);
+      localStorage.setItem('user', JSON.stringify(res?.user));
+    })
   }
 
   async getAddress(event: Event) {

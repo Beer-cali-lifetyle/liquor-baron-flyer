@@ -9,6 +9,7 @@ import { ContextService } from '../../core/services/context.service';
 import { AppBase } from '../../../app-base.component';
 import { UiToasterService } from '../../core/services/toaster.service';
 import { MiniCartComponent } from "../shopping-cart/mini-cart/mini-cart.component";
+import { CartService } from '../../shared/services/cart.service';
 declare var bootstrap: any;
 
 @Component({
@@ -26,6 +27,7 @@ export class HomeComponent extends AppBase implements OnInit, AfterViewInit {
   @ViewChild('homepageCarousel', { static: false }) carousel!: ElementRef;
   categories: any;
   subCategories: any[] = [];
+  flyers: any = [];
   products: any = [];
   quantity: number = 1;
   cartInfo: any;
@@ -33,6 +35,7 @@ export class HomeComponent extends AppBase implements OnInit, AfterViewInit {
   imgBaseUrl: string = environment.api.base_url;
   constructor(@Inject(PLATFORM_ID) private platformId: Object,
     private ApiService: ApiService,
+    private cartService: CartService,
     private router: Router,
     private contextService: ContextService,
     private toaster: UiToasterService,
@@ -41,6 +44,10 @@ export class HomeComponent extends AppBase implements OnInit, AfterViewInit {
   }
 
   async ngOnInit() {
+    this.cartService.cartUpdated$.subscribe(() => {
+      this.getCart();  
+    });
+    await this.fetchFlyers();
     await this.fetchCategories();
     await this.fetchProducts();
     await this.getCart();
@@ -60,6 +67,8 @@ export class HomeComponent extends AppBase implements OnInit, AfterViewInit {
       this.router.navigate(['/shop'], { queryParams: { categoryId: id, title: title } });
     } else if (type === 'subcategory') {
       this.router.navigate(['/shop'], { queryParams: { subcategoryId: id, title: title } });
+    } else if (type === 'flyer') {
+      this.router.navigate(['/shop'], { queryParams: { flyerId: id, title: title } });
     }
   }
 
@@ -70,7 +79,16 @@ export class HomeComponent extends AppBase implements OnInit, AfterViewInit {
 
   async fetchCategories() {
     await this.ApiService.getCategories().then(async (res) => {
-      this.subCategories = res?.categories[0]?.subcategories;
+      debugger;
+      this.categories = res?.categories;
+    })
+  }
+
+  async fetchFlyers() {
+    await this.ApiService.getFlyers().then((res) => {
+      console.log(res)
+      this.flyers = res?.data;
+      this.contextService.flyers.set(res?.data);
     })
   }
 
@@ -110,7 +128,6 @@ export class HomeComponent extends AppBase implements OnInit, AfterViewInit {
       await this.ApiService.getCartProducts().then((res) => {
         res?.data.forEach((dataItem: any) => {
           const productIndex = this.products.findIndex((prod: any) => prod.id === dataItem.product_id);
-          
           if (productIndex !== -1) {
             this.products[productIndex]['cart_details'] = {
               id: dataItem?.id,
@@ -118,10 +135,8 @@ export class HomeComponent extends AppBase implements OnInit, AfterViewInit {
               quantity: dataItem?.quantity,
             };
           }
-          console.log(this.products)
         });
         this.contextService.cart.set(res);
-        console.log(this.contextService.cart()?.data)
       })
     }
   }

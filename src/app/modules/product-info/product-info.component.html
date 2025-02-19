@@ -132,7 +132,10 @@
                   <p>{{product?.description}}</p>
                   <div class="product-bottom-details d-flex justify-content-between">
                     <div class="product-price">
-                      ${{product?.price}}
+                      <span [class.text-danger]="product?.discount"> ${{ product?.price }}  </span>
+                      <span *ngIf="product?.discount">
+                        <del>  ${{ product?.discount }}</del>
+                      </span>
                     </div>
                     <div class="bag-container" *ngIf="!product?.cart_details">
                       <i class="bi bi-lg bi-bag-plus bag-icon" *ngIf="!product?.product?.cart_details"
@@ -326,14 +329,14 @@
       <!-- Your name and email -->
       <div class="row mb-3">
         <div class="col-md-6">
-          <label for="name" class="form-label">Your name <span class="text-danger">*</span></label>
+          <label for="name" class="form-label">Your name</label>
           <input type="text" class="form-control" id="name" formControlName="name" />
           <div *ngIf="form.get('name')?.touched && form.get('name')?.invalid" class="text-danger small">
             Name is required.
           </div>
         </div>
         <div class="col-md-6">
-          <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+          <label for="email" class="form-label">Email</label>
           <input type="email" class="form-control" id="email" formControlName="email" />
           <!-- <small class="form-text text-muted">We'll send you an email to verify this review came from you.</small> -->
           <div *ngIf="form.get('email')?.touched && form.get('email')?.invalid" class="text-danger small">

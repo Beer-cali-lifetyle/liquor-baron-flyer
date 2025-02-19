@@ -52,6 +52,10 @@ export class ApiService {
     return await this.httpRequest.GET(`/totalcategory`);
   }
 
+  async getFlyers() {
+    return await this.httpRequest.GET(`/getFlyer`);
+  }
+
   async getById(code: string) {
     return await this.httpRequest.GET(`/end-point/${code}`);
   }
@@ -203,6 +207,10 @@ export class ApiService {
 
   async updateUser(data: any) {
     return await this.httpRequest.POST(`/updateuser`, data);
+  }
+
+  async markAgeVerified(data: any) {
+    return await this.httpRequest.POST(`/ageVerification`, data);
   }
 
 }

@@ -41,7 +41,7 @@
             <div class="col-lg-10 align-self-center mt-2">
               <div class="d-flex justify-content-between mb-3 aligner-productss">
                 <h5 class="name-text">
-                  <a>{{item?.product?.name}}</a>
+                  <a [routerLink]="['/product', item?.product?.id]">{{item?.product?.name}}</a>
                   <br>
                   <span class="text-body-secondary">{{item?.product?.description}}</span>
                 </h5>
@@ -60,7 +60,7 @@
                 <div class="select-products">
                   <label class="form-label">Quantity</label>
                   <div class="quantity">
-                    <select class="qty-select" [(ngModel)]="item.quantity"
+                    <select class="qty-select form-select" [(ngModel)]="item.quantity"
                       (change)="onQuantityChange($event, item?.id)">
                       <option *ngFor="let qty of quantityOptions" [value]="qty">{{ qty }}</option>
                     </select>

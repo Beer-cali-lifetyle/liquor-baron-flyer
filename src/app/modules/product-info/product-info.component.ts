@@ -51,7 +51,7 @@ export class ProductInfoComponent extends AppBase implements OnInit {
     this.form = this.fb.group({
       rating: [null, Validators.required],
       review: ['', Validators.required],
-      headline: [''],
+      headline: ['', Validators.required],
       name: [''],
       email: [''],
       media: [''],
@@ -120,7 +120,7 @@ export class ProductInfoComponent extends AppBase implements OnInit {
     if (this.contextService.user()) {
       const payload = {
         productId: id,
-        quantity: quantity ? quantity : this?.quantity
+        quantity: quantity ? quantity : ((this.quantity === 0 || this.quantity === 'Add') ? 1 : this.quantity)
       }
       await this.ApiService.addToCart(payload).then(async res => {
         await this.getCart();
@@ -135,6 +135,7 @@ export class ProductInfoComponent extends AppBase implements OnInit {
       })
     }
   }
+  
   async addToCartRelated(event: Event, id: number, i: number) {
     event.stopPropagation();
     this.relatedProducts[i].cart_details = this.relatedProducts[i].cart_details !== undefined ? !this.relatedProducts[i].addcart_detailsedTocart : true;

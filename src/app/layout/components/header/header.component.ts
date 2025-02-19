@@ -29,7 +29,7 @@ export class HeaderComponent implements OnInit {
 
 
   async ngOnInit() {
-    await this.fetchCategories();
+    await this.fetchFlyers();
   }
 
   ngAfterViewInit() {
@@ -46,8 +46,15 @@ export class HeaderComponent implements OnInit {
   async fetchCategories() {
     await this.ApiService.getCategories().then(async (res) => {
       this.subCategories = res?.categories[0]?.subcategories;
-      this.contextService.sub_categories.set(res?.categories[0]?.subcategories);
+      this.contextService.flyers.set(res?.categories[0]?.subcategories);
     });
+  }
+
+  async fetchFlyers() {
+    await this.ApiService.getFlyers().then((res) => {
+      this.subCategories = res?.data;
+      this.contextService.flyers.set(res?.data);
+    })
   }
 
   getCartNumber() {
@@ -65,6 +72,8 @@ export class HeaderComponent implements OnInit {
       this.router.navigate(['/shop'], { queryParams: { categoryId: id, title: title } });
     } else if (type === 'subcategory') {
       this.router.navigate(['/shop'], { queryParams: { subcategoryId: id, title: title } });
+    } else if (type === 'flyer') {
+      this.router.navigate(['/shop'], { queryParams: { flyerId: id, title: title } });
     }
     this.isNavbarCollapsed = true;
   }

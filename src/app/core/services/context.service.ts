@@ -13,6 +13,7 @@ import {
     name: string;
     email: string;
     is_guest: any;
+    is_age_verified: any;
     // Add more fields as needed
   }
 
@@ -25,7 +26,7 @@ import {
   export class ContextService {
     user: WritableSignal<User | null> = signal(null);
     cart: WritableSignal<any | null> = signal(null);
-    sub_categories: WritableSignal<SubCategory[] | null> = signal([]);
+    flyers: WritableSignal<SubCategory[] | null> = signal([]);
   
     constructor(@Inject(PLATFORM_ID) private platformId: Object) {
       this.loadFromLocalStorage();
@@ -35,12 +36,12 @@ import {
       if (isPlatformBrowser(this.platformId)) {
         const storedUser = localStorage.getItem('user');
         const cart: any = localStorage.getItem('cart');
-        const sub_categories: any = localStorage.getItem('sub_categories');
+        const flyers: any = localStorage.getItem('flyers');
         if (storedUser !== null) {
           try {
             this.user.set(JSON.parse(storedUser));
             this.cart.set(JSON.parse(cart));
-            this.sub_categories.set(JSON.parse(sub_categories));
+            this.flyers.set(JSON.parse(flyers));
           } catch (error) {
             console.error('Error parsing local storage for user:', error);
           }
@@ -57,11 +58,11 @@ import {
       if (isPlatformBrowser(this.platformId)) {
         const currentUser = this.user();
         const cartStatus = this.cart();
-        const sub_categories = this.sub_categories();
+        const flyers = this.flyers();
         if (currentUser !== null) {
           localStorage.setItem('user', JSON.stringify(currentUser));
           localStorage.setItem('cart', JSON.stringify(cartStatus));
-          localStorage.setItem('sub_categories', JSON.stringify(sub_categories));
+          localStorage.setItem('flyers', JSON.stringify(flyers));
         }
       }
     }
@@ -70,7 +71,7 @@ import {
       if (isPlatformBrowser(this.platformId)) {
         localStorage.removeItem('user');
         localStorage.removeItem('cart');
-        localStorage.removeItem('sub_categories');
+        localStorage.removeItem('flyers');
       }
     }
   }

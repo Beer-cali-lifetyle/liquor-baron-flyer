@@ -19,7 +19,10 @@
             <p>{{product?.product?.description}}</p>
             <div class="product-bottom-details d-flex justify-content-between">
               <div class="product-price">
-                ${{product?.product?.price}}
+                <span [class.text-danger]="product?.product?.discount"> ${{ product?.product?.price }}  </span>
+                <span *ngIf="product?.product?.discount">
+                  <del>  ${{ product?.product?.discount }}</del>
+                </span>
               </div>
               <div class="bag-container" *ngIf="!product?.cart_details">
                 <i class="bi bi-lg bi-bag-plus bag-icon" *ngIf="!product?.product?.cart_details" 
