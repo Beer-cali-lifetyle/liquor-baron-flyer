@@ -13,6 +13,7 @@ import { ContextService } from '../../../core/services/context.service';
 })
 export class HeaderComponent implements OnInit {
   subCategories: any[] = [];
+  marquees: any = [];
   isNavbarCollapsed: boolean = true;
   mainNavClass = 'main-nav'; // Default class for navigation
   scrolledClass = 'main-nav-scrolled'; // Class to add on scroll
@@ -30,6 +31,7 @@ export class HeaderComponent implements OnInit {
 
   async ngOnInit() {
     await this.fetchFlyers();
+    await this.fetchMarquee();
   }
 
   ngAfterViewInit() {
@@ -54,6 +56,12 @@ export class HeaderComponent implements OnInit {
     await this.ApiService.getFlyers().then((res) => {
       this.subCategories = res?.data;
       this.contextService.flyers.set(res?.data);
+    })
+  }
+
+  async fetchMarquee() {
+    await this.ApiService.getMarquee().then((res) => {
+      this.marquees = res?.data;
     })
   }
 

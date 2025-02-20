@@ -56,6 +56,10 @@ export class ApiService {
     return await this.httpRequest.GET(`/getFlyer`);
   }
 
+  async getMarquee() {
+    return await this.httpRequest.GET(`/getMarquee`);
+  }
+
   async getById(code: string) {
     return await this.httpRequest.GET(`/end-point/${code}`);
   }
