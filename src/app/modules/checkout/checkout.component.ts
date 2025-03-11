@@ -11,6 +11,8 @@ import { PaymentComponent } from "../payment/payment.component";
 import { GooglePlacesAutocompleteDirective } from '../../core/directives/google-places.directive';
 import { GooglePlacesAutocompleteComponent } from '../../shared/ui/google-places/google-places.component';
 import Swal from 'sweetalert2';
+import { Observable } from 'rxjs';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 // declare const google: any;
 @Component({
   selector: 'app-checkout',
@@ -43,6 +45,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
   imgBaseUrl: string = environment.api.base_url;
   showPayment: boolean = false;
   CanadianProvincesAndTerritories: any = [];
+  private shippingApiUrl = 'https://atsapi-dev.azurewebsites.net/v1/Shipments/rate';
   // USStates = [
   //   "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut",
   //   "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana",
@@ -56,6 +59,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
   autocompleteInput: string = '';
   queryWait: boolean = false;
   constructor(
+    private http: HttpClient,
     private ApiService: ApiService,
     private modalService: NgbModal,
     private fb: FormBuilder,
@@ -113,8 +117,9 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
 
   ngAfterViewInit() {
     console.log(this.contextService.user())
-    if(!this.contextService.user()?.is_age_verified) {
-    this.initSwal();}
+    if (!this.contextService.user()?.is_age_verified) {
+      this.initSwal();
+    }
     // this.googleMapsService
     //   .loadGoogleMaps('AIzaSyBFtrosISezP-8z2NwTWKhD_5pNHoi0wRw')
     //   .then(() => {
@@ -172,7 +177,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
 
   async markAgeverified(data: any) {
     await this.ApiService.markAgeVerified(data).then((res) => {
-      
+
       this.contextService.user.set(res?.user);
       localStorage.setItem('user', JSON.stringify(res?.user));
     })
@@ -295,7 +300,40 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
     this.subTotal = itemsTotal;
     this.total_tax = (this.tax_percentage / 100) * parseFloat(itemsTotal);
     this.total = itemsTotal + this.total_tax;
+    this.calculateShipping();
     return itemsTotal
+  }
+
+  calculateShipping(): Observable<any> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IkJCT2pNMGZTNTBhdHVyVHBqMUpPbyJ9.eyJvcmdhbml6YXRpb25JZCI6IjUxIiwiYWNjb3VudElkIjoiNTIiLCJhcHBfZ3JvdXBzIjpbIldpbmVTaGlwcGVyX0N1c3RvbWVyX1NoaXBwZXIiXSwiY2lkIjoiWk5kTDdHQzNHMm5RSkJURlkxbTlYa1lHRm04cll2bUMiLCJpc3MiOiJodHRwczovL2xvZ2luLWIyYi1hdHMtaGVhbHRoY2FyZS51cy5hdXRoMC5jb20vIiwic3ViIjoiWk5kTDdHQzNHMm5RSkJURlkxbTlYa1lHRm04cll2bUNAY2xpZW50cyIsImF1ZCI6Imh0dHBzOi8vdGVzdC5hcGkuYXRzLmhlYWx0aGNhcmUiLCJpYXQiOjE3NDE2MzMyNTksImV4cCI6MTc0MTcxOTY1OSwiZ3R5IjoiY2xpZW50LWNyZWRlbnRpYWxzIiwiYXpwIjoiWk5kTDdHQzNHMm5RSkJURlkxbTlYa1lHRm04cll2bUMifQ.C1V5Nt-KZbkxopTttn1XM08vSy2zWNKKwztTW0yyP2IN8vNi9GxJIlkmbJDijjlKm3x1QY_x7rAv72yrx2sJsq3m9V-bFZhCkPGcz_rfv5YDcoIrpZaHggiMIgKTZtMXXb82_NR5TUb2nfy05A0CsKQJGp8uig1JSWAwKbhKU8rJTZRw8BDbPVhg0pSsWp9Xn14yTSw6i7fdtPHd2dPLC9Lli8m8fRdalIjJgnZ03fLbH_3PfVn8eV-5kgHhC3peZmTgYGVO-fEXj1GKijT3QRT2mKbEtvDIGGs_ks_O7RCiJ4hyVgRVzuyMo5DeitmqG9iSajJVCWiY2nsXQlEXvg'
+    });
+    let address = this.addresses.find((item: any) => item?.id === this.deliveryForm.get('deliveryAddress')?.value) || this.addresses.find((item: any) => item?.id === this.shippingForm.get('shippingddress')?.value);
+   debugger;
+    console.log(address)
+    const body = {
+      "serviceCode": "GE",
+      "address": {
+        "address1": address?.address,
+        "address2": address?.locality,
+        "city": address?.city,
+        "province": address?.state.name || address?.state_name,
+        "postalCode": address?.pin_code,
+        "country": "Canada",
+        "isResidential": false
+      },
+      "pieces": 1,
+      "packages": [],
+      "totalWeight": 1.5,
+      "isPallet": false,
+      "shipDate": "2023-12-31T23:59:59Z",
+      "shipmentTypeEnum": "regular",
+      "selectedAccessorials": [],
+      "declaredValue": 100.00
+    };
+
+    return this.http.post(this.shippingApiUrl, body, { headers });
   }
 
   async placeOrder() {

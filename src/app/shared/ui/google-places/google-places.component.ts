@@ -72,7 +72,7 @@ export class GooglePlacesAutocompleteComponent implements OnInit, AfterViewInit,
 
     return new Promise<void>((resolve) => {
       const script = document.createElement('script');
-      script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyBHLa-jkR9aEujv8hOrMRecQjh307mdu-M&libraries=places`;
+      script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyBFtrosISezP-8z2NwTWKhD_5pNHoi0wRw&libraries=places`;
       script.async = true;
       script.defer = true;
       script.onload = () => resolve();
