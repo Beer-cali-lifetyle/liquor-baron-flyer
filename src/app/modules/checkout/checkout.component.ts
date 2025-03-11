@@ -11,8 +11,9 @@ import { PaymentComponent } from "../payment/payment.component";
 import { GooglePlacesAutocompleteDirective } from '../../core/directives/google-places.directive';
 import { GooglePlacesAutocompleteComponent } from '../../shared/ui/google-places/google-places.component';
 import Swal from 'sweetalert2';
-import { Observable } from 'rxjs';
+import { catchError, firstValueFrom, Observable, throwError, timeout } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { jwtDecode } from 'jwt-decode';
 // declare const google: any;
 @Component({
   selector: 'app-checkout',
@@ -39,6 +40,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
   deliveryForm!: any;
   shippingForm!: any;
   selectedTime: any;
+  shippingCharges: number = 0;
   @ViewChild('modalContent') modalContent: TemplateRef<any> | undefined;
   selectedBillingAddress: any;
   selectedPaymentMethod: any = 'online';
@@ -190,6 +192,13 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
   }
 
   async setAddress(event: Event, directId?: any) {
+    if(this.activeTab === 2 && !(this.deliveryForm.value.deliveryDate)) {
+      this.toaster.Warning('Please Select delivery date first')
+      this.deliveryForm.get('deliveryAddress')?.setValue(null);
+      event.preventDefault;
+      event.stopPropagation();
+      return
+    }
     if (directId) {
       this.selectedState = directId
     } else {
@@ -220,6 +229,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
     this.shippingForm.reset();
     this.total_tax = 0;
     this.total = 0;
+    this.shippingCharges = 0;
     await this.calculateSubTotal();
   }
 
@@ -241,7 +251,8 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
 
   async fetchTaxes() {
     await this.ApiService.fetchTax(this.selectedState).then((res) => {
-      this.tax_percentage = parseFloat(res[0]?.total_tax)
+      this.tax_percentage = parseFloat(res[0]?.total_tax);
+      this.calculateShipping();
     })
     await this.calculateSubTotal();
   }
@@ -300,40 +311,165 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
     this.subTotal = itemsTotal;
     this.total_tax = (this.tax_percentage / 100) * parseFloat(itemsTotal);
     this.total = itemsTotal + this.total_tax;
-    this.calculateShipping();
     return itemsTotal
   }
 
-  calculateShipping(): Observable<any> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IkJCT2pNMGZTNTBhdHVyVHBqMUpPbyJ9.eyJvcmdhbml6YXRpb25JZCI6IjUxIiwiYWNjb3VudElkIjoiNTIiLCJhcHBfZ3JvdXBzIjpbIldpbmVTaGlwcGVyX0N1c3RvbWVyX1NoaXBwZXIiXSwiY2lkIjoiWk5kTDdHQzNHMm5RSkJURlkxbTlYa1lHRm04cll2bUMiLCJpc3MiOiJodHRwczovL2xvZ2luLWIyYi1hdHMtaGVhbHRoY2FyZS51cy5hdXRoMC5jb20vIiwic3ViIjoiWk5kTDdHQzNHMm5RSkJURlkxbTlYa1lHRm04cll2bUNAY2xpZW50cyIsImF1ZCI6Imh0dHBzOi8vdGVzdC5hcGkuYXRzLmhlYWx0aGNhcmUiLCJpYXQiOjE3NDE2MzMyNTksImV4cCI6MTc0MTcxOTY1OSwiZ3R5IjoiY2xpZW50LWNyZWRlbnRpYWxzIiwiYXpwIjoiWk5kTDdHQzNHMm5RSkJURlkxbTlYa1lHRm04cll2bUMifQ.C1V5Nt-KZbkxopTttn1XM08vSy2zWNKKwztTW0yyP2IN8vNi9GxJIlkmbJDijjlKm3x1QY_x7rAv72yrx2sJsq3m9V-bFZhCkPGcz_rfv5YDcoIrpZaHggiMIgKTZtMXXb82_NR5TUb2nfy05A0CsKQJGp8uig1JSWAwKbhKU8rJTZRw8BDbPVhg0pSsWp9Xn14yTSw6i7fdtPHd2dPLC9Lli8m8fRdalIjJgnZ03fLbH_3PfVn8eV-5kgHhC3peZmTgYGVO-fEXj1GKijT3QRT2mKbEtvDIGGs_ks_O7RCiJ4hyVgRVzuyMo5DeitmqG9iSajJVCWiY2nsXQlEXvg'
-    });
-    let address = this.addresses.find((item: any) => item?.id === this.deliveryForm.get('deliveryAddress')?.value) || this.addresses.find((item: any) => item?.id === this.shippingForm.get('shippingddress')?.value);
-   debugger;
-    console.log(address)
-    const body = {
-      "serviceCode": "GE",
-      "address": {
-        "address1": address?.address,
-        "address2": address?.locality,
-        "city": address?.city,
-        "province": address?.state.name || address?.state_name,
-        "postalCode": address?.pin_code,
-        "country": "Canada",
-        "isResidential": false
-      },
-      "pieces": 1,
-      "packages": [],
-      "totalWeight": 1.5,
-      "isPallet": false,
-      "shipDate": "2023-12-31T23:59:59Z",
-      "shipmentTypeEnum": "regular",
-      "selectedAccessorials": [],
-      "declaredValue": 100.00
-    };
+  // async calculateShipping() {
+  //   try {
+  //     const headers = new HttpHeaders({
+  //       'Content-Type': 'application/json',
+  //       'Authorization': `Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IkJCT2pNMGZTNTBhdHVyVHBqMUpPbyJ9.eyJvcmdhbml6YXRpb25JZCI6IjUxIiwiYWNjb3VudElkIjoiNTIiLCJhcHBfZ3JvdXBzIjpbIldpbmVTaGlwcGVyX0N1c3RvbWVyX1NoaXBwZXIiXSwiY2lkIjoiWk5kTDdHQzNHMm5RSkJURlkxbTlYa1lHRm04cll2bUMiLCJpc3MiOiJodHRwczovL2xvZ2luLWIyYi1hdHMtaGVhbHRoY2FyZS51cy5hdXRoMC5jb20vIiwic3ViIjoiWk5kTDdHQzNHMm5RSkJURlkxbTlYa1lHRm04cll2bUNAY2xpZW50cyIsImF1ZCI6Imh0dHBzOi8vdGVzdC5hcGkuYXRzLmhlYWx0aGNhcmUiLCJpYXQiOjE3NDE2MzMyNTksImV4cCI6MTc0MTcxOTY1OSwiZ3R5IjoiY2xpZW50LWNyZWRlbnRpYWxzIiwiYXpwIjoiWk5kTDdHQzNHMm5RSkJURlkxbTlYa1lHRm04cll2bUMifQ.C1V5Nt-KZbkxopTttn1XM08vSy2zWNKKwztTW0yyP2IN8vNi9GxJIlkmbJDijjlKm3x1QY_x7rAv72yrx2sJsq3m9V-bFZhCkPGcz_rfv5YDcoIrpZaHggiMIgKTZtMXXb82_NR5TUb2nfy05A0CsKQJGp8uig1JSWAwKbhKU8rJTZRw8BDbPVhg0pSsWp9Xn14yTSw6i7fdtPHd2dPLC9Lli8m8fRdalIjJgnZ03fLbH_3PfVn8eV-5kgHhC3peZmTgYGVO-fEXj1GKijT3QRT2mKbEtvDIGGs_ks_O7RCiJ4hyVgRVzuyMo5DeitmqG9iSajJVCWiY2nsXQlEXvg`
+  //     });
+  
+  //     let address = this.addresses.find((item: any) => item?.id === this.deliveryForm.get('deliveryAddress')?.value) ||
+  //                   this.addresses.find((item: any) => item?.id === this.shippingForm.get('shippingddress')?.value);
+  
+  //     const count = this.contextService.cart()?.data?.reduce((sum: any, item: any) => sum + (item.quantity ?? 0), 0) || 0;
+  
+  //     const body = {
+  //       "serviceCode": "GE",
+  //       "address": {
+  //         "address1": address?.address,
+  //         "address2": address?.locality,
+  //         "city": address?.city,
+  //         "province": address?.state?.NAME || address?.state_name,
+  //         "postalCode": address?.pin_code,
+  //         "country": "Canada",
+  //         "isResidential": false
+  //       },
+  //       "pieces": count,
+  //       "packages": [],
+  //       "totalWeight": 1.5 * count,
+  //       "isPallet": false,
+  //       "shipDate": this.deliveryForm.value.deliveryDate,
+  //       "shipmentTypeEnum": "regular",
+  //       "selectedAccessorials": [],
+  //       "declaredValue": 100.00
+  //     };
+  
+  //     console.log('Request Payload:', JSON.stringify(body));
+  
+  //     const result: any = await firstValueFrom(
+  //       this.http.post(this.shippingApiUrl, body, { headers }).pipe(
+  //         timeout(15000), // 15 seconds timeout
+  //         catchError(err => {
+  //           console.error('Request failed:', err);
+  //           return throwError(() => err);
+  //         })
+  //       )
+  //     );
+  
+  //     console.log('Response:', result);
+  
+  //     this.shippingCharges = result?.total ? result.total : result;
+  //     this.total  = this.total + this.shippingCharges;
+  //     return result?.total;
+  
+  //   } catch (error) {
+  //     console.error('Error fetching shipping charges:', error);
+  //     return undefined; // Avoid breaking the UI
+  //   }
+  // }
 
-    return this.http.post(this.shippingApiUrl, body, { headers });
+  async getAuthToken() {
+    const tokenData = localStorage.getItem('ats_token');
+  
+    if (tokenData) {
+      const tokenObj = JSON.parse(tokenData);
+      const decoded: any = jwtDecode(tokenObj.access_token);
+  
+      // Check if token is expired
+      if (decoded.exp * 1000 > Date.now()) {
+        return tokenObj.access_token;
+      }
+    }
+  
+    // Fetch new token if not found or expired
+    const body = {
+      "client_id": "ZNdL7GC3G2nQJBTFY1m9XkYGFm8rYvmC",
+      "client_secret": "0fw-N811uBmlGS6wyioOKM4-a2OqrFachUpfVcJUT3LiUf33EBgUeTbgbO61QXbA",
+      "audience": "https://test.api.ats.healthcare",
+      "grant_type": "client_credentials"
+    };
+  
+    try {
+      const result: any = await firstValueFrom(
+        this.http.post('https://admin.liquorbaronflyer.ca/api/stripe/token', body, {
+          headers: new HttpHeaders({
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          })
+        })
+      );
+  
+      if (result.access_token) {
+        localStorage.setItem('ats_token', JSON.stringify(result));
+        return result.access_token;
+      }
+  
+      throw new Error('Failed to retrieve token');
+    } catch (error) {
+      console.error('Token Fetch Error:', error);
+      throw error;
+    }
+  }
+  
+  async calculateShipping() {
+    try {
+      const token = await this.getAuthToken();
+      const headers = new HttpHeaders({
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      });
+  
+      let address = this.addresses.find((item: any) => item?.id === this.deliveryForm.get('deliveryAddress')?.value) ||
+                    this.addresses.find((item: any) => item?.id === this.shippingForm.get('shippingddress')?.value);
+  
+      const count = this.contextService.cart()?.data?.reduce((sum: any, item: any) => sum + (item.quantity ?? 0), 0) || 0;
+  
+      const body = {
+        "serviceCode": "GE",
+        "address": {
+          "address1": address?.address,
+          "address2": address?.locality,
+          "city": address?.city,
+          "province": address?.state?.NAME || address?.state_name,
+          "postalCode": address?.pin_code,
+          "country": "Canada",
+          "isResidential": false
+        },
+        "pieces": count,
+        "packages": [],
+        "totalWeight": 1.5 * count,
+        "isPallet": false,
+        "shipDate": this.deliveryForm.value.deliveryDate,
+        "shipmentTypeEnum": "regular",
+        "selectedAccessorials": [],
+        "declaredValue": 100.00
+      };
+  
+      console.log('Request Payload:', JSON.stringify(body));
+  
+      const result: any = await firstValueFrom(
+        this.http.post(this.shippingApiUrl, body, { headers }).pipe(
+          timeout(15000), // 15 seconds timeout
+          catchError(err => {
+            console.error('Request failed:', err);
+            return throwError(() => err);
+          })
+        )
+      );
+  
+      console.log('Response:', result);
+  
+      this.shippingCharges = result?.total ? result.total : result;
+      this.total  = this.total + this.shippingCharges;
+      return result?.total;
+  
+    } catch (error) {
+      console.error('Error fetching shipping charges:', error);
+      return undefined; // Avoid breaking the UI
+    }
   }
 
   async placeOrder() {
@@ -350,7 +486,9 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
             delivery_type: "store",
             pickup_date: this.storePickupForm.value.pickupDate,
             delivery_time: this.selectedTime,
-            store: this.storePickupForm.value.selectedStore
+            store: this.storePickupForm.value.selectedStore,
+            total_tax: this.total_tax,
+            shipping_charge: this.shippingCharges
           }
           console.log(JSON.stringify(storePickupPayload))
           await this.ApiService.placeOrder(storePickupPayload).then((res) => {

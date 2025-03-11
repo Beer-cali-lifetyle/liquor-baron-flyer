@@ -30,6 +30,7 @@
     "bootstrap-icons": "^1.11.3",
     "express": "^4.18.2",
     "hls.js": "^1.5.17",
+    "jwt-decode": "^4.0.0",
     "ngx-cookie-service": "^18.0.0",
     "ngx-google-places-autocomplete": "^2.0.5",
     "rxjs": "~7.8.0",

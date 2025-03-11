@@ -307,6 +307,12 @@
             <p *ngIf="total_tax === 0">Select location to calculate tax</p>
           </div>
 
+          <div class="p-total" *ngIf="activeTab !== 1">
+            <p>Shipping Charges :</p>
+            <p *ngIf="shippingCharges !== 0">{{shippingCharges | currency:'CAD'}}</p>
+            <p *ngIf="shippingCharges === 0">Select location to calculate shipping charge</p>
+          </div>
+
           <!-- <div class="p-total d-total">
             <p>Shipping :</p>
             <p>Enter Shipping Address</p>
@@ -317,9 +323,7 @@
             <p> <span class="cad">{{total | currency:'CAD'}}</span></p>
           </div>
 
-          <div class="p-total free-grand icluding">
-            <!-- <p>Including $6.00 in taxes</p> -->
-          </div>
+     
         </div>
       </div>
     </div>

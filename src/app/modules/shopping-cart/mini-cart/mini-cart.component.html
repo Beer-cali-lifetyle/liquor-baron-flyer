@@ -2,17 +2,17 @@
 
 
 
-<div class="container my-4">
+<div class="container my-4" *ngIf="contextService.cart()?.data?.length > 0">
   <div class="mini-cart-header text-center">
     My Cart
   </div>
-  <!-- Mini Cart -->
-  <div class="mini-cart-container">
-    <!-- Header -->
 
-    <!-- Cart Items -->
+  <div class="mini-cart-container">
+
+
+
     <div class="row my-3">
-      <!-- First Item -->
+ 
       <div class="cart-item col-12 d-flex" *ngFor="let item of contextService.cart()?.data">
         <div class="d-flex">
           <img [src]="imgBaseUrl + item?.product?.product_image" alt="Product Image" class="img-fluid" />
@@ -30,7 +30,6 @@
 
     </div>
 
-    <!-- You may also like -->
     <div class="also-like-section" *ngIf="relatedProducts?.length > 0">
       <h5 class="text-center mb-3 text-maroon">You may also like</h5>
       <div class="row mb-5">
@@ -39,12 +38,12 @@
           <div class="product-card" [routerLink]="['/product', product?.id]">
             <div class="product-tumb pt-4 pb-1">
               <img [src]="imgBaseUrl + product?.product_image" class="img-fluid uniform-img" alt="product">
-              <!-- <div class="badge-wrapper"> -->
+
               <div class="badge" [ngClass]="{
                   'bg-auccess': product.producttag === '3', 
                   'badge-yellow': product.producttag !== '3'
                 }">{{product.producttag === '3' ? 'New Item' : 'Limited Edition'}}</div>
-              <!-- </div> -->
+
             </div>
             <div class="product-details p-2">
               <h4>{{product?.name}}</h4>
@@ -64,16 +63,14 @@
       </div>
     </div>
 
-    <!-- Footer -->
+
     <div class="text-center mt-3">
       <div class="d-flex justify-content-between subtotal">
         <p class="mb-0 pb-0">Cart Subtotal:</p>
         <span>{{calculateSubTotal(contextService.cart()) |
           currency}}</span>
       </div>
-      <!-- <div class="whitebg">
-        Continue Shopping
-      </div> -->
+
       <div routerLink="/cart" class="whitebg">
         View and Edit Cart
       </div>
