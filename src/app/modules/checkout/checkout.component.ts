@@ -488,13 +488,11 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
             delivery_time: this.selectedTime,
             store: this.storePickupForm.value.selectedStore,
             total_tax: this.total_tax,
-            shipping_charge: this.shippingCharges
           }
           console.log(JSON.stringify(storePickupPayload))
           await this.ApiService.placeOrder(storePickupPayload).then((res) => {
             const checkoutUrl = res?.checkout_url;
             if (checkoutUrl) {
-              // Redirect to the checkout URL
               window.location.href = checkoutUrl;
             } else {
               console.error('Checkout URL not found');
@@ -522,9 +520,13 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
             delivery_type: "local",
             pickup_date: this.deliveryForm.value.deliveryDate,
             delivery_time: this.selectedTime,
+            total_tax: this.total_tax,
+            shipping_charge: this.shippingCharges
           };
           console.log(JSON.stringify(localDeliveryPayload))
           await this.ApiService.placeOrder(localDeliveryPayload).then((res) => {
+            debugger;
+            console.log(res)
             const checkoutUrl = res?.checkout_url;
             if (checkoutUrl) {
               // Redirect to the checkout URL
@@ -552,6 +554,8 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
           delivery_address: this.formatAddress(this.addresses.find((item: any) => item?.id === this.shippingForm.get('shippingAddress')?.value)),
           payment_method: this.selectedPaymentMethod,
           delivery_type: "shipping",
+          total_tax: this.total_tax,
+          shipping_charge: this.shippingCharges
         };
         await this.ApiService.placeOrder(shippingPayload).then((res) => {
           const checkoutUrl = res?.checkout_url;

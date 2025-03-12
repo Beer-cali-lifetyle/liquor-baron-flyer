@@ -19,11 +19,14 @@ import { FormGroup } from '@angular/forms';
 export class ShopListComponent extends AppBase implements OnInit, AfterViewInit {
   products: any = [];
   stars = [1, 2, 3, 4, 5];
-  categoryId: string | null = null;
-  subcategoryId: string | null = null;
-  flyerId: string | null = null;
+  categoryId: any = null;
+  subcategoryId: any = null;
+  flyerId: any = null;
   subcategoryTitle: string | null = null;
   categories: any[] = [];
+  brands: any[] = [];
+  selectedCategory: number | null = null;
+  selectedBrand: number | null = null;
   imgBaseUrl: string = environment.api.base_url;
   constructor(
     private ApiService: ApiService,
@@ -35,36 +38,44 @@ export class ShopListComponent extends AppBase implements OnInit, AfterViewInit 
   ) { super() }
 
   async ngOnInit() {
-    await this.fetchCategories();
-    this.route.queryParams.subscribe(async params => {
-      this.categoryId = params['categoryId'] || null;
-      this.subcategoryId = params['subcategoryId'] || null;
-      this.flyerId = params['flyerId'] || null;
+    Promise.all([
+      this.fetchCategories(),
+      this.fetchBrands()
+    ])
+    this.route.queryParams.subscribe(async (params) => {
+      this.categoryId = params['categoryId'] ? parseInt(params['categoryId']) : null;
+      this.subcategoryId = params['subcategoryId'] ? parseInt(params['subcategoryId']) : null;
+      this.flyerId = params['flyerId'] ? parseInt(params['flyerId']) : null;
       this.subcategoryTitle = params['title'] || null;
+
+      this.products = []; // Clear previous products before fetching new ones
+      const payload: any = { perPage: this.pageSize, page: this.currentPage };
 
       if (this.categoryId) {
         console.log('Category ID:', this.categoryId);
-        await this.fetchproductsWithFilter({ categoryId: this.categoryId, perPage: this.pageSize, page: this.currentPage })
+        payload.categoryId = this.categoryId;
+      } else if (this.subcategoryId) {
+        console.log('Subcategory ID:', this.subcategoryId);
+        payload.subcategoryId = this.subcategoryId;
+      } else if (this.flyerId) {
+        console.log('Flyer ID:', this.flyerId);
+        payload.flyername = this.flyerId;
       }
 
-      if (this.subcategoryId) {
-        console.log('Subcategory ID:', this.subcategoryId);
-        await this.fetchproductsWithFilter({ subcategoryId: this.subcategoryId, perPage: this.pageSize, page: this.currentPage })
-      }
-      
-      if (this.flyerId) {
-        console.log('Flyer ID:', this.flyerId);
-        await this.fetchproductsWithFilter({ flyername: this.flyerId, perPage: this.pageSize, page: this.currentPage })
+      if (Object.keys(payload).length > 2) {
+        await this.fetchproductsWithFilter(payload).then(async () => {
+          await this.getCart();
+        });
+      } else {
+        await this.ApiService.fetcHlatestProducts(payload).then(async (res) => {
+          this.products = res?.data || [];
+          console.log(this.products);
+          await this.getCart();
+        });
       }
     });
-    if (!(this.categoryId || this.subcategoryId || this.flyerId)) {
-      await this.ApiService.fetcHlatestProducts({ perPage: this.pageSize, page: this.currentPage }).then((res) => {
-        this.products = res?.data
-        console.log(this.products)
-      })
-    }
-    await this.getCart();
   }
+
 
   async ngAfterViewInit() {
     await this.cdr.detectChanges();
@@ -72,9 +83,28 @@ export class ShopListComponent extends AppBase implements OnInit, AfterViewInit 
 
   async fetchCategories() {
     await this.ApiService.getCategories().then((res) => {
+      debugger;
       this.categories = res?.categories;
       this.cdr.detectChanges()
     })
+  }
+
+  async fetchBrands() {
+    await this.ApiService.getBrands().then((res) => {
+      this.brands = res?.data;
+    })
+  }
+
+  onCategoryChange(categoryId: number) {
+    this.selectedCategory = categoryId;
+    const payload: any = { categoryId: this.selectedCategory, perPage: this.pageSize, page: this.currentPage };
+    this.fetchproductsWithFilter(payload);
+  }
+
+  onBrandChange(brandId: number) {
+    this.selectedBrand = brandId;
+    const payload: any = { categoryId: this.selectedCategory, perPage: this.pageSize, page: this.currentPage };
+    this.fetchproductsWithFilter(payload);
   }
 
   async addToCart(event: Event, id: number, i: number) {
@@ -99,7 +129,7 @@ export class ShopListComponent extends AppBase implements OnInit, AfterViewInit 
       await this.ApiService.getCartProducts().then((res) => {
         res?.data.forEach((dataItem: any) => {
           const productIndex = this.products.findIndex((prod: any) => prod.id === dataItem.product_id);
-          
+
           if (productIndex !== -1) {
             this.products[productIndex]['cart_details'] = {
               id: dataItem?.id,
@@ -157,7 +187,6 @@ export class ShopListComponent extends AppBase implements OnInit, AfterViewInit 
     }
   }
 
-
   decrementProductCard(id: any, quantity: any, i: any, event: any) {
     event.stopPropagation();
     this.updateQuantityProductCard(id, quantity, i, 'dec');
@@ -174,7 +203,7 @@ export class ShopListComponent extends AppBase implements OnInit, AfterViewInit 
       quantity: calculateQuantity,
     };
     await this.ApiService.updateQuantity(payload, id).then(async (res) => {
-      
+
       this.products[i].cart_details.quantity = calculateQuantity;
       this.getCart();
       if (this.products[i].cart_details.quantity === 0) {

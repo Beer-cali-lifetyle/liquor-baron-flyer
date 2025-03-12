@@ -23,18 +23,18 @@ export class ApiService {
   }
 
   async GuestLogin() {
-      try {
-        const res = await this.GuestSignIn();
-        
-        await this.context.user.set(res?.user);
-          localStorage.setItem('access_token', res?.token);
-          localStorage.setItem('user_id', res?.user?.id);
-          localStorage.setItem('user', JSON.stringify(res?.user)); 
-          return res;
-      } catch (error) {
-        console.error('Sign-in error:', error);
-      }
+    try {
+      const res = await this.GuestSignIn();
+
+      await this.context.user.set(res?.user);
+      localStorage.setItem('access_token', res?.token);
+      localStorage.setItem('user_id', res?.user?.id);
+      localStorage.setItem('user', JSON.stringify(res?.user));
+      return res;
+    } catch (error) {
+      console.error('Sign-in error:', error);
     }
+  }
 
   async SignIn(data: any) {
     return await this.httpRequest.POST(`/login`, data);
@@ -54,6 +54,10 @@ export class ApiService {
 
   async getFlyers() {
     return await this.httpRequest.GET(`/getFlyer`);
+  }
+
+  async getBrands() {
+    return await this.httpRequest.GET(`/brandlogos`);
   }
 
   async getMarquee() {
@@ -93,7 +97,7 @@ export class ApiService {
   }
 
   async fetchFilteredProduct(data: any) {
-    return await this.httpRequest.GET(`/productfilter`, data);
+      return await this.httpRequest.GET(`/productfilter`, data);
   }
 
   async fetchAddress() {
@@ -160,8 +164,9 @@ export class ApiService {
 
   async updateQuantity(data: any, id: any, noToast?: boolean) {
     return await this.httpRequest.PUT(`/cart/${id}`, data).then(async (res) => {
-      if(!noToast) {
-      await this.toaster.Cart()}
+      if (!noToast) {
+        await this.toaster.Cart()
+      }
     });
   }
 
