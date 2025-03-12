@@ -47,10 +47,12 @@ export class HomeComponent extends AppBase implements OnInit, AfterViewInit {
     this.cartService.cartUpdated$.subscribe(() => {
       this.getCart();  
     });
-    await this.fetchFlyers();
-    await this.fetchCategories();
-    await this.fetchProducts();
-    await this.getCart();
+    Promise.all([
+      await this.fetchFlyers(),
+      await this.fetchCategories(),
+      await this.fetchProducts(),
+      await this.getCart(),
+    ])
   }
 
   ngAfterViewInit(): void {

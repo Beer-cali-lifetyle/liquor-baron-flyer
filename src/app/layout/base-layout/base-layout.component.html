@@ -1,5 +1,7 @@
-<app-header class="upper"></app-header>
-<app-loader class="lower"></app-loader>
-<router-outlet class="main-router"></router-outlet>
-<app-news-letter></app-news-letter>
-<app-footer></app-footer>
+<app-header #header class="upper"></app-header>
+<div class="content-wrapper">
+  <app-loader class="lower"></app-loader>
+  <router-outlet class="main-router"></router-outlet>
+  <app-news-letter></app-news-letter>
+  <app-footer></app-footer>
+</div>

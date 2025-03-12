@@ -97,8 +97,6 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
       altPhoneNumber: ['', Validators.pattern(/^\+?[1-9]\d{1,14}$/)],
       defaultAddress: [false]
     });
-    await this.fetchStates();
-    await this.fetchAddres();
     this.storePickupForm = this.fb.group({
       selectedStore: ['', Validators.required],
       pickupDate: ['', Validators.required],
@@ -112,9 +110,13 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
     this.shippingForm = this.fb.group({
       shippingAddress: ['', Validators.required],
     })
-    await this.fetchStores();
-    await this.getCart();
-    await this.calculateSubTotal();
+    Promise.all([
+       this.fetchStates(),
+       this.fetchAddres(),
+       this.fetchStores(),
+       this.getCart(),
+       this.calculateSubTotal(),
+    ])
   }
 
   ngAfterViewInit() {

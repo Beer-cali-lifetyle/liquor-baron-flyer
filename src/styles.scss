@@ -1512,24 +1512,22 @@ html {
 
 /* Checked state with maroon background and white tick */
 .form-check-input:checked {
-  background-color: maroon !important;
+  background-color: rgba(128, 0, 0, 0) !important;
   border-color: maroon !important;
 }
 
 input[type="radio"]:checked {
-  accent-color: #840029;
-  /* Changes the radio button color */
+  accent-color: #84002a00;
 }
 
 .form-check-input:checked::after {
   content: "✔";
-  /* Unicode checkmark */
-  color: white;
+  color: #840029 !important;
   font-weight: bold;
   position: absolute;
   top: 0;
-  left: 4px;
-  font-size: 14px;
+  // left: 4px;
+  font-size: 15px;
 }
 
 .btn-maroon {

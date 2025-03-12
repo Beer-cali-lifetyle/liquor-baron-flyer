@@ -83,7 +83,6 @@ export class ShopListComponent extends AppBase implements OnInit, AfterViewInit 
 
   async fetchCategories() {
     await this.ApiService.getCategories().then((res) => {
-      debugger;
       this.categories = res?.categories;
       this.cdr.detectChanges()
     })
@@ -95,16 +94,18 @@ export class ShopListComponent extends AppBase implements OnInit, AfterViewInit 
     })
   }
 
-  onCategoryChange(categoryId: number) {
+  onCategoryChange(categoryId: number, name: string) {
     this.selectedCategory = categoryId;
     const payload: any = { categoryId: this.selectedCategory, perPage: this.pageSize, page: this.currentPage };
     this.fetchproductsWithFilter(payload);
+    this.subcategoryTitle = name;
   }
 
-  onBrandChange(brandId: number) {
+  onBrandChange(brandId: number, name: string) {
     this.selectedBrand = brandId;
     const payload: any = { categoryId: this.selectedCategory, perPage: this.pageSize, page: this.currentPage };
     this.fetchproductsWithFilter(payload);
+    this.subcategoryTitle = name;
   }
 
   async addToCart(event: Event, id: number, i: number) {

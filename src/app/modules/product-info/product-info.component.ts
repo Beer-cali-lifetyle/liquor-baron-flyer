@@ -72,9 +72,11 @@ export class ProductInfoComponent extends AppBase implements OnInit {
       this.totalRatings = this.productInfo?.reviews.reduce((sum: any, item: any) => sum + item.rating, 0);
       this.averageRating = this.totalRatings / this.productInfo?.reviews.length;
       console.log(this.productInfo)
-      await this.getCart();
-      await this.fetchWishlist();
-      await this.fetchRelatedProducts();
+      Promise.all([
+         this.getCart(),
+         this.fetchWishlist(),
+         this.fetchRelatedProducts(),
+      ])
     })
   }
 

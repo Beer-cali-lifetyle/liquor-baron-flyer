@@ -1,12 +1,13 @@
 .upper {
-  position: relative;
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
-  z-index: 10;
+  z-index: 1000;
   background-color: #faf1ea;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-.lower {
-  position: relative;
-  z-index: 1;
-  margin-top: 200px;
+.content-wrapper {
+  margin-top: var(--header-height, 60px); // Fallback to 60px if not set
 }

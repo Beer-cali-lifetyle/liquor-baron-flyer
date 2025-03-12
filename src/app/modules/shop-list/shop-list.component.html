@@ -11,7 +11,7 @@
       <div class="container-fluid">
         <div class="row">
           <div class="col-2">
-
+<div class="d-flex justify-content-between"><h4>Filter</h4><button type="button" class="btn btn-light">Clear all</button></div>
             <h5>Category</h5>
             <div id="category-filters my-4">
                 <div class="form-check mb-2" *ngFor="let item of categories">
@@ -21,7 +21,7 @@
                   name="categoryFilter" 
                   [value]="item.id" 
                   [checked]="selectedCategory === item.id" 
-                  (change)="onCategoryChange(item.id)">
+                  (change)="onCategoryChange(item.id, item.catname)">
                     <label class="form-check-label" for="cat1">{{item?.catname}}</label>
                 </div>
             </div>
@@ -35,7 +35,7 @@
                   name="brandFilter" 
                   [value]="item.id" 
                   [checked]="selectedBrand === item.id" 
-                  (change)="onBrandChange(item.id)">        
+                  (change)="onBrandChange(item.id, item.name)">        
                     <label class="form-check-label" for="brand1">{{item?.name}}</label>
                 </div>
             </div>
