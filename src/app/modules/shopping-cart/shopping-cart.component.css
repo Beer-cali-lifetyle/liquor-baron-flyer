@@ -775,3 +775,17 @@
     font-size: 26px !important;
   }
 }
+
+
+
+.badge {
+  position: absolute;
+  margin: 0;
+  bottom: -12px;
+  right: 10px;
+}
+
+.sticky-element {
+  position: sticky;
+  top: calc(var(--header-height, 35px) + 32px);
+}

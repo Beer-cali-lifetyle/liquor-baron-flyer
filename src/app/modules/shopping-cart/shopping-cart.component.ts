@@ -7,6 +7,7 @@ import { ContextService } from '../../core/services/context.service';
 import { environment } from '../../../environments/environment';
 import { FormsModule, NgModel } from '@angular/forms';
 import { SharedModule } from '../../shared/shared/shared.module';
+import { AppBase } from '../../../app-base.component';
 
 @Component({
   selector: 'app-shopping-cart',
@@ -17,7 +18,8 @@ import { SharedModule } from '../../shared/shared/shared.module';
     CommonModule, RouterModule, FormsModule, SharedModule
   ]
 })
-export class ShoppingCartComponent implements OnInit {
+export class ShoppingCartComponent extends AppBase implements OnInit {
+  products: any = [];
   imgBaseUrl: string = environment.api.base_url;
   cartInfo: any;
   address: any;
@@ -28,15 +30,16 @@ export class ShoppingCartComponent implements OnInit {
     private toaster: UiToasterService,
     public contextService: ContextService,
     private cdr: ChangeDetectorRef
-  ) { }
+  ) { super(); }
 
   async ngOnInit() {
+    await this.fetchProducts();
     this.contextService.cart()?.subscribe((cartData: any) => {
       if (cartData && cartData.data) {
         this.calculateSubTotal(cartData.data);
       }
     });
-    await this.getCart();
+      await this.getCart();
   }
 
   async fetchAddres() {
@@ -64,7 +67,7 @@ export class ShoppingCartComponent implements OnInit {
     const newQuantity = parseInt(value, 10);
     this.updateQuantity(newQuantity, id);
   }
-  
+
   async updateQuantity(quantity: number, id: string) {
     const payload = { quantity };
     await this.ApiService.updateQuantity(payload, id, true).then(async res => {
@@ -78,12 +81,68 @@ export class ShoppingCartComponent implements OnInit {
     });
   }
 
+  async fetchProducts() {
+    this.pageSize = 2;
+    this.currentPage = 1;
+    await this.ApiService.fetcHlatestProducts({ perPage: this.pageSize, page: this.currentPage }).then(res => {
+      this.products = res?.data;
+    })
+  }
+
   calculateSubTotal(cart: any) {
     let itemsTotal = 0;
     cart?.data?.map((item: any) => {
       itemsTotal += item?.quantity * item?.product?.price
     })
     return itemsTotal
+  }
+
+  decrementProductCard(id: any, quantity: any, i: any, event: any) {
+    event.stopPropagation();
+    this.updateQuantityProductCard(id, quantity, i, 'dec');
+  }
+
+  incrementProductCard(id: any, quantity: any, i: any, event: any) {
+    event.stopPropagation();
+    this.updateQuantityProductCard(id, quantity, i, 'inc');
+  }
+
+  async updateQuantityProductCard(id: any, quantity: any, i: any, value: 'inc' | 'dec') {
+    const calculateQuantity = value === 'inc' ? quantity + 1 : quantity - 1;
+    const payload = {
+      quantity: calculateQuantity,
+    };
+    await this.ApiService.updateQuantity(payload, id).then(async (res) => {
+
+      this.products[i].cart_details.quantity = calculateQuantity;
+      this.getCart();
+      if (this.products[i].cart_details.quantity === 0) {
+        this.products[i].cart_details = null
+      }
+    });
+  }
+
+  async addToCart(event: Event, id: number, i: number) {
+    event.stopPropagation();
+    // this.products[i]['cart_details'] = this.products[i]?.cart_details ? !this.products[i]?.cart_details : true;
+    if (this.contextService.user()) {
+      const payload = {
+        productId: id,
+        quantity: 1
+      }
+      await this.ApiService.addToCart(payload).then(async res => {
+        await this.getCart();
+        // await this.toaster.Cart()
+      })
+    }
+    else {
+      await this.ApiService.GuestLogin().then(async (res: any) => {
+
+        if (res?.token) {
+          await this.addToCart(event, id, i);
+        };
+      })
+    }
   }
 
 }

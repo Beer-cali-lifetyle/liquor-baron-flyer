@@ -11,137 +11,106 @@
       </div>
     </div>
 
-    <div *ngFor="let order of orders">
-      <div class="row card-wi-border">
-        <div class="col-lg-2">
-          <div class="align-items-center">
-            <img [src]="imgBaseUrl + order?.items[0]?.product_image" width="180px" alt="Thumbnail">
+
+
+    <div *ngFor="let order of orders" class="order-card p-3 mb-3 shadow-sm rounded">
+      <div
+        class="row card-wi-border border-0 d-flex align-items-start text-md-start text-center flex-md-row flex-column">
+        <!-- Product Image (Centered on Mobile & Tablet) -->
+        <div class="col-md-2 col-12 d-flex justify-content-center">
+          <img [src]="imgBaseUrl + order?.items[0]?.product_image" class="img-fluid product-img rounded"
+            alt="Thumbnail">
+        </div>
+
+        <!-- Order Details (Under Image on Mobile & Tablet) -->
+        <div class="col-md-7 col-12 order-details">
+          <h6 class="mb-1 fw-bold text-maroon">Liquor Baron</h6>
+          <p class="small mb-1">{{ getOrderType(order?.delivery_type) }}</p>
+          <p class="small text-muted mb-1">
+            <span>{{ order?.order_number }} | {{ order?.created_at | date }}</span>
+          </p>
+          <p class="fw-bold text-maroon mb-1 view-details" (click)="openModal(orderModal, order)">
+            View Details
+          </p>
+        </div>
+
+        <!-- Delivery Time -->
+        <div class="col-md-3 col-12 text-md-end text-start">
+          <p class="mb-1 small"><b>Delivery Time:</b></p>
+          <p class="small text-secondary">Tuesday, 27 August 2024 | 1:00 PM</p>
+        </div>
+      </div>
+
+
+      <hr class="mt-2 mb-2">
+
+      <!-- Items and Total Paid -->
+      <div class="col-12">
+        <div class="d-flex flex-wrap justify-content-between">
+          <div>
+            <p class="small mb-1"><b>Items:</b>
+              <span *ngFor="let item of order?.items">
+                {{ item?.product_name }} × {{ item?.quantity }},
+              </span>
+            </p>
+          </div>
+          <div class="text-end">
+            <p class="fw-bold text-success mb-0">Total Paid: ${{ order?.total_amount }}</p>
           </div>
         </div>
-        <div class="col-lg-10 align-self-center mt-2">
-          <div class="d-flex justify-content-between">
-            <h5 class="name-text">
-              <a class="text-maroon">Liquor Baron</a>
-              <p>{{getOrderType(order?.delivery_type)}}</p>
-              <p class="mb-1">
-                <span class="text-body-secondary">{{order?.order_number}} | {{order?.created_at | date}}</span>
-              </p>
-              <!-- <a class="button_view" href="#">View Details</a> -->
-            </h5>
-            <div class="list-unstyled gap-1 fs-xs mb-0 d-flex">
-              <div class="remove-productss d-block">
-                <span>
-                  <b>Delivery Time: </b>Tuesday, 27 August 2024 | 1:00 pm </span>
+      </div>
+
+
+    </div>
+
+
+  </div>
+
+
+
+
+
+  <ng-template #orderModal let-modal>
+    <div class="modal-content">
+      <div class="modal-header color-maroon text-white">
+        <h5 class="modal-title">{{ currentOrder?.order_number }}</h5>
+        <button type="button" class="btn-close text-light" aria-label="Close" (click)="closeModal()"></button>
+      </div>
+
+      <div class="p-3 text-center order-status" [ngClass]="{
+        'order-pending': currentOrder?.order_status === 'new',
+        'order-confirmed': currentOrder?.order_status === 'confirmed',
+        'order-success': currentOrder?.order_status === 'shipped',
+        'order-reject': currentOrder?.order_status === 'cancelled'
+      }">
+        <img src="assets/image/shipping/green-tick.png" alt="green-tick" class="status-icon">
+        <p class="fs-5 fw-bold">{{ currentOrder?.order_status == 'new' ? 'Pending' : currentOrder?.order_status }}</p>
+        <p class="text-muted">Your order will be delivered on Tuesday, 27 August 2024, 1:00 PM</p>
+      </div>
+
+      <div class="modal-body">
+        <div class="row g-3">
+          <div class="col-12">
+            <div *ngFor="let item of currentOrder?.items"
+              class="d-flex align-items-center justify-content-between p-2 item-box">
+              <div class="d-flex align-items-center">
+                <img [src]="imgBaseUrl + item?.product_image" class="product-img-order me-3" alt="Product">
+                <div>
+                  <p class="mb-1 fw-semibold">{{ item?.product_name }}</p>
+                  <p class="text-muted mb-0">Qty: {{ item?.quantity }}</p>
+                </div>
               </div>
+              <p class="fw-bold">{{ item?.price * item?.quantity | currency }}</p>
             </div>
           </div>
-          <p class="text-maroon fw-bold mb-1" (click)="openModal(orderModal, order)">View Details</p>
         </div>
+
         <hr>
-        <div class="col-12">
-          <div class="d-flex justify-content-between">
-            <div class="select-products">
-              <p>
-                <b class="fw-bold">Item :</b> <span *ngFor="let item of order?.items">{{item?.product_name}} &times;
-                  {{item?.quantity}}, </span>
-              </p>
-            </div>
-            <div class="d-flex">
-              <!-- <div class="gap-1 mb-0 d-flex price-text me-3"> Price:$ {{item?.price}} </div> -->
-              <div class="list-unstyled gap-1 fs-xs mb-0 d-flex price-text"> Total Paid:$ {{order?.total_amount}} </div>
-            </div>
-          </div>
+
+        <div class="text-end">
+          <p class="fw-bold fs-5">Total: CAD <span class="text-primary">{{ currentOrder?.total_amount | currency
+              }}</span></p>
         </div>
       </div>
     </div>
-
-    <section class="empty-checkout text-center pt-90 pb-90" *ngIf="!(orders.length > 0)">
-      <div class="container-baron container-fluid">
-        <div class="row">
-          <div class="col">
-            <div class="message-empty">
-              <h4>Nothing to see – or drink – here. Start shopping and add something to your basket. It’s free shipping
-                if you spend over £60!</h4>
-              <button class="btn btn-continue" routerLink="/shop">
-                Continue shopping
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-  </div>
-</div>
-
-
-
-
-
-
-
-
-<ng-template #orderModal let-modal>
-  <div class="modal-header">
-    <h4 class="modal-title color-white">{{currentOrder?.order_number}}</h4>
-    <button type="button" class="btn-close color-white" aria-label="Close" (click)="closeModal()"></button>
-  </div>
-  <div 
-  [ngClass]="{
-    'order-pending': currentOrder?.order_status === 'new',
-    'order-confirmed': currentOrder?.order_status === 'confirmed',
-    'order-success': currentOrder?.order_status === 'shipped',
-    'order-reject': currentOrder?.order_status === 'cancelled'
-  }"
-  class="p-3">
-    <div class="d-flex">
-      <div class="image-green">
-        <img src="assets/image/shipping/green-tick.png" alt="green-tick" class="mt-2 pe-3">
-      </div>
-      <p class="fs-4 mb-1">Your Order is {{currentOrder?.order_status}}</p>
-    </div>
-    <p class="mb-0">Your Order will be delivered on Tuesday, 27 August 2024 1:00 pm </p>
-  </div>
-  <div class="modal-body">
-    <div class="col">
-      <div class="padding-equal-right position-sticky top-0">
-        <div class="right-starting">
-          <div class="listing-right mb-1" *ngFor="let item of currentOrder?.items">
-            <div class="img-bottle">
-              <img [src]="imgBaseUrl + item?.product_image" alt="old">
-              <p class="one">{{item?.quantity}}</p>
-            </div>
-            <p>{{item?.product_name}}</p>
-            <p>{{item?.price * item?.quantity | currency}}</p>
-          </div>
-        </div>
-        <!-- <div class="apply-but">
-        <input type="text" placeholder="Discount Code">
-        <button type="button">Apply</button>
-      </div> -->
-        <hr>
-        <div class="apply-total">
-
-          <div class="p-total">
-            <!-- <p>Subtotal :</p> -->
-            <!-- <p>${{calculateSubTotal(contextService.cart())}}</p> -->
-          </div>
-
-          <!-- <div class="p-total d-total">
-          <p>Shipping :</p>
-          <p>Enter Shipping Address</p>
-        </div> -->
-
-          <div class="p-total free-grand">
-            <p><span class="grandone">Total</span></p>
-            <p>CAD<span class="cad">${{currentOrder?.total_amount}}</span></p>
-          </div>
-
-          <div class="p-total free-grand icluding">
-            <!-- <p>Including $6.00 in taxes</p> -->
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</ng-template>
+  </ng-template>

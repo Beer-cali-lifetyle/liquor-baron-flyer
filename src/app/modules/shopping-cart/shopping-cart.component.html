@@ -27,7 +27,7 @@
       </div>
     </div>
     <div class="row mt-5 margin-kam">
-      <!-- Items list + Delivery / pickup tabs -->
+
       <div class="col-lg-7">
 
         <div class="shopping-productss">
@@ -77,11 +77,55 @@
           </div>
         </div>
 
-      </div>
+        <div class="row row-product mb-5 you-may-like">
+          <h2>You May Also Like </h2>
+          <div class="col-lg-6 col-md-6 col-sm-12 product-card-container cards-product" *ngFor="let product of products; let i = index">
+            <div class="product-card d-flex align-items-center p-3 shadow-sm border rounded" [routerLink]="['/product', product?.id]">
+              <div class="product-tumb pt-4 pb-1">
+                <img [src]="imgBaseUrl + product?.product_image" class="img-fluid uniform-img" alt="product">
+    
+                <div class="badge" [ngClass]="{
+                    'bg-auccess': product.producttag === '3', 
+                    'badge-yellow': product.producttag !== '3'
+                  }">{{product.producttag === '3' ? 'New Item' : 'Limited Edition'}}</div>
+    
+              </div>
+              <div class="product-details p-2">
+                <h4>{{product?.name}}</h4>
+                <p>{{product?.description}}</p>
+                <div class="product-bottom-details d-flex justify-content-between">
+                  <div class="product-price">
+                    <span [class.text-danger]="product?.discount"> ${{ product?.price }}  </span>
+                    <span *ngIf="product?.discount">
+                      <del>  ${{ product?.discount }}</del>
+                    </span>
+                  </div>
+                  <div class="bag-container" *ngIf="!product?.cart_details">
+                    <i class="bi bi-lg bi-bag-plus bag-icon" *ngIf="!product?.product?.cart_details"
+                      (click)="addToCart($event, product?.id, i)">
+                    </i>
+                    <span class="hover-text">Add</span>
+                  </div>
+                  <div class="qty-container" *ngIf="product?.cart_details">
+                    <button class="minus-round btn-light" type="button"
+                      (click)="decrementProductCard(product?.cart_details?.id, product?.cart_details?.quantity, i, $event)"><i
+                        class="bi bi-dash"></i></button>
+                    <div class="quantity-round">{{product?.cart_details?.quantity}}</div>
+                    <button class="plus-round btn-light" type="button"
+                      (click)="incrementProductCard(product?.cart_details?.id, product?.cart_details?.quantity, i, $event)"><i
+                        class="bi bi-plus-lg"></i></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+    
+        </div>
 
+      </div>
       <div class="col-lg-5">
         <!-- Order summary (sticky sidebar) -->
-        <aside class="payment-de bg-white p-5">
+        <aside class="payment-de sticky-element bg-white p-5">
           <div class="top-0">
             <!-- <div class="border-bottom pb-4 mb-4">
               <div class="mb-2"><i class="bi bi-truck"></i> Local shippings $9.99 on all orders.</div>

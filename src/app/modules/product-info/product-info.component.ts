@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ApiService } from '../../shared/services/api.service';
 import { AppBase } from '../../../app-base.component';
 import { ActivatedRoute, RouterModule } from '@angular/router';
@@ -9,16 +9,17 @@ import { UiToasterService } from '../../core/services/toaster.service';
 import { ContextService } from '../../core/services/context.service';
 import { environment } from '../../../environments/environment';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-
+import { CarouselModule } from 'ngx-owl-carousel-o';
 @Component({
   selector: 'app-product-info',
   templateUrl: './product-info.component.html',
   styleUrls: ['./product-info.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, ReactiveFormsModule, FormsModule]
+  imports: [CommonModule, FormsModule, RouterModule, ReactiveFormsModule, FormsModule, CarouselModule]
 })
 export class ProductInfoComponent extends AppBase implements OnInit {
   stars = [1, 2, 3, 4, 5];
+  customOptions: any;
   ratings = [
     { stars: 5, count: 0 },
     { stars: 4, count: 0 },
@@ -35,16 +36,22 @@ export class ProductInfoComponent extends AppBase implements OnInit {
   relatedProducts: any = [];
   averageRating: any;
   totalRatings: any;
+  chunkedProducts: any;
   constructor(private ApiService: ApiService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private toaster: UiToasterService,
     public contextService: ContextService,
     private fb: FormBuilder,
-    private modal: NgbModal
+    private modal: NgbModal,
+    private cdr: ChangeDetectorRef
   ) {
     super();
     this.checkMode(this.activatedRoute.snapshot.params);
+  }
+
+  trackByFn(index: number, item: any): number | string {
+    return item?.id ?? index;  // Use 'id' if available, else fallback to index
   }
 
   async ngOnInit() {
@@ -73,15 +80,15 @@ export class ProductInfoComponent extends AppBase implements OnInit {
       this.averageRating = this.totalRatings / this.productInfo?.reviews.length;
       console.log(this.productInfo)
       Promise.all([
-         this.getCart(),
-         this.fetchWishlist(),
-         this.fetchRelatedProducts(),
+        this.getCart(),
+        this.fetchWishlist(),
+        this.fetchRelatedProducts(),
       ])
     })
   }
 
   increment() {
-    
+
     if (this.quantity === 'Add') { this.quantity = 0 }
     this.quantity++;
     if (this.cartInfo?.id) {
@@ -132,12 +139,12 @@ export class ProductInfoComponent extends AppBase implements OnInit {
     else {
       await this.ApiService.GuestLogin().then(async (res: any) => {
         if (res?.token) {
-         await this.addToCart(event, id, i)
+          await this.addToCart(event, id, i)
         };
       })
     }
   }
-  
+
   async addToCartRelated(event: Event, id: number, i: number) {
     event.stopPropagation();
     this.relatedProducts[i].cart_details = this.relatedProducts[i].cart_details !== undefined ? !this.relatedProducts[i].addcart_detailsedTocart : true;
@@ -203,7 +210,7 @@ export class ProductInfoComponent extends AppBase implements OnInit {
     } else {
       await this.ApiService.GuestLogin().then(async (res: any) => {
         if (res?.token) {
-         await this.addToWishlist(id);
+          await this.addToWishlist(id);
         };
       })
     }
@@ -224,9 +231,36 @@ export class ProductInfoComponent extends AppBase implements OnInit {
 
   async fetchRelatedProducts() {
     await this.ApiService.fetchFilteredProduct({ categoryId: this.productInfo?.product?.cat_id, perPage: 3, page: 1 }).then((res) => {
-      this.relatedProducts = res?.data;
-    })
+      this.relatedProducts = res?.data || [];
+      this.customOptions = {
+        loop: true,
+        mouseDrag: true,
+        touchDrag: true,
+        pullDrag: true,
+        dots: true,
+        navSpeed: 700,
+        navText: ['', ''],
+        responsive: {
+          0: {
+            items: 1
+          },
+          400: {
+            items: 2
+          },
+          740: {
+            items: 3
+          },
+          940: {
+            items: 4
+          }
+        },
+        nav: true
+      };
+      this.cdr.detectChanges();
+    });
   }
+  
+  
 
   async selectRelated(id: any) {
     await this.ApiService.fetchProduct(id).then((res) => {

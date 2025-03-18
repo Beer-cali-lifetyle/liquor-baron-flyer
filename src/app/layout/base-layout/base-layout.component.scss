@@ -9,5 +9,6 @@
 }
 
 .content-wrapper {
-  margin-top: var(--header-height, 60px); // Fallback to 60px if not set
+  padding-top: calc(var(--header-height, 35px) + max(var(--header-height, 0) * 0, 28px));
+
 }

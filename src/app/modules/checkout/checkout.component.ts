@@ -78,6 +78,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
 
 
   handlePlaceSelection(place: any) {
+    debugger;
     this.selectedLocation = place;
     this.form.patchValue({
       address: place?.formatted_address
@@ -444,7 +445,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
         "packages": [],
         "totalWeight": 1.5 * count,
         "isPallet": false,
-        "shipDate": this.deliveryForm.value.deliveryDate,
+        "shipDate": this.deliveryForm.value.deliveryDate ? this.deliveryForm.value.deliveryDate : new Date(new Date().setDate(new Date().getDate() + 1)),
         "shipmentTypeEnum": "regular",
         "selectedAccessorials": [],
         "declaredValue": 100.00
@@ -505,7 +506,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
         }
         break;
       case 2:
-        if (this.deliveryForm.valid) {
+        if (this.deliveryForm.valid && this.shippingCharges > 0) {
           const localDeliveryPayload = {
             user_id: this.contextService.user()?.id,
             items: this.contextService.cart()?.data?.map((product: any) => {
@@ -538,10 +539,14 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
             }
           })
         } else {
-          this.validateForm(this.deliveryForm)
+          this.validateForm(this.deliveryForm);
+          if(!this.shippingCharges && this.deliveryForm.valid) {
+            this.toaster.Warning('Please try again after some time.')
+          }
         }
         break;
       case 3:
+        if(this.shippingForm.get('shippingAddress')?.value && this.shippingCharges > 0) {
         const shippingPayload = {
           user_id: this.contextService.user()?.id,
           items: this.contextService.cart()?.data?.map((product: any) => {
@@ -568,8 +573,13 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
             console.error('Checkout URL not found');
           }
         })
-        break;
-
+      } else {
+        this.validateForm(this.shippingForm);
+        if(!this.shippingCharges && this.shippingForm.valid) {
+          this.toaster.Warning('Please try again after some time.')
+        }
+      }
+      break;
       default:
         break;
     }

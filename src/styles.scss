@@ -367,7 +367,7 @@ section.main-section {
 }
 
 .product-tumb img {
-  max-width: 70%;
+  // max-width: 70%; 
   max-height: 100%;
   width: 100%;
   background: #ffffff;
@@ -1495,7 +1495,6 @@ html {
 .text-maroon {
   color: #840029 !important;
 }
-
 .form-check-input {
   appearance: none;
   -webkit-appearance: none;
@@ -1505,30 +1504,38 @@ html {
   height: 20px;
   cursor: pointer;
   position: relative;
-  border-radius: 3px;
-  /* optional: makes checkbox have slight rounded edges */
+  border-radius: 50%; /* Makes it circular */
   outline: none;
+  transition: all 0.3s ease-in-out;
 }
 
-/* Checked state with maroon background and white tick */
+/* When checked */
 .form-check-input:checked {
-  background-color: rgba(128, 0, 0, 0) !important;
+  // background-color: maroon !important;
+  color: maroon !important;
   border-color: maroon !important;
 }
 
-input[type="radio"]:checked {
-  accent-color: #84002a00;
+/* Add a dot when selected */
+.form-check-input:checked::before {
+  content: "✔" !important;
+  color: maroon !important;
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background-color: white;
+  border-radius: 50%;
+  // top: 50%;
+  left: 10%;
+  transform: translate(-50%, -50%);
 }
 
-.form-check-input:checked::after {
-  content: "✔";
-  color: #840029 !important;
-  font-weight: bold;
-  position: absolute;
-  top: 0;
-  // left: 4px;
-  font-size: 15px;
+/* Ensures a modern look */
+input[type="radio"]:checked {
+  accent-color: maroon !important;
 }
+
+
 
 .btn-maroon {
   background-color: #840029 !important;
@@ -2012,3 +2019,30 @@ input:focus {
 }
 
 ;
+
+
+
+
+.custom-pagination .page-link {
+  border-radius: 50px !important;  /* Makes buttons rounded */
+  margin: 0 5px;  /* Spacing between buttons */
+  padding: 8px 15px; /* Adjust padding for better look */
+  border: none;  /* Remove default border */
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1); /* Add soft shadow */
+  background-color: #f8f9fa; /* Light background */
+  color: #820029; /* Primary blue color */
+  transition: all 0.3s ease-in-out;
+}
+
+.custom-pagination .page-item.active .page-link {
+  background-color: #820029; /* Blue background for active page */
+  color: white;
+  font-weight: bold;
+  box-shadow: 2px 2px 10px rgba(0, 123, 255, 0.3);
+}
+
+.custom-pagination .page-link:hover {
+  background-color: #820029;
+  color: white;
+  transform: scale(1.1); /* Slight zoom effect */
+}

@@ -27,6 +27,8 @@ export class ApiService {
       const res = await this.GuestSignIn();
 
       await this.context.user.set(res?.user);
+      debugger;
+      console.log(res);
       localStorage.setItem('access_token', res?.token);
       localStorage.setItem('user_id', res?.user?.id);
       localStorage.setItem('user', JSON.stringify(res?.user));

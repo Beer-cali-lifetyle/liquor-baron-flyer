@@ -402,3 +402,9 @@ select {
     border-top: 1px solid rgba(128, 128, 128, 0.671);
     margin-bottom: 5px;
 }
+
+
+.sticky-element {
+    position: sticky;
+    top: calc(var(--header-height, 35px) + 32px); 
+  }

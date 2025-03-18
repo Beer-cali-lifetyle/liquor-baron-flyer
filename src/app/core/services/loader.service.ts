@@ -1,26 +1,29 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UiLoaderService {
 
-  public isLoading = new BehaviorSubject(false);
+  private activeRequests = 0; // Counter for active API calls
+  private isLoadingSubject = new BehaviorSubject<boolean>(false);
 
-  public subject = new Subject<boolean>();
-    
-  constructor() { }
+  constructor() {}
 
-  public onLoad() :Observable<boolean>{
-    return this.isLoading.asObservable();
+  public onLoad(): Observable<boolean> {
+    return this.isLoadingSubject.asObservable();
   }
 
-  public async start() {
-    this.isLoading.next(true);
-  } 
+  public start() {
+    this.activeRequests++;
+    this.isLoadingSubject.next(true);
+  }
 
-  public async stop(){
-    this.isLoading.next(false);
-  } 
+  public stop() {
+    this.activeRequests = Math.max(0, this.activeRequests - 1); // Ensure counter doesn't go negative
+    if (this.activeRequests === 0) {
+      this.isLoadingSubject.next(false);
+    }
+  }
 }
