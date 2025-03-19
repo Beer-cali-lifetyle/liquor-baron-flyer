@@ -78,6 +78,12 @@
           <div class="col-md-9 col-lg-10">
             <div class="row flex-row-reverse">
               <!-- Products Section -->
+              <!-- <div class="col-12 ps-5 md-ps-15px md-mb-60px nil-padding">
+                <div class="row mb-5  row-product"   *ngIf="products.length"
+                infiniteScroll 
+                [infiniteScrollDistance]="1" 
+                [infiniteScrollThrottle]="300"
+                (scrolled)="fetchMoreProducts()"> -->
               <div class="col-12 ps-5 md-ps-15px md-mb-60px nil-padding">
                 <div class="row mb-5  row-product">
                   <div class="col-3 product-card-container" *ngFor="let product of products; let i=index">

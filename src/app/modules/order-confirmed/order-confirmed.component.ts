@@ -45,6 +45,7 @@ export class OrderConfirmedComponent implements OnInit {
     this.orders = [];
     await this.ApiService.fetchParticularOrder(this.order_id).then(async (res) => {
       this.orders = res?.order;
+      if(res?.order?.delivery_address) { this.orders['delivery_address'] = JSON.parse(res?.order?.delivery_address) }
     })
   }
 

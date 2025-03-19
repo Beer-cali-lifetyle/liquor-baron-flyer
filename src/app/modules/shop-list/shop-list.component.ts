@@ -8,13 +8,15 @@ import { NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
 import { AppBase } from '../../../app-base.component';
 import { ContextService } from '../../core/services/context.service';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
+
 
 @Component({
   selector: 'app-shop-list',
   templateUrl: './shop-list.component.html',
   styleUrls: ['./shop-list.component.css'],
   standalone: true,
-  imports: [RouterModule, CommonModule, NgbPaginationModule, FormsModule, ReactiveFormsModule]
+  imports: [RouterModule, CommonModule, NgbPaginationModule, FormsModule, ReactiveFormsModule, InfiniteScrollDirective]
 })
 export class ShopListComponent extends AppBase implements OnInit, AfterViewInit {
   products: any = [];
@@ -142,10 +144,10 @@ export class ShopListComponent extends AppBase implements OnInit, AfterViewInit 
       this.selectedCategory = null;
       return
     }
-      this.selectedCategory = categoryId
+    this.selectedCategory = categoryId
     this.selectedCategory = categoryId;
     const payload: any = { categoryId: this.selectedCategory, perPage: this.pageSize, page: this.currentPage };
-    if(this.form.value.selectedBrand) {
+    if (this.form.value.selectedBrand) {
       payload['brand'] = this.form.value.selectedBrand;
     }
     // if (this.selectedCategory === categoryId) {
@@ -165,7 +167,7 @@ export class ShopListComponent extends AppBase implements OnInit, AfterViewInit 
         this.flyerId = params['flyerId'] ? parseInt(params['flyerId']) : null;
         this.subcategoryTitle = params['title'] || null;
 
-        this.products = []; 
+        this.products = [];
         const payload: any = { perPage: this.pageSize, page: this.currentPage };
 
         if (this.categoryId) {
@@ -192,8 +194,8 @@ export class ShopListComponent extends AppBase implements OnInit, AfterViewInit 
     }
     this.selectedBrand = brandId;
     const payload: any = { brand: this.selectedBrand, perPage: this.pageSize, page: this.currentPage };
-      this.selectedBrand = brandId
-    if(this.form.value.selectedCategory) {
+    this.selectedBrand = brandId
+    if (this.form.value.selectedCategory) {
       payload['categoryId'] = this.form.value.selectedCategory;
     }
     // if (this.selectedBrand === brandId) {
@@ -262,18 +264,18 @@ export class ShopListComponent extends AppBase implements OnInit, AfterViewInit 
   // }
 
   async fetchproductsWithFilter(data: any) {
-    this.products = []
     await this.ApiService.fetchFilteredProduct(data).then((res) => {
-      this.products = res?.data;
+      this.products = [...this.products, ...res?.data]
       this.totalProducts = res?.total;
     })
   }
 
   async onPageChange(pagenumber: any) {
     this.currentPage = pagenumber;
+    debugger;
     if (!(this.categoryId || this.subcategoryId || this.flyerId) && !(this.selectedBrand || this.selectedCategory)) {
       return await this.ApiService.fetcHlatestProducts({ perPage: this.pageSize, page: this.currentPage }).then((res) => {
-        this.products = res
+        this.products = [...this.products, ...res?.data]
       })
     } else {
       let payload: any = { perPage: this.pageSize, page: this.currentPage }
@@ -323,6 +325,35 @@ export class ShopListComponent extends AppBase implements OnInit, AfterViewInit 
       }
     });
   }
+
+  // onScroll() {
+  //   this.currentPage++;
+  //   this.fetchMoreProducts();
+  // }
+
+  // async fetchMoreProducts() {
+  //   if (this.products.length < this.totalProducts) {
+  //     let payload: any = { perPage: this.pageSize, page: this.currentPage };
+  //     if (this.selectedBrand) {
+  //       payload['brand'] = this.selectedBrand;
+  //     }
+  //     if (this.selectedCategory) {
+  //       payload['categoryId'] = this.selectedCategory;
+  //     }
+  //     if (this.subcategoryId) {
+  //       payload['subcategoryId'] = this.subcategoryId;
+  //     }
+  //     if (this.categoryId && !this.selectedBrand) {
+  //       payload['categoryId'] = this.categoryId;
+  //     }
+  //     if (this.flyerId) {
+  //       payload['flyername'] = this.flyerId;
+  //     }
+
+  //     await this.fetchproductsWithFilter(payload)
+  //   }
+  // }
+
 
 }
 

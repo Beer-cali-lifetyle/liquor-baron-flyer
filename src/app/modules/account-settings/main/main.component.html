@@ -316,7 +316,7 @@
       <div class="body-forms">
         <form [formGroup]="form" (ngSubmit)="onSubmit()" class="row g-3 general-info">
           <div class="col-md-6 type-form">
-            <label class="form-label flex-">Full Name *</label>
+            <label class="form-label flex-">Full Name <span class="text-danger">*</span></label>
             <input type="text" class="form-control" formControlName="fullName" placeholder="Full Name">
             <div *ngIf="form.get('fullName')?.touched && form.get('fullName')?.invalid">
               <div class="text-danger p-small" *ngIf="form.get('fullName')?.errors?.['required']">Full name is required.</div>
@@ -324,7 +324,7 @@
           </div>
       
           <div class="col-md-6 type-form">
-            <label class="form-label flex-">Mobile Number *</label>
+            <label class="form-label flex-">Mobile Number <span class="text-danger">*</span></label>
             <input type="text" class="form-control" formControlName="mobileNumber" placeholder="Mobile Number">
             <div *ngIf="form.get('mobileNumber')?.touched && form.get('mobileNumber')?.invalid">
               <div class="text-danger p-small" *ngIf="form.get('mobileNumber')?.errors?.['required']">Mobile number is required.</div>
@@ -332,7 +332,7 @@
           </div>
       
           <div class="col-md-6 type-form">
-            <label class="form-label flex-">Pin Code *</label>
+            <label class="form-label flex-">Pin Code <span class="text-danger">*</span></label>
             <input type="text" class="form-control" formControlName="pinCode" placeholder="Pin Code">
             <div *ngIf="form.get('pinCode')?.touched && form.get('pinCode')?.invalid">
               <div class="text-danger p-small" *ngIf="form.get('pinCode')?.errors?.['required']">Pin code is required.</div>
@@ -341,7 +341,7 @@
 
 
           <div class="col-md-6 type-form">
-            <label class="form-label flex-">State *</label>
+            <label class="form-label flex-">State <span class="text-danger">*</span></label>
             <select class="form-control" formControlName="state">
               <option value="" selected disabled class="ms-2">Select State</option>
               <option class="ms-2" *ngFor="let state of CanadianProvincesAndTerritories" [value]="state.id">{{
@@ -371,7 +371,7 @@
 
       
           <div class="col-md-6 type-form">
-            <label class="form-label flex-">Locality *</label>
+            <label class="form-label flex-">Locality <span class="text-danger">*</span></label>
             <input type="text" class="form-control" formControlName="locality" placeholder="Locality">
             <div *ngIf="form.get('locality')?.touched && form.get('locality')?.invalid">
               <div class="text-danger p-small" *ngIf="form.get('locality')?.errors?.['required']">Locality is required.</div>
@@ -379,7 +379,7 @@
           </div>
       
           <div class="col-md-6 type-form">
-            <label class="form-label flex-">City/District/Town *</label>
+            <label class="form-label flex-">City/District/Town <span class="text-danger">*</span></label>
             <input type="text" class="form-control" formControlName="city" placeholder="City/District/Town">
             <div *ngIf="form.get('city')?.touched && form.get('city')?.invalid">
               <div class="text-danger p-small" *ngIf="form.get('city')?.errors?.['required']">City/District/Town is required.</div>
@@ -388,7 +388,7 @@
 
           
           <div class="col-md-6 type-form">
-            <label class="form-label flex-">Alternate Phone Number *</label>
+            <label class="form-label flex-">Alternate Phone Number <span class="text-danger">*</span></label>
             <input type="text" class="form-control" formControlName="altPhoneNumber" placeholder="Alternate Phone Number">
             <div *ngIf="form.get('altPhoneNumber')?.touched && form.get('altPhoneNumber')?.invalid">
               <div class="text-danger p-small" *ngIf="form.get('altPhoneNumber')?.errors?.['required']">Alternate phone number is required.</div>
@@ -396,7 +396,7 @@
           </div>
       
           <div class="col-md-6 type-form">
-            <label class="form-label flex-">Landmark *</label>
+            <label class="form-label flex-">Landmark <span class="text-danger">*</span></label>
             <input type="text" class="form-control" formControlName="landmark" placeholder="Landmark">
             <div *ngIf="form.get('landmark')?.touched && form.get('landmark')?.invalid">
               <div class="text-danger p-small" *ngIf="form.get('landmark')?.errors?.['required']">Landmark is required.</div>

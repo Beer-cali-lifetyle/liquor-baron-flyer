@@ -35,7 +35,8 @@
             <div class="box-confirmed">
               <div class="detailed-confirm">
                 <div class="first-confirm">
-                  <p class="confirmed"><strong>Contact Information:</strong><br><span>Local Delivery</span></p>
+                  <p class="confirmed"><strong>Contact Information:</strong><br><span>Name: <strong>{{orders?.delivery_address?.name}} </strong><br>
+                    Mobile: <strong>{{orders?.delivery_address?.mobile}}</strong></span></p>
                 </div>
                 <div class="first-confirm second-confirm">
                   <p class="confirmed"><strong>Payment Method:</strong><br><span>{{orders?.payment_method | titlecase}}</span></p>
@@ -44,16 +45,16 @@
 
               <div class="detailed-confirm">
                 <div class="first-confirm">
-                  <p class="confirmed"><strong>Address:</strong><br>{{orders?.delivery_address}}</p>
+                  <p class="confirmed"><strong>Address:</strong><br>{{orders?.delivery_address?.address}}</p>
                 </div>
-                <!-- <div class="first-confirm second-confirm">
-                  <p class="confirmed"><strong>Billing Address:</strong><br><span>Kolkata, West Bengal</span></p>
-                </div> -->
+                <div class="first-confirm second-confirm">
+                  <p class="confirmed"><strong>Amount:</strong><br><span>{{orders?.total_amount | currency:'CAD'}}</span></p>
+                </div>
               </div>
 
               <div class="detailed-confirm">
                 <div class="first-confirm">
-                  <p class="confirmed"><strong>Shipping Method:</strong><br><span>Local Delivery</span></p>
+                  <p class="confirmed"><strong>Shipping Method:</strong><br><span>{{orders?.delivery_type | titlecase}} Delivery</span></p>
                 </div>
               </div>
             </div>
