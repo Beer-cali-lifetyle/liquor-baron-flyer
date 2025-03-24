@@ -461,7 +461,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
         selectedAccessorials: [],
         declaredValue: this.subTotal,
       };
-      const result: any = this.ApiService.getShippingCharges(body);
+      const result: any = await this.ApiService.getShippingCharges(body);
       // const result: any = await firstValueFrom(
       //             this.http.post(this.shippingApiUrl, body, { headers }).pipe(
       //               catchError(err => {
@@ -472,7 +472,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
       //           );
 
     console.log('Response:', result);
-
+debugger;
     this.shippingCharges = result?.total ? result.total : result;
     this.total = this.total + this.shippingCharges;
     return result?.total;

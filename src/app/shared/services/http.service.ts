@@ -6,6 +6,7 @@ import { timeout } from 'rxjs/operators';
 import { CookieService } from 'ngx-cookie-service';
 import { Observable } from 'rxjs';
 import { UiLoaderService } from '../../core/services/loader.service';
+import { UiToasterService } from '../../core/services/toaster.service';
 
 export interface Options {
   withFormData: boolean;
@@ -24,7 +25,8 @@ export class HttpServie {
     private cookieService: CookieService,
     @Inject(PLATFORM_ID) private platformId: Object,
     // Inject a loader service if available
-    private loaderService: UiLoaderService // Assuming you have a loader service
+    private loaderService: UiLoaderService, // Assuming you have a loader service
+    private toaster: UiToasterService
   ) {
     this.isBrowser = isPlatformBrowser(platformId);
     if (this.isBrowser) {
@@ -58,8 +60,9 @@ export class HttpServie {
           reject(error);
         });
         this.queryParams = {};
-      } catch (e) {
+      }  catch (e: any) {
         console.log('Caught exception in GET request: ', e);
+        this.toaster.Error(e);
         if (!withLoader) this.toggleLoader(false); 
         reject(null);
         return;
@@ -81,10 +84,13 @@ export class HttpServie {
           resolve(response);
         }, (error) => {
           if (!withLoader) this.toggleLoader(false); // Hide loader on error
+          const firstValue: any = Object.values(error?.error)[0];  
+          this.toaster.Error(firstValue);
           reject(error);
         });
-      } catch (e) {
+      }  catch (e: any) {
         console.log('Caught exception in POST request: ', e);
+        this.toaster.Error(e);
         if (!withLoader) this.toggleLoader(false); // Hide loader on exception
         reject(null);
         return;
@@ -106,10 +112,13 @@ export class HttpServie {
           resolve(response);
         }, (error) => {
           if (!withLoader) this.toggleLoader(false); // Hide loader on error
+          const firstValue: any = Object.values(error?.error)[0];  
+          this.toaster.Error(firstValue);
           reject(error);
         });
-      } catch (e) {
+      } catch (e: any) {
         console.log('Caught exception in PUT request: ', e);
+        this.toaster.Error(e);
         if (!withLoader) this.toggleLoader(false); // Hide loader on exception
         reject(null);
         return;
