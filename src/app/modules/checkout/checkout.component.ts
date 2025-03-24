@@ -36,6 +36,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
   activeTab = 1;
   addresses: any = [];
   stores: any = [];
+  signUpForm!: any;
   storePickupForm!: any;
   deliveryForm!: any;
   shippingForm!: any;
@@ -47,7 +48,8 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
   imgBaseUrl: string = environment.api.base_url;
   showPayment: boolean = false;
   CanadianProvincesAndTerritories: any = [];
-  private shippingApiUrl = 'https://atsapi-dev.azurewebsites.net/v1/Shipments/rate';
+  private shippingApiUrl = 'https://admin.liquorbaronflyer.ca/api/shipping/rate';
+  // private shippingApiUrl = 'https://atsapi-dev.azurewebsites.net/v1/Shipments/rate';
   // USStates = [
   //   "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut",
   //   "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana",
@@ -80,6 +82,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
   handlePlaceSelection(place: any) {
     debugger;
     this.selectedLocation = place;
+    debugger;
     this.form.patchValue({
       address: place?.formatted_address
     })
@@ -111,12 +114,18 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
     this.shippingForm = this.fb.group({
       shippingAddress: ['', Validators.required],
     })
+    this.signUpForm = this.fb.group({
+      firstName: ['', Validators.required],
+      lastName: [''],
+      newEmail: ['', Validators.required],
+      newPassword: ['', Validators.required],
+    })
     Promise.all([
-       this.fetchStates(),
-       this.fetchAddres(),
-       this.fetchStores(),
-       this.getCart(),
-       this.calculateSubTotal(),
+      this.fetchStates(),
+      this.fetchAddres(),
+      this.fetchStores(),
+      this.getCart(),
+      this.calculateSubTotal(),
     ])
   }
 
@@ -195,7 +204,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
   }
 
   async setAddress(event: Event, directId?: any) {
-    if(this.activeTab === 2 && !(this.deliveryForm.value.deliveryDate)) {
+    if (this.activeTab === 2 && !(this.deliveryForm.value.deliveryDate)) {
       this.toaster.Warning('Please Select delivery date first')
       this.deliveryForm.get('deliveryAddress')?.setValue(null);
       event.preventDefault;
@@ -255,6 +264,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
   async fetchTaxes() {
     await this.ApiService.fetchTax(this.selectedState).then((res) => {
       this.tax_percentage = parseFloat(res[0]?.total_tax);
+      if(this.activeTab != 1)
       this.calculateShipping();
     })
     await this.calculateSubTotal();
@@ -323,12 +333,12 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
   //       'Content-Type': 'application/json',
   //       'Authorization': `Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IkJCT2pNMGZTNTBhdHVyVHBqMUpPbyJ9.eyJvcmdhbml6YXRpb25JZCI6IjUxIiwiYWNjb3VudElkIjoiNTIiLCJhcHBfZ3JvdXBzIjpbIldpbmVTaGlwcGVyX0N1c3RvbWVyX1NoaXBwZXIiXSwiY2lkIjoiWk5kTDdHQzNHMm5RSkJURlkxbTlYa1lHRm04cll2bUMiLCJpc3MiOiJodHRwczovL2xvZ2luLWIyYi1hdHMtaGVhbHRoY2FyZS51cy5hdXRoMC5jb20vIiwic3ViIjoiWk5kTDdHQzNHMm5RSkJURlkxbTlYa1lHRm04cll2bUNAY2xpZW50cyIsImF1ZCI6Imh0dHBzOi8vdGVzdC5hcGkuYXRzLmhlYWx0aGNhcmUiLCJpYXQiOjE3NDE2MzMyNTksImV4cCI6MTc0MTcxOTY1OSwiZ3R5IjoiY2xpZW50LWNyZWRlbnRpYWxzIiwiYXpwIjoiWk5kTDdHQzNHMm5RSkJURlkxbTlYa1lHRm04cll2bUMifQ.C1V5Nt-KZbkxopTttn1XM08vSy2zWNKKwztTW0yyP2IN8vNi9GxJIlkmbJDijjlKm3x1QY_x7rAv72yrx2sJsq3m9V-bFZhCkPGcz_rfv5YDcoIrpZaHggiMIgKTZtMXXb82_NR5TUb2nfy05A0CsKQJGp8uig1JSWAwKbhKU8rJTZRw8BDbPVhg0pSsWp9Xn14yTSw6i7fdtPHd2dPLC9Lli8m8fRdalIjJgnZ03fLbH_3PfVn8eV-5kgHhC3peZmTgYGVO-fEXj1GKijT3QRT2mKbEtvDIGGs_ks_O7RCiJ4hyVgRVzuyMo5DeitmqG9iSajJVCWiY2nsXQlEXvg`
   //     });
-  
+
   //     let address = this.addresses.find((item: any) => item?.id === this.deliveryForm.get('deliveryAddress')?.value) ||
   //                   this.addresses.find((item: any) => item?.id === this.shippingForm.get('shippingddress')?.value);
-  
+
   //     const count = this.contextService.cart()?.data?.reduce((sum: any, item: any) => sum + (item.quantity ?? 0), 0) || 0;
-  
+
   //     const body = {
   //       "serviceCode": "GE",
   //       "address": {
@@ -349,9 +359,9 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
   //       "selectedAccessorials": [],
   //       "declaredValue": 100.00
   //     };
-  
+
   //     console.log('Request Payload:', JSON.stringify(body));
-  
+
   //     const result: any = await firstValueFrom(
   //       this.http.post(this.shippingApiUrl, body, { headers }).pipe(
   //         timeout(15000), // 15 seconds timeout
@@ -361,13 +371,13 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
   //         })
   //       )
   //     );
-  
+
   //     console.log('Response:', result);
-  
+
   //     this.shippingCharges = result?.total ? result.total : result;
   //     this.total  = this.total + this.shippingCharges;
   //     return result?.total;
-  
+
   //   } catch (error) {
   //     console.error('Error fetching shipping charges:', error);
   //     return undefined; // Avoid breaking the UI
@@ -376,17 +386,17 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
 
   async getAuthToken() {
     const tokenData = localStorage.getItem('ats_token');
-  
+
     if (tokenData) {
       const tokenObj = JSON.parse(tokenData);
       const decoded: any = jwtDecode(tokenObj.access_token);
-  
+
       // Check if token is expired
       if (decoded.exp * 1000 > Date.now()) {
         return tokenObj.access_token;
       }
     }
-  
+
     // Fetch new token if not found or expired
     const body = {
       "client_id": "ZNdL7GC3G2nQJBTFY1m9XkYGFm8rYvmC",
@@ -394,7 +404,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
       "audience": "https://test.api.ats.healthcare",
       "grant_type": "client_credentials"
     };
-  
+
     try {
       const result: any = await firstValueFrom(
         this.http.post('https://admin.liquorbaronflyer.ca/api/stripe/token', body, {
@@ -404,149 +414,153 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
           })
         })
       );
-  
+
       if (result.access_token) {
         localStorage.setItem('ats_token', JSON.stringify(result));
         return result.access_token;
       }
-  
+
       throw new Error('Failed to retrieve token');
     } catch (error) {
       console.error('Token Fetch Error:', error);
       throw error;
     }
   }
-  
+
   async calculateShipping() {
     try {
-      const token = await this.getAuthToken();
-      const headers = new HttpHeaders({
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      });
-  
       let address = this.addresses.find((item: any) => item?.id === this.deliveryForm.get('deliveryAddress')?.value) ||
-                    this.addresses.find((item: any) => item?.id === this.shippingForm.get('shippingddress')?.value);
-  
+        this.addresses.find((item: any) => item?.id === this.shippingForm.get('shippingAddress')?.value);
+
       const count = this.contextService.cart()?.data?.reduce((sum: any, item: any) => sum + (item.quantity ?? 0), 0) || 0;
-  
+      // const token = await this.getAuthToken();
+      // const headers = new HttpHeaders({
+      //   'Content-Type': 'application/json',
+      //   'Authorization': `Bearer ${token}`
+      // });
+      // debugger;
       const body = {
-        "serviceCode": "GE",
-        "address": {
-          "address1": address?.address,
-          "address2": address?.locality,
-          "city": address?.city,
-          "province": address?.state?.NAME || address?.state_name,
-          "postalCode": address?.pin_code,
-          "country": "Canada",
-          "isResidential": false
+        serviceCode: "GE",
+        address: {
+          address1: address?.address,
+          address2: null,
+          city: address?.city,
+          province: address?.state?.NAME || address?.state_name,
+          postalCode: address?.pin_code,
+          country: "Canada",
+          isResidential: false, // Ensure this key is correctly spelled
         },
-        "pieces": count,
-        "packages": [],
-        "totalWeight": 1.5 * count,
-        "isPallet": false,
-        "shipDate": this.deliveryForm.value.deliveryDate ? this.deliveryForm.value.deliveryDate : new Date(new Date().setDate(new Date().getDate() + 1)),
-        "shipmentTypeEnum": "regular",
-        "selectedAccessorials": [],
-        "declaredValue": 100.00
+        pieces: count,
+        packages: [],
+        totalWeight: 1.5 * count,
+        isPallet: false, // Corrected syntax
+        shipDate: this.deliveryForm.value.deliveryDate instanceof Date
+        ? this.deliveryForm.value.deliveryDate.toISOString()
+        : new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+        shipmentTypeEnum: "regular",
+        selectedAccessorials: [],
+        declaredValue: this.subTotal,
       };
-  
-      console.log('Request Payload:', JSON.stringify(body));
-  
-      const result: any = await firstValueFrom(
-        this.http.post(this.shippingApiUrl, body, { headers }).pipe(
-          timeout(15000), // 15 seconds timeout
-          catchError(err => {
-            console.error('Request failed:', err);
-            return throwError(() => err);
-          })
-        )
-      );
-  
-      console.log('Response:', result);
-  
-      this.shippingCharges = result?.total ? result.total : result;
-      this.total  = this.total + this.shippingCharges;
-      return result?.total;
-  
-    } catch (error) {
-      console.error('Error fetching shipping charges:', error);
-      return undefined; // Avoid breaking the UI
-    }
+      const result: any = this.ApiService.getShippingCharges(body);
+      // const result: any = await firstValueFrom(
+      //             this.http.post(this.shippingApiUrl, body, { headers }).pipe(
+      //               catchError(err => {
+      //                 console.error('Request failed:', err);
+      //                 return throwError(() => err);
+      //               })
+      //             )
+      //           );
+
+    console.log('Response:', result);
+
+    this.shippingCharges = result?.total ? result.total : result;
+    this.total = this.total + this.shippingCharges;
+    return result?.total;
+
+  } catch(error) {
+    console.error('Error fetching shipping charges:', error);
+    return undefined; // Avoid breaking the UI
   }
+}
 
   async placeOrder() {
-    switch (this.activeTab) {
-      case 1:
-        if (this.storePickupForm.valid) {
-          const storePickupPayload = {
-            user_id: this.contextService.user()?.id,
-            items: this.contextService.cart()?.data?.map((product: any) => {
-              return { product_id: product?.product?.id, name: product?.product?.name, quantity: product?.quantity, price: product?.product?.price }
-            }),
-            total_amount: this.subTotal,
-            payment_method: this.selectedPaymentMethod,
-            delivery_type: "store",
-            pickup_date: this.storePickupForm.value.pickupDate,
-            delivery_time: this.selectedTime,
-            store: this.storePickupForm.value.selectedStore,
-            total_tax: this.total_tax,
-          }
-          console.log(JSON.stringify(storePickupPayload))
-          await this.ApiService.placeOrder(storePickupPayload).then((res) => {
-            const checkoutUrl = res?.checkout_url;
-            if (checkoutUrl) {
-              window.location.href = checkoutUrl;
-            } else {
-              console.error('Checkout URL not found');
-            }
-          })
-        } else {
-          this.validateForm(this.storePickupForm)
+    if((this.contextService.user()?.is_guest === true || this.contextService.user()?.is_guest === '1')) {
+      await this.onSignUp();
+      debugger;
+      console.log('hello')
+    }
+    debugger;
+  switch (this.activeTab) {
+    case 1:
+      if (this.storePickupForm.valid) {
+        const storePickupPayload = {
+          user_id: this.contextService.user()?.id,
+          items: this.contextService.cart()?.data?.map((product: any) => {
+            return { product_id: product?.product?.id, name: product?.product?.name, quantity: product?.quantity, price: product?.product?.price }
+          }),
+          total_amount: this.subTotal,
+          payment_method: this.selectedPaymentMethod,
+          delivery_type: "store",
+          pickup_date: this.storePickupForm.value.pickupDate,
+          delivery_time: this.selectedTime,
+          store: this.storePickupForm.value.selectedStore,
+          total_tax: this.total_tax,
         }
-        break;
-      case 2:
-        if (this.deliveryForm.valid && this.shippingCharges > 0) {
-          const localDeliveryPayload = {
-            user_id: this.contextService.user()?.id,
-            items: this.contextService.cart()?.data?.map((product: any) => {
-              return {
-                product_id: product?.product?.id,
-                name: product?.product?.name,
-                quantity: product?.quantity,
-                price: product?.product?.price
-              };
-            }),
-            total_amount: this.subTotal,
-            delivery_address: this.formatAddress(this.addresses.find((item: any) => item?.id === this.deliveryForm.get('deliveryAddress')?.value)),
-            payment_method: this.selectedPaymentMethod,
-            delivery_type: "local",
-            pickup_date: this.deliveryForm.value.deliveryDate,
-            delivery_time: this.selectedTime,
-            total_tax: this.total_tax,
-            shipping_charge: this.shippingCharges
-          };
-          console.log(JSON.stringify(localDeliveryPayload))
-          await this.ApiService.placeOrder(localDeliveryPayload).then((res) => {
-            debugger;
-            console.log(res)
-            const checkoutUrl = res?.checkout_url;
-            if (checkoutUrl) {
-              // Redirect to the checkout URL
-              window.location.href = checkoutUrl;
-            } else {
-              console.error('Checkout URL not found');
-            }
-          })
-        } else {
-          this.validateForm(this.deliveryForm);
-          if(!this.shippingCharges && this.deliveryForm.valid) {
-            this.toaster.Warning('Please try again after some time.')
+        console.log(JSON.stringify(storePickupPayload))
+        await this.ApiService.placeOrder(storePickupPayload).then((res) => {
+          const checkoutUrl = res?.checkout_url;
+          if (checkoutUrl) {
+            window.location.href = checkoutUrl;
+          } else {
+            console.error('Checkout URL not found');
           }
+        })
+      } else {
+        this.validateForm(this.storePickupForm)
+      }
+      break;
+    case 2:
+      if (this.deliveryForm.valid && this.shippingCharges > 0) {
+        const localDeliveryPayload = {
+          user_id: this.contextService.user()?.id,
+          items: this.contextService.cart()?.data?.map((product: any) => {
+            return {
+              product_id: product?.product?.id,
+              name: product?.product?.name,
+              quantity: product?.quantity,
+              price: product?.product?.price
+            };
+          }),
+          total_amount: this.subTotal,
+          delivery_address: this.formatAddress(this.addresses.find((item: any) => item?.id === this.deliveryForm.get('deliveryAddress')?.value)),
+          payment_method: this.selectedPaymentMethod,
+          delivery_type: "local",
+          pickup_date: this.deliveryForm.value.deliveryDate,
+          delivery_time: this.selectedTime,
+          total_tax: this.total_tax,
+          shipping_charge: this.shippingCharges
+        };
+        console.log(JSON.stringify(localDeliveryPayload))
+        await this.ApiService.placeOrder(localDeliveryPayload).then((res) => {
+          debugger;
+          console.log(res)
+          const checkoutUrl = res?.checkout_url;
+          if (checkoutUrl) {
+            // Redirect to the checkout URL
+            window.location.href = checkoutUrl;
+          } else {
+            console.error('Checkout URL not found');
+          }
+        })
+      } else {
+        this.validateForm(this.deliveryForm);
+        if (!this.shippingCharges && this.deliveryForm.valid) {
+          this.toaster.Warning('Please try again after some time.')
         }
-        break;
-      case 3:
-        if(this.shippingForm.get('shippingAddress')?.value && this.shippingCharges > 0) {
+      }
+      break;
+    case 3:
+      if (this.shippingForm.get('shippingAddress')?.value && this.shippingCharges > 0) {
         const shippingPayload = {
           user_id: this.contextService.user()?.id,
           items: this.contextService.cart()?.data?.map((product: any) => {
@@ -575,46 +589,68 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
         })
       } else {
         this.validateForm(this.shippingForm);
-        if(!this.shippingCharges && this.shippingForm.valid) {
+        if (!this.shippingCharges && this.shippingForm.valid) {
           this.toaster.Warning('Please try again after some time.')
         }
       }
       break;
-      default:
-        break;
+    default:
+      break;
+  }
+}
+
+
+formatAddress(address: any) {
+  if (!address) return null; // Handle case where no address is provided
+
+  const { full_name, address: addr, locality, landmark, city, state, pin_code, mobile_number } = address;
+
+  return {
+    name: full_name || '', // Full name
+    address: `${addr || ''}, ${locality || ''}${landmark ? ', ' + landmark : ''}, ${city || ''} - ${pin_code || ''}, ${state || ''}`.replace(/,\s*,/g, ',').replace(/,\s*$/, '').trim(),
+    mobile: mobile_number || '' // Mobile number (optional if required)
+  };
+}
+
+formatTime(form: FormGroup, field: string) {
+  const timeValue = form.get(field)?.value; // Get the raw value
+  if (timeValue) {
+    const [hours, minutes] = timeValue.split(':');
+    let hour = parseInt(hours, 10);
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    hour = hour % 12 || 12; // Convert to 12-hour format
+    const formattedHour = String(hour).padStart(2, '0'); // Add leading zero if necessary
+    const formattedMinutes = String(minutes).padStart(2, '0'); // Add leading zero if necessary
+    const formattedTime = `${formattedHour}:${formattedMinutes} ${ampm}`; // Format the time
+    this.selectedTime = formattedTime // Dynamically set the field value
+  }
+}
+
+continue() {
+  this.showPayment = true;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+async onSignUp() {
+  if (this.signUpForm.invalid) {
+    this.validateForm();
+  } else {
+    const payload = {
+      name: this.signUpForm.value?.firstName + '' + this.form.value?.lastName,
+      first_name: this.signUpForm.value.firstName,
+      last_name: this.signUpForm.value.lastName,
+      email: this.signUpForm.value.newEmail,
+      password: this.signUpForm.value.newPassword,  
+      is_guest: false
     }
+    debugger;
+    await this.ApiService.updateUser(payload).then(res => {
+      this.contextService.user.set(res?.user);
+      localStorage.setItem('user_id', res?.user?.id);
+      localStorage.setItem('user', JSON.stringify(res?.user)); 
+      this.toaster.Success('Updated successfully')
+    })
   }
-
-
-  formatAddress(address: any) {
-    if (!address) return null; // Handle case where no address is provided
-
-    const { full_name, address: addr, locality, landmark, city, state, pin_code, mobile_number } = address;
-
-    return {
-      name: full_name || '', // Full name
-      address: `${addr || ''}, ${locality || ''}${landmark ? ', ' + landmark : ''}, ${city || ''} - ${pin_code || ''}, ${state || ''}`.replace(/,\s*,/g, ',').replace(/,\s*$/, '').trim(),
-      mobile: mobile_number || '' // Mobile number (optional if required)
-    };
-  }
-
-  formatTime(form: FormGroup, field: string) {
-    const timeValue = form.get(field)?.value; // Get the raw value
-    if (timeValue) {
-      const [hours, minutes] = timeValue.split(':');
-      let hour = parseInt(hours, 10);
-      const ampm = hour >= 12 ? 'PM' : 'AM';
-      hour = hour % 12 || 12; // Convert to 12-hour format
-      const formattedHour = String(hour).padStart(2, '0'); // Add leading zero if necessary
-      const formattedMinutes = String(minutes).padStart(2, '0'); // Add leading zero if necessary
-      const formattedTime = `${formattedHour}:${formattedMinutes} ${ampm}`; // Format the time
-      this.selectedTime = formattedTime // Dynamically set the field value
-    }
-  }
-
-  continue() {
-    this.showPayment = true;
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
+}
 
 }

@@ -1,0 +1,9 @@
+{
+    "/api": {
+      "target": "https://admin.liquorbaronflyer.ca",
+      "secure": false,
+      "changeOrigin": true,
+      "logLevel": "debug"
+    }
+  }
+  

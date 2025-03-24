@@ -224,4 +224,8 @@ export class ApiService {
     return await this.httpRequest.POST(`/ageVerification`, data);
   }
 
+  async getShippingCharges(data: any) {
+    return await this.httpRequest.POST('/shipping/rate', data);
+  }
+
 }

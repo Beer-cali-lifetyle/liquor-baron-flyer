@@ -3,20 +3,64 @@
 
     <div class="left-white" *ngIf="!showPayment">
       <div class="padding-equal">
-        <div class="listing-adresses">
+        <div class="listing-adresses"   *ngIf="!(contextService.user()?.is_guest=== true  || contextService.user()?.is_guest === '1')">
+          <div class="contact-addresses">
+            <p class="1st-contact">Name</p>
+            <p class="2nd-contact">{{(contextService.user()?.is_guest=== true  || contextService.user()?.is_guest === '1') ? 'Guest' : contextService.user()?.name}}</p>
+            <!-- <p class="3rd-contact"><a href="#">Change</a></p> -->
+          </div>
+          <hr>
           <div class="contact-addresses">
             <p class="1st-contact">Contact</p>
             <p class="2nd-contact">{{(contextService.user()?.is_guest=== true  || contextService.user()?.is_guest === '1') ? 'Guest' : contextService.user()?.email}}</p>
             <!-- <p class="3rd-contact"><a href="#">Change</a></p> -->
           </div>
-          <!-- <hr>
-          <div class="contact-addresses">
-            <p class="1st-contact">Shipto</p>
-            <p class="2nd-contact">Forest Hill Family Health Centre, Toronto ON M5N 1A8, Canada</p>
-            <p class="3rd-contact"><a href="#">Change</a></p>
-          </div> -->
         </div>
-
+        
+        <form [formGroup]="signUpForm" *ngIf="(contextService.user()?.is_guest === true || contextService.user()?.is_guest === '1')">
+          <div class="container">
+            <div class="row">
+              <!-- First Name Field -->
+              <div class="col-md-6">
+                <label for="firstName">First Name</label>
+                <input id="firstName" type="text" class="form-control" formControlName="firstName" />
+                <div *ngIf="signUpForm.get('firstName')?.touched && signUpForm.get('firstName')?.invalid">
+                  <small class="text-danger">First name is required</small>
+                </div>
+              </div>
+        
+              <!-- Last Name Field -->
+              <div class="col-md-6">
+                <label for="lastName">Last Name</label>
+                <input id="lastName" type="text" class="form-control" formControlName="lastName" />
+                <div *ngIf="signUpForm.get('lastName')?.touched && signUpForm.get('lastName')?.invalid">
+                  <small class="text-danger">Last name is required</small>
+                </div>
+              </div>
+            </div>
+        
+            <div class="row mt-3">
+              <!-- Email Field -->
+              <div class="col-md-6">
+                <label for="newEmail">Email</label>
+                <input id="newEmail" type="email" class="form-control" formControlName="newEmail" />
+                <div *ngIf="signUpForm.get('newEmail')?.touched && signUpForm.get('newEmail')?.invalid">
+                  <small class="text-danger">Email is required</small>
+                </div>
+              </div>
+        
+              <!-- Password Field -->
+              <div class="col-md-6">
+                <label for="newPassword">Password</label>
+                <input id="newPassword" type="password" class="form-control" formControlName="newPassword" />
+                <div *ngIf="signUpForm.get('newPassword')?.touched && signUpForm.get('newPassword')?.invalid">
+                  <small class="text-danger">Password is required</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+        
         <div class="contact-payment">
           <h4>Shipping Method</h4>
           <div class="three-section">
