@@ -117,11 +117,40 @@ export class MainComponent extends AppBase implements OnInit {
 
 
   handlePlaceSelection(place: any) {
-    debugger
+    if (!place) return;
+  
+    const addressComponents = place.address_components;
+    let pinCode = '';
+    let city = '';
+    let state = '';
+    let locality = '';
+  
+    addressComponents.forEach((component: any) => {
+      const componentType = component.types[0];
+  
+      switch (componentType) {
+        case 'postal_code':
+          pinCode = component.long_name;
+          break;
+        case 'locality': // City
+          city = component.long_name;
+          break;
+        case 'administrative_area_level_1': // State
+          state = component.long_name;
+          break;
+        case 'sublocality_level_1': // Locality
+        case 'neighborhood':
+          locality = component.long_name;
+          break;
+      }
+    });
+  
     this.form.patchValue({
-      address: place?.formatted_address
-    })
-    console.log(this.form.value)
+      address: place?.formatted_address || '',
+      pinCode,
+      city,
+      locality
+    });
   }
 
 
