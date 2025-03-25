@@ -22,4 +22,5 @@ export * from './shopping-cart/shopping-cart.component';
 export * from './account-settings/main/main.component';
 export * from './hls-player/hls-player.component';
 export * from './order-confirmed/order-confirmed.component';
-export * from './order-rejected/order-rejected.component'
+export * from './order-rejected/order-rejected.component';
+export * from './pwa-prompt/pwa-prompt.component';

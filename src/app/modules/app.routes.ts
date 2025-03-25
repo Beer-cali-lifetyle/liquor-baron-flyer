@@ -21,6 +21,9 @@ const ModuleRoutes: Routes = [
         path: 'shop', loadComponent: () => import('./index').then(c => c.ShopListComponent)
     },
     {
+        path: 'pwa', loadComponent: () => import('./index').then(c => c.PwaPromptComponent)
+    },
+    {
         path: 'product/:id', loadComponent: () => import('./index').then(c => c.ProductInfoComponent)
     },
     {

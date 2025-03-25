@@ -1,0 +1,44 @@
+.pwa-container {
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .install-btn {
+    display: block;
+    margin: 15px auto;
+    padding: 10px 20px;
+    font-size: 16px;
+  }
+  
+  .download-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin: 20px 0;
+  }
+  
+  .download-buttons img {
+    width: 150px;
+  }
+  
+  .tutorial {
+    margin-top: 30px;
+  }
+  
+  .tutorial-step {
+    margin-bottom: 20px;
+  }
+  
+  .tutorial-step img {
+    width: 100%;
+    max-width: 300px;
+    border-radius: 8px;
+  }
+  
+  .tutorial-step p {
+    font-size: 14px;
+    color: #555;
+  }
+  
