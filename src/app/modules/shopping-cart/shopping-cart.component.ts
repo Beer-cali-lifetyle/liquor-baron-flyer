@@ -33,7 +33,6 @@ export class ShoppingCartComponent extends AppBase implements OnInit {
   ) { super(); }
 
   async ngOnInit() {
-    await this.fetchProducts();
     this.contextService.cart()?.subscribe((cartData: any) => {
       if (cartData && cartData.data) {
         this.calculateSubTotal(cartData.data);
@@ -49,9 +48,10 @@ export class ShoppingCartComponent extends AppBase implements OnInit {
   }
 
   async getCart() {
-    await this.ApiService.getCartProducts().then((res) => {
+    await this.ApiService.getCartProducts().then(async(res) => {
       this.contextService.cart.set(res)
       this.cdr.detectChanges();
+      await this.fetchProducts();
     })
   }
 
@@ -84,10 +84,24 @@ export class ShoppingCartComponent extends AppBase implements OnInit {
   async fetchProducts() {
     this.pageSize = 2;
     this.currentPage = 1;
-    await this.ApiService.fetcHlatestProducts({ perPage: this.pageSize, page: this.currentPage }).then(res => {
-      this.products = res?.data;
-    })
+  
+    // Get the category ID from the first product in the cart
+    let cartProducts = await this.contextService.cart()?.data.map((item: any) => item.product.id) || [];
+    let category = await this.contextService.cart()?.data[0]?.product?.cat_id;
+
+    console.log(category);
+  
+    // Fetch products based on the category
+    await this.ApiService.fetchFilteredProduct({
+      perPage: this.pageSize,
+      page: this.currentPage,
+      categoryId: category
+    }).then(res => {
+      // Filter out products that already exist in the cart
+      this.products = res?.data?.filter((product: any) => !cartProducts.includes(product.id));
+    });
   }
+  
 
   calculateSubTotal(cart: any) {
     let itemsTotal = 0;

@@ -9,7 +9,7 @@ import { AbstractControl } from '@angular/forms';
 export abstract class AppBase {
     isEditMode=false;
     currentPage = 1;
-    pageSize = 1;
+    pageSize = 20;
     searchTerm = '';
     dataSource: any;
     pageSizeOptions: number[] = [10, 25, 50, 100];

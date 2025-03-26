@@ -152,6 +152,10 @@ export class ApiService {
     });
   }
 
+  async addToCartWithoutPopup(data: any) {
+    return await this.httpRequest.POST(`/cart`, data)
+  }
+
   async getCartProducts() {
     return await this.httpRequest.GET(`/cart`);
   }
@@ -227,5 +231,9 @@ export class ApiService {
   async getShippingCharges(data: any) {
     return await this.httpRequest.POST('/shipping/rate', data);
   }
+
+  // async nesletterSignUp(data: any) {
+  //   return await this.httpRequest.POST('/shipping/rate', data);
+  // }
 
 }

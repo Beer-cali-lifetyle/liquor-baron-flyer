@@ -2,9 +2,12 @@
   <div class="container-fluid">
     <h2>My Wishlist</h2>
     <div class="row row-product">
-      <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 product-card-container cards-porduct" *ngFor="let product of wishLstItems?.data; let i=index">
+      <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 product-card-container cards-porduct"
+        *ngFor="let product of wishLstItems?.data; let i=index">
 
-        <div class="product-card mx-3" [routerLink]="['/product', product?.id]">
+        <div class="product-card mx-3" [routerLink]="['/product', product?.id]"
+          [ngClass]="{ 'out-of-stock': product?.stock === 0 }" [attr.disabled]="product?.stock === 0 ? true : null">
+          <h4 *ngIf="product?.stock === 0 " class="ms-2 mt-2">Out of Stock</h4>
           <div class="product-tumb pt-4 pb-1">
             <img [src]="imgBaseUrl + product?.product?.product_image" class="img-fluid uniform-img" alt="product">
 
@@ -19,31 +22,36 @@
             <p>{{product?.product?.description}}</p>
             <div class="product-bottom-details d-flex justify-content-between">
               <div class="product-price">
-                <span [class.text-danger]="product?.product?.discount"> ${{ product?.product?.price }}  </span>
+                <span [class.text-danger]="product?.product?.discount"> ${{ product?.product?.price }} </span>
                 <span *ngIf="product?.product?.discount">
-                  <del>  ${{ product?.product?.discount }}</del>
+                  <del> ${{ product?.product?.discount }}</del>
                 </span>
               </div>
               <div class="bag-container" *ngIf="!product?.cart_details">
-                <i class="bi bi-lg bi-bag-plus bag-icon" *ngIf="!product?.product?.cart_details" 
-                   (click)="addToCart($event, product?.product?.id)">
+                <i class="bi bi-lg bi-bag-plus bag-icon" *ngIf="!product?.product?.cart_details"
+                  (click)="addToCart($event, product?.product?.id)">
                 </i>
                 <span class="hover-text">Add</span>
               </div>
-            <div class="qty-container" *ngIf="product?.product?.cart_details">
-              <button class="minus-round btn-light" type="button"
-                (click)="decrementProductCard(product?.product?.cart_details?.id, product?.product?.cart_details?.quantity, i, $event)"><i
-                  class="bi bi-dash"></i></button>
-              <div class="quantity-round">{{product?.product?.cart_details?.quantity}}</div>
-              <button class="plus-round btn-light" type="button"
-                (click)="incrementProductCard(product?.product?.cart_details?.id, product?.product?.cart_details?.quantity, i, $event)"><i
-                  class="bi bi-plus-lg"></i></button>
-            </div>
+              <div class="qty-container" *ngIf="product?.product?.cart_details">
+                <button class="minus-round btn-light" type="button"
+                  (click)="decrementProductCard(product?.product?.cart_details?.id, product?.product?.cart_details?.quantity, i, $event)"><i
+                    class="bi bi-dash"></i></button>
+                <div class="quantity-round">{{product?.product?.cart_details?.quantity}}</div>
+                <button class="plus-round btn-light" type="button"
+                  (click)="incrementProductCard(product?.product?.cart_details?.id, product?.product?.cart_details?.quantity, i, $event)"><i
+                    class="bi bi-plus-lg"></i></button>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
     </div>
+
+    <div class="no-data-found text-center" *ngIf="!(wishLstItems?.data.length > 0)">
+      <img src="https://bepharco.com/no-products-found.png" alt="no-data-found" />
+    </div>
+
   </div>
 </section>

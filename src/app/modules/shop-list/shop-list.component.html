@@ -84,11 +84,13 @@
                 [infiniteScrollDistance]="1" 
                 [infiniteScrollThrottle]="300"
                 (scrolled)="fetchMoreProducts()"> -->
-              <div class="col-12 ps-5 md-ps-15px md-mb-60px nil-padding">
+              <div class="col-12 ps-5 md-ps-15px md-mb-60px nil-padding" *ngIf="products.length > 0">
                 <div class="row mb-5  row-product">
                   <div class="col-3 product-card-container" *ngFor="let product of products; let i=index">
 
-                    <div class="product-card mx-2" [routerLink]="['/product', product?.id]">
+                    <div class="product-card mx-2" [routerLink]="['/product', product?.id]" [ngClass]="{ 'out-of-stock': product?.stock === 0 }" 
+                    [attr.disabled]="product?.stock === 0 ? true : null">
+            <h4 *ngIf="product?.stock === 0 " class="ms-2 mt-2">Out of Stock</h4>
                       <div class="product-tumb pt-4 pb-1">
                         <img [src]="imgBaseUrl + product?.product_image" class="img-fluid uniform-img" alt="product">
                         <!-- <div class="badge-wrapper"> -->
@@ -144,6 +146,12 @@
                 </div>
                 
                 </div>
+
+
+                <div class="no-data-found text-center" *ngIf="!(products.length > 0)">
+                  <img src="https://bepharco.com/no-products-found.png" alt="no-data-found" />
+                </div>
+
             </div>
           </div>
         </div>

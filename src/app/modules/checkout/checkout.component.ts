@@ -61,6 +61,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
   //   "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"
   // ];
   autocompleteInput: string = '';
+  disabledDays: number[] = [];
   queryWait: boolean = false;
   constructor(
     private http: HttpClient,
@@ -81,16 +82,16 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
 
   handlePlaceSelection(place: any) {
     if (!place) return;
-  
+
     const addressComponents = place.address_components;
     let pinCode = '';
     let city = '';
     let state = '';
     let locality = '';
-  
+
     addressComponents.forEach((component: any) => {
       const componentType = component.types[0];
-  
+
       switch (componentType) {
         case 'postal_code':
           pinCode = component.long_name;
@@ -107,7 +108,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
           break;
       }
     });
-  
+
     this.form.patchValue({
       address: place?.formatted_address || '',
       pinCode,
@@ -240,15 +241,48 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
       return
     }
     if (directId) {
-      this.selectedState = directId
+      this.selectedState = directId;
     } else {
       const selectElement = event.target as HTMLSelectElement; // Cast event target as HTMLSelectElement
       this.selectedState = selectElement.value; // Get the selected value
       console.log('Selected State:', this.selectedState);
     }
     await this.fetchTaxes();
+    if (this.storePickupForm.get('selectedStore').value) {
+      const selectedStore = this.stores.data.data.find((store: any) => store.id == this.storePickupForm.get('selectedStore').value);
+      if (selectedStore) {
+        this.setDisabledDays(selectedStore.days);
+      }
+    }
   }
 
+  setDisabledDays(availableDays: string) {
+    const weekdaysMap: { [key: string]: number } = {
+      'Sunday': 0, 'Monday': 1, 'Tuesday': 2, 'Wednesday': 3,
+      'Thursday': 4, 'Friday': 5, 'Saturday': 6
+    };
+
+    const availableDaysArray = availableDays.split(',').map(day => weekdaysMap[day.trim()]);
+    this.disabledDays = Array.from({ length: 7 }, (_, i) => i).filter(day => !availableDaysArray.includes(day));
+  }
+
+  // Validate selected date and clear if it's a disabled day
+  validateDate(event: any) {
+    const weekdaysMap: { [key: string]: number } = {
+      'Sunday': 0, 'Monday': 1, 'Tuesday': 2, 'Wednesday': 3,
+      'Thursday': 4, 'Friday': 5, 'Saturday': 6
+    };
+    if (!this.storePickupForm.get('selectedStore').value) {
+      this.toaster.Warning('Select store first.')
+    }
+    debugger;
+    const selectedDate = new Date(event.target.value);
+    if (this.disabledDays.includes(selectedDate.getDay())) {
+      this.toaster.Warning(`Store is not open on these days: ${this.disabledDays.map(day => Object.keys(weekdaysMap).find(key => weekdaysMap[key] === day)).join(', ')}.`);
+
+      this.storePickupForm.get('pickupDate')?.setValue('');
+    }
+  }
 
   openModal(content: any) {
     const modalRef: NgbModalRef = this.modalService.open(content, {
@@ -292,8 +326,8 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
   async fetchTaxes() {
     await this.ApiService.fetchTax(this.selectedState).then((res) => {
       this.tax_percentage = parseFloat(res[0]?.total_tax);
-      if(this.activeTab != 1)
-      this.calculateShipping();
+      if (this.activeTab != 1)
+        this.calculateShipping();
     })
     await this.calculateSubTotal();
   }
@@ -483,8 +517,8 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
         totalWeight: 1.5 * count,
         isPallet: false, // Corrected syntax
         shipDate: this.deliveryForm.value.deliveryDate instanceof Date
-        ? this.deliveryForm.value.deliveryDate.toISOString()
-        : new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
+          ? this.deliveryForm.value.deliveryDate.toISOString()
+          : new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
         shipmentTypeEnum: "regular",
         selectedAccessorials: [],
         declaredValue: this.subTotal,
@@ -499,186 +533,186 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
       //             )
       //           );
 
-    console.log('Response:', result);
-debugger;
-    this.shippingCharges = result?.total ? result.total : result;
-    this.total = this.total + this.shippingCharges;
-    return result?.total;
+      console.log('Response:', result);
+      debugger;
+      this.shippingCharges = result?.total ? result.total : result;
+      this.total = this.total + this.shippingCharges;
+      return result?.total;
 
-  } catch(error) {
-    console.error('Error fetching shipping charges:', error);
-    return undefined; // Avoid breaking the UI
+    } catch (error) {
+      console.error('Error fetching shipping charges:', error);
+      return undefined; // Avoid breaking the UI
+    }
   }
-}
 
   async placeOrder() {
-    if((this.contextService.user()?.is_guest === true || this.contextService.user()?.is_guest === '1')) {
+    if ((this.contextService.user()?.is_guest === true || this.contextService.user()?.is_guest === '1')) {
       await this.onSignUp();
       debugger;
       console.log('hello')
     }
     debugger;
-  switch (this.activeTab) {
-    case 1:
-      if (this.storePickupForm.valid) {
-        const storePickupPayload = {
-          user_id: this.contextService.user()?.id,
-          items: this.contextService.cart()?.data?.map((product: any) => {
-            return { product_id: product?.product?.id, name: product?.product?.name, quantity: product?.quantity, price: product?.product?.price }
-          }),
-          total_amount: this.subTotal,
-          payment_method: this.selectedPaymentMethod,
-          delivery_type: "store",
-          pickup_date: this.storePickupForm.value.pickupDate,
-          delivery_time: this.selectedTime,
-          store: this.storePickupForm.value.selectedStore,
-          total_tax: this.total_tax,
-        }
-        console.log(JSON.stringify(storePickupPayload))
-        await this.ApiService.placeOrder(storePickupPayload).then((res) => {
-          const checkoutUrl = res?.checkout_url;
-          if (checkoutUrl) {
-            window.location.href = checkoutUrl;
-          } else {
-            console.error('Checkout URL not found');
+    switch (this.activeTab) {
+      case 1:
+        if (this.storePickupForm.valid) {
+          const storePickupPayload = {
+            user_id: this.contextService.user()?.id,
+            items: this.contextService.cart()?.data?.map((product: any) => {
+              return { product_id: product?.product?.id, name: product?.product?.name, quantity: product?.quantity, price: product?.product?.price }
+            }),
+            total_amount: this.subTotal,
+            payment_method: this.selectedPaymentMethod,
+            delivery_type: "store",
+            pickup_date: this.storePickupForm.value.pickupDate,
+            delivery_time: this.selectedTime,
+            store: this.storePickupForm.value.selectedStore,
+            total_tax: this.total_tax,
           }
-        })
-      } else {
-        this.validateForm(this.storePickupForm)
-      }
-      break;
-    case 2:
-      if (this.deliveryForm.valid && this.shippingCharges > 0) {
-        const localDeliveryPayload = {
-          user_id: this.contextService.user()?.id,
-          items: this.contextService.cart()?.data?.map((product: any) => {
-            return {
-              product_id: product?.product?.id,
-              name: product?.product?.name,
-              quantity: product?.quantity,
-              price: product?.product?.price
-            };
-          }),
-          total_amount: this.subTotal,
-          delivery_address: this.formatAddress(this.addresses.find((item: any) => item?.id === this.deliveryForm.get('deliveryAddress')?.value)),
-          payment_method: this.selectedPaymentMethod,
-          delivery_type: "local",
-          pickup_date: this.deliveryForm.value.deliveryDate,
-          delivery_time: this.selectedTime,
-          total_tax: this.total_tax,
-          shipping_charge: this.shippingCharges
-        };
-        console.log(JSON.stringify(localDeliveryPayload))
-        await this.ApiService.placeOrder(localDeliveryPayload).then((res) => {
-          debugger;
-          console.log(res)
-          const checkoutUrl = res?.checkout_url;
-          if (checkoutUrl) {
-            // Redirect to the checkout URL
-            window.location.href = checkoutUrl;
-          } else {
-            console.error('Checkout URL not found');
-          }
-        })
-      } else {
-        this.validateForm(this.deliveryForm);
-        if (!this.shippingCharges && this.deliveryForm.valid) {
-          this.toaster.Warning('Please try again after some time.')
+          console.log(JSON.stringify(storePickupPayload))
+          await this.ApiService.placeOrder(storePickupPayload).then((res) => {
+            const checkoutUrl = res?.checkout_url;
+            if (checkoutUrl) {
+              window.location.href = checkoutUrl;
+            } else {
+              console.error('Checkout URL not found');
+            }
+          })
+        } else {
+          this.validateForm(this.storePickupForm)
         }
-      }
-      break;
-    case 3:
-      if (this.shippingForm.get('shippingAddress')?.value && this.shippingCharges > 0) {
-        const shippingPayload = {
-          user_id: this.contextService.user()?.id,
-          items: this.contextService.cart()?.data?.map((product: any) => {
-            return {
-              product_id: product?.product?.id,
-              name: product?.product?.name,
-              quantity: product?.quantity,
-              price: product?.product?.price
-            };
-          }),
-          total_amount: this.subTotal,
-          delivery_address: this.formatAddress(this.addresses.find((item: any) => item?.id === this.shippingForm.get('shippingAddress')?.value)),
-          payment_method: this.selectedPaymentMethod,
-          delivery_type: "shipping",
-          total_tax: this.total_tax,
-          shipping_charge: this.shippingCharges
-        };
-        await this.ApiService.placeOrder(shippingPayload).then((res) => {
-          const checkoutUrl = res?.checkout_url;
-          if (checkoutUrl) {
-            // Redirect to the checkout URL
-            window.location.href = checkoutUrl;
-          } else {
-            console.error('Checkout URL not found');
+        break;
+      case 2:
+        if (this.deliveryForm.valid && this.shippingCharges > 0) {
+          const localDeliveryPayload = {
+            user_id: this.contextService.user()?.id,
+            items: this.contextService.cart()?.data?.map((product: any) => {
+              return {
+                product_id: product?.product?.id,
+                name: product?.product?.name,
+                quantity: product?.quantity,
+                price: product?.product?.price
+              };
+            }),
+            total_amount: this.subTotal,
+            delivery_address: this.formatAddress(this.addresses.find((item: any) => item?.id === this.deliveryForm.get('deliveryAddress')?.value)),
+            payment_method: this.selectedPaymentMethod,
+            delivery_type: "local",
+            pickup_date: this.deliveryForm.value.deliveryDate,
+            delivery_time: this.selectedTime,
+            total_tax: this.total_tax,
+            shipping_charge: this.shippingCharges
+          };
+          console.log(JSON.stringify(localDeliveryPayload))
+          await this.ApiService.placeOrder(localDeliveryPayload).then((res) => {
+            debugger;
+            console.log(res)
+            const checkoutUrl = res?.checkout_url;
+            if (checkoutUrl) {
+              // Redirect to the checkout URL
+              window.location.href = checkoutUrl;
+            } else {
+              console.error('Checkout URL not found');
+            }
+          })
+        } else {
+          this.validateForm(this.deliveryForm);
+          if (!this.shippingCharges && this.deliveryForm.valid) {
+            this.toaster.Warning('Please try again after some time.')
           }
-        })
-      } else {
-        this.validateForm(this.shippingForm);
-        if (!this.shippingCharges && this.shippingForm.valid) {
-          this.toaster.Warning('Please try again after some time.')
         }
-      }
-      break;
-    default:
-      break;
-  }
-}
-
-
-formatAddress(address: any) {
-  if (!address) return null; // Handle case where no address is provided
-
-  const { full_name, address: addr, locality, landmark, city, state, pin_code, mobile_number } = address;
-
-  return {
-    name: full_name || '', // Full name
-    address: `${addr || ''}, ${locality || ''}${landmark ? ', ' + landmark : ''}, ${city || ''} - ${pin_code || ''}, ${state || ''}`.replace(/,\s*,/g, ',').replace(/,\s*$/, '').trim(),
-    mobile: mobile_number || '' // Mobile number (optional if required)
-  };
-}
-
-formatTime(form: FormGroup, field: string) {
-  const timeValue = form.get(field)?.value; // Get the raw value
-  if (timeValue) {
-    const [hours, minutes] = timeValue.split(':');
-    let hour = parseInt(hours, 10);
-    const ampm = hour >= 12 ? 'PM' : 'AM';
-    hour = hour % 12 || 12; // Convert to 12-hour format
-    const formattedHour = String(hour).padStart(2, '0'); // Add leading zero if necessary
-    const formattedMinutes = String(minutes).padStart(2, '0'); // Add leading zero if necessary
-    const formattedTime = `${formattedHour}:${formattedMinutes} ${ampm}`; // Format the time
-    this.selectedTime = formattedTime // Dynamically set the field value
-  }
-}
-
-continue() {
-  this.showPayment = true;
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-async onSignUp() {
-  if (this.signUpForm.invalid) {
-    this.validateForm();
-  } else {
-    const payload = {
-      name: this.signUpForm.value?.firstName + '' + this.form.value?.lastName,
-      first_name: this.signUpForm.value.firstName,
-      last_name: this.signUpForm.value.lastName,
-      email: this.signUpForm.value.newEmail,
-      password: this.signUpForm.value.newPassword,  
-      is_guest: false
+        break;
+      case 3:
+        if (this.shippingForm.get('shippingAddress')?.value && this.shippingCharges > 0) {
+          const shippingPayload = {
+            user_id: this.contextService.user()?.id,
+            items: this.contextService.cart()?.data?.map((product: any) => {
+              return {
+                product_id: product?.product?.id,
+                name: product?.product?.name,
+                quantity: product?.quantity,
+                price: product?.product?.price
+              };
+            }),
+            total_amount: this.subTotal,
+            delivery_address: this.formatAddress(this.addresses.find((item: any) => item?.id === this.shippingForm.get('shippingAddress')?.value)),
+            payment_method: this.selectedPaymentMethod,
+            delivery_type: "shipping",
+            total_tax: this.total_tax,
+            shipping_charge: this.shippingCharges
+          };
+          await this.ApiService.placeOrder(shippingPayload).then((res) => {
+            const checkoutUrl = res?.checkout_url;
+            if (checkoutUrl) {
+              // Redirect to the checkout URL
+              window.location.href = checkoutUrl;
+            } else {
+              console.error('Checkout URL not found');
+            }
+          })
+        } else {
+          this.validateForm(this.shippingForm);
+          if (!this.shippingCharges && this.shippingForm.valid) {
+            this.toaster.Warning('Please try again after some time.')
+          }
+        }
+        break;
+      default:
+        break;
     }
-    debugger;
-    await this.ApiService.updateUser(payload).then(res => {
-      this.contextService.user.set(res?.user);
-      localStorage.setItem('user_id', res?.user?.id);
-      localStorage.setItem('user', JSON.stringify(res?.user)); 
-      this.toaster.Success('Updated successfully')
-    })
   }
-}
+
+
+  formatAddress(address: any) {
+    if (!address) return null; // Handle case where no address is provided
+
+    const { full_name, address: addr, locality, landmark, city, state, pin_code, mobile_number } = address;
+
+    return {
+      name: full_name || '', // Full name
+      address: `${addr || ''}, ${locality || ''}${landmark ? ', ' + landmark : ''}, ${city || ''} - ${pin_code || ''}, ${state || ''}`.replace(/,\s*,/g, ',').replace(/,\s*$/, '').trim(),
+      mobile: mobile_number || '' // Mobile number (optional if required)
+    };
+  }
+
+  formatTime(form: FormGroup, field: string) {
+    const timeValue = form.get(field)?.value; // Get the raw value
+    if (timeValue) {
+      const [hours, minutes] = timeValue.split(':');
+      let hour = parseInt(hours, 10);
+      const ampm = hour >= 12 ? 'PM' : 'AM';
+      hour = hour % 12 || 12; // Convert to 12-hour format
+      const formattedHour = String(hour).padStart(2, '0'); // Add leading zero if necessary
+      const formattedMinutes = String(minutes).padStart(2, '0'); // Add leading zero if necessary
+      const formattedTime = `${formattedHour}:${formattedMinutes} ${ampm}`; // Format the time
+      this.selectedTime = formattedTime // Dynamically set the field value
+    }
+  }
+
+  continue() {
+    this.showPayment = true;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  async onSignUp() {
+    if (this.signUpForm.invalid) {
+      this.validateForm();
+    } else {
+      const payload = {
+        name: this.signUpForm.value?.firstName + '' + this.form.value?.lastName,
+        first_name: this.signUpForm.value.firstName,
+        last_name: this.signUpForm.value.lastName,
+        email: this.signUpForm.value.newEmail,
+        password: this.signUpForm.value.newPassword,
+        is_guest: 0
+      }
+      debugger;
+      await this.ApiService.updateUser(payload).then(res => {
+        this.contextService.user.set(res?.user);
+        localStorage.setItem('user_id', res?.user?.id);
+        localStorage.setItem('user', JSON.stringify(res?.user));
+        this.toaster.Success('Updated successfully')
+      })
+    }
+  }
 
 }

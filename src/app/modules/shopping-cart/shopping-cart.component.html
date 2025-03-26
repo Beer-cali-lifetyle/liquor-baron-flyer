@@ -77,10 +77,12 @@
           </div>
         </div>
 
-        <div class="row row-product mb-5 you-may-like">
+        <div class="row row-product mb-5 you-may-like" *ngIf="products.length > 0">
           <h2>You May Also Like </h2>
           <div class="col-lg-6 col-md-6 col-sm-12 product-card-container cards-product" *ngFor="let product of products; let i = index">
-            <div class="product-card d-flex align-items-center p-3 shadow-sm border rounded" [routerLink]="['/product', product?.id]">
+            <div class="product-card d-flex align-items-center p-3 shadow-sm border rounded" [routerLink]="['/product', product?.id]" [ngClass]="{ 'out-of-stock': product?.stock === 0 }" 
+            [attr.disabled]="product?.stock === 0 ? true : null">
+    <h4 *ngIf="product?.stock === 0 " class="ms-2 mt-2">Out of Stock</h4>
               <div class="product-tumb pt-4 pb-1">
                 <img [src]="imgBaseUrl + product?.product_image" class="img-fluid uniform-img" alt="product">
     

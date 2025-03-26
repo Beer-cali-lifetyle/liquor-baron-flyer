@@ -60,10 +60,13 @@
         </div>
       </div>
     </div>
+    <span *ngIf="products.length> 0">
     <div class="row row-product casting-products">
       <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 product-card-container cards-porduct" *ngFor="let product of products; let i=index">
 
-        <div class="product-card mx-3" [routerLink]="['/product', product?.id]">
+        <div class="product-card mx-3" [routerLink]="['/product', product?.id]" [ngClass]="{ 'out-of-stock': product?.stock === 0 }" 
+        [attr.disabled]="product?.stock === 0 ? true : null">
+<h4 *ngIf="product?.stock === 0 " class="ms-2 mt-2">Out of Stock</h4>
           <div class="product-tumb pt-4 pb-1">
             <img [src]="imgBaseUrl + product?.product_image" class="img-fluid uniform-img" alt="product">
 
@@ -111,9 +114,14 @@
           <button (click)="loadMore()">Load More</button>
         </div>
       </div>
-    </div>
+    </div></span>
   </div>
 </section>
+
+
+<div class="no-data-found text-center" *ngIf="!(products.length > 0)">
+  <img src="https://bepharco.com/no-products-found.png" alt="no-data-found" />
+</div>
 
 <!-- <section>
   <div>

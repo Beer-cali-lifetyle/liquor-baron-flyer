@@ -3,16 +3,16 @@
     <div class="row">
       <div class="col-12">
         <div class="newsletter-form align-middle">
-          <div class="title-form text-center">
+          <form class="title-form text-center" [formGroup]="form" (ngSubmit)="onSubmit()">
             <h3>Newsletter</h3>
             <p>Sign up for exclusive offers, masterclasses, launches and the latest news</p>
-            <form class="d-flex">
+            <div class="d-flex">
               <div class="input-group">
-                <input class="form-control mr-2 newsletter-input" type="search" placeholder="Enter you email" aria-label="Search">
+                <input class="form-control mr-2 newsletter-input" formControlName="email" placeholder="Enter you email" aria-label="Search">
                 <button class="btn btn-primary border-0" type="submit">Subscribe</button>
               </div>
-            </form>
-          </div>
+            </div>
+          </form>
         </div>
       </div>
     </div>

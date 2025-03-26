@@ -16,7 +16,7 @@
             <!-- <p class="3rd-contact"><a href="#">Change</a></p> -->
           </div>
         </div>
-        
+
         <form [formGroup]="signUpForm" *ngIf="(contextService.user()?.is_guest === true || contextService.user()?.is_guest === '1')">
           <div class="container">
             <div class="row">
@@ -120,7 +120,7 @@
                 <div class="col-6">
                   <div class="form-floating mb-3" (click)="triggerClick(datepicker1)">
                     <input [min]="today" #datepicker1 type="date" class="form-control border-2" id="datepicker1"
-                      formControlName="pickupDate" />
+                      formControlName="pickupDate" (change)="validateDate($event)"  />
                     <label for="datepicker1">Select Date</label>
                   </div>
                   <div *ngIf="storePickupForm.get('pickupDate')?.invalid && storePickupForm.get('pickupDate')?.touched"

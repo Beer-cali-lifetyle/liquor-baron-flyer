@@ -2046,3 +2046,17 @@ input:focus {
   color: white;
   transform: scale(1.1); /* Slight zoom effect */
 }
+
+
+.out-of-stock {
+  opacity: 0.6; /* Makes it look faded */
+  filter: grayscale(80%); /* Converts most of the colors to black and white */
+  pointer-events: none; /* Prevents clicks */
+  cursor: not-allowed; /* Shows a disabled cursor */
+  transition: all 0.3s ease-in-out; /* Smooth transition effect */
+}
+
+.out-of-stock:hover {
+  opacity: 0.8; /* Slightly increase visibility on hover */
+  filter: grayscale(100%); /* Fully black and white on hover */
+}
