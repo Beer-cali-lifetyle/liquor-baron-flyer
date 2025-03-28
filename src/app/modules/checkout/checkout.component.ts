@@ -698,7 +698,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
       this.validateForm();
     } else {
       const payload = {
-        name: this.signUpForm.value?.firstName + '' + this.form.value?.lastName,
+        name: this.signUpForm.value?.firstName + ' ' + this.signUpForm.value?.lastName,
         first_name: this.signUpForm.value.firstName,
         last_name: this.signUpForm.value.lastName,
         email: this.signUpForm.value.newEmail,

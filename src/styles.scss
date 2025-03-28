@@ -2060,3 +2060,65 @@ input:focus {
   opacity: 0.8; /* Slightly increase visibility on hover */
   filter: grayscale(100%); /* Fully black and white on hover */
 }
+
+.track-past {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0px !important;
+}
+
+.track-past .track-1 {
+  width: 22%;
+  padding: 12px !important;
+  background: #fff;
+  border-radius: 5px;
+}
+
+.track-past .track-1 img {
+  min-width: 100% !important;
+}
+
+.track-past .track-2 {
+  width: 56%;
+}
+
+.track-past .track-3 {
+  width: 18%;
+}
+
+
+@media (min-width: 320px) and (max-width: 991px) {
+  .track-past .track-1 {
+    width: 180px !important;
+    margin: 0 auto 12px;
+
+  }
+  
+  .track-past .track-2 {
+    width: 100%;
+    min-width: 100% !important;
+  }
+  
+  .track-past .track-3 {
+    width: 100%;
+    min-width: 100% !important;
+    margin-top: 12px;
+    text-align: center;
+  }
+}
+
+// @media (min-width: 601px) and (max-width: 991px) {
+//   .track-past .track-1 img {
+//     min-width: 100% !important;
+//   }
+  
+//   .track-past .track-2 {
+//     width: 100%;
+//     min-width: 100% !important;
+//   }
+  
+//   .track-past .track-3 {
+//     width: 100%;
+//     min-width: 100% !important;
+//   }
+// }

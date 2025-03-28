@@ -2,133 +2,145 @@
   <div class="my-account">
     <h2>My Orders</h2>
     <span *ngIf="orders.length > 0">
-    <br>
-    
-    <div class="col">
-      <div class="title-with-forms">
-        <div class="title-forms">
-          <h3>PENDING ORDERS</h3>
-          <hr>
-        </div>
-      </div>
-    </div>
+      <br>
 
-    <div *ngFor="let order of orders" class="order-card p-3 mb-3 shadow-sm rounded">
-      <div
-        class="row card-wi-border border-0 d-flex align-items-start text-md-start text-center flex-md-row flex-column">
-        <!-- Product Image (Centered on Mobile & Tablet) -->
-        <div class="col-md-2 col-12 d-flex justify-content-center">
-          <img [src]="imgBaseUrl + order?.items[0]?.product_image" class="img-fluid product-img rounded"
-            alt="Thumbnail">
-        </div>
-
-        <!-- Order Details (Under Image on Mobile & Tablet) -->
-        <div class="col-md-7 col-12 order-details">
-          <h6 class="mb-1 fw-bold text-maroon">Liquor Baron</h6>
-          <p class="small mb-1">{{ getOrderType(order?.delivery_type) }}</p>
-          <p class="small text-muted mb-1">
-            <span>{{ order?.order_number }} | {{ order?.created_at | date }}</span>
-          </p>
-          <p class="fw-bold text-maroon mb-1 view-details" (click)="openModal(orderModal, order)">
-            View Details
-          </p>
-        </div>
-
-        <!-- Delivery Time -->
-        <div class="col-md-3 col-12 text-md-end text-start">
-          <p class="mb-1 small"><b>Delivery Time:</b></p>
-          <p class="small text-secondary">{{ order?.delivery_time }}</p>
+      <div class="col">
+        <div class="title-with-forms">
+          <div class="title-forms">
+            <h3>PENDING ORDERS</h3>
+            <hr>
+          </div>
         </div>
       </div>
 
+      <div *ngFor="let order of orders" class="order-card p-3 mb-3 shadow-sm rounded">
+        <div
+          class="row card-wi-border border-0 d-flex align-items-start text-md-start text-center flex-md-row flex-column track-past">
+          <!-- Product Image (Centered on Mobile & Tablet) -->
+          <div class="col-md-2 col-12 d-flex justify-content-center track-1">
+            <img [src]="imgBaseUrl + order?.items[0]?.product_image" class="img-fluid product-img rounded"
+              alt="Thumbnail">
+          </div>
 
-      <hr class="mt-2 mb-2" style="border: none; border-top: 2px dashed maroon; margin: 10px 0;">
-
-
-      <!-- Items and Total Paid -->
-      <div class="col-12">
-        <div class="d-flex flex-wrap justify-content-between">
-          <div>
-            <p class="small mb-1"><b>Items:</b>
-              <span *ngFor="let item of order?.items">
-                {{ item?.product_name }} × {{ item?.quantity }},
-              </span>
+          <!-- Order Details (Under Image on Mobile & Tablet) -->
+          <div class="col-md-7 col-12 order-details track-2">
+            <h6 class="mb-1 fw-bold text-maroon">Liquor Baron</h6>
+            <p class="small mb-1">{{ getOrderType(order?.delivery_type) }}</p>
+            <p class="small text-muted mb-1">
+              <span>{{ order?.order_number }} | {{ order?.created_at | date }}</span>
+            </p>
+            <p class="fw-bold text-maroon mb-1 view-details" (click)="openModal(orderModal, order)">
+              View Details
             </p>
           </div>
-          <div class="text-end">
-            <p class="fw-bold text-success mb-0">Total Paid: ${{ order?.total_amount }}</p>
+
+          <!-- Delivery Time -->
+          <div class="col-md-3 col-12 text-md-end text-start track-3">
+            <span *ngIf="order?.delivery_type !== 'store'">
+            <p class="mb-1 small"><b>Delivery Date:</b></p>
+            <p class="small text-secondary">{{ order?.delivery_time | date }}</p>
+          </span>
+            <span *ngIf="order?.delivery_type === 'store'">
+            <p class="mb-1 small"><b>Order Date:</b></p>
+            <p class="small text-secondary">{{ order?.created_at | date }}</p>
+          </span>
           </div>
         </div>
+
+
+        <hr class="mt-2 mb-2" style="border: none; border-top: 2px dashed maroon; margin: 10px 0;">
+
+        <!-- Items and Total Paid -->
+        <div class="col-12">
+          <div class="d-flex flex-wrap justify-content-between">
+            <div>
+              <p class="small mb-1"><b>Items:</b>
+                <span *ngFor="let item of order?.items">
+                  {{ item?.product_name }} × {{ item?.quantity }},
+                </span>
+              </p>
+            </div>
+            <div class="text-end">
+              <p class="fw-bold text-success mb-0">Total Paid: ${{ order?.total_amount }}</p>
+            </div>
+          </div>
+        </div>
+
+
       </div>
-
-
-    </div></span>
+    </span>
 
     <span *ngIf="completed_orders.length > 0">
-    <div class="col">
-      <div class="title-with-forms">
-        <div class="title-forms">
-          <h3>PAST ORDERS</h3>
-          <hr>
-        </div>
-      </div>
-    </div>
-
-    <div *ngFor="let order of completed_orders" class="order-card p-3 mb-3 shadow-sm rounded">
-      <div
-        class="row card-wi-border border-0 d-flex align-items-start text-md-start text-center flex-md-row flex-column">
-        <!-- Product Image (Centered on Mobile & Tablet) -->
-        <div class="col-md-2 col-12 d-flex justify-content-center">
-          <img [src]="imgBaseUrl + order?.items[0]?.product_image" class="img-fluid product-img rounded"
-            alt="Thumbnail">
-        </div>
-
-        <!-- Order Details (Under Image on Mobile & Tablet) -->
-        <div class="col-md-7 col-12 order-details">
-          <h6 class="mb-1 fw-bold text-maroon">Liquor Baron</h6>
-          <p class="small mb-1">{{ getOrderType(order?.delivery_type) }}</p>
-          <p class="small text-muted mb-1">
-            <span>{{ order?.order_number }} | {{ order?.created_at | date }}</span>
-          </p>
-          <p class="fw-bold text-maroon mb-1 view-details" (click)="openModal(orderModal, order)">
-            View Details
-          </p>
-        </div>
-
-        <!-- Delivery Time -->
-        <div class="col-md-3 col-12 text-md-end text-start">
-          <p class="mb-1 small"><b>Delivery Time:</b></p>
-          <p class="small text-secondary">{{ order?.delivery_time }}</p>
+      <div class="col">
+        <div class="title-with-forms">
+          <div class="title-forms">
+            <h3>PAST ORDERS</h3>
+            <hr>
+          </div>
         </div>
       </div>
 
+      <div *ngFor="let order of completed_orders" class="order-card p-3 mb-3 shadow-sm rounded">
+        <div
+          class="row card-wi-border border-0 d-flex align-items-start text-md-start text-center flex-md-row flex-column track-past">
+          <!-- Product Image (Centered on Mobile & Tablet) -->
+          <div class="col-md-2 col-12 d-flex justify-content-center track-1">
+            <img [src]="imgBaseUrl + order?.items[0]?.product_image" class="img-fluid product-img rounded"
+              alt="Thumbnail">
+          </div>
 
-      <hr class="mt-2 mb-2" style="border: none; border-top: 2px dashed maroon; margin: 10px 0;">
-
-      <!-- Items and Total Paid -->
-      <div class="col-12">
-        <div class="d-flex flex-wrap justify-content-between">
-          <div>
-            <p class="small mb-1"><b>Items:</b>
-              <span *ngFor="let item of order?.items">
-                {{ item?.product_name }} × {{ item?.quantity }},
-              </span>
+          <!-- Order Details (Under Image on Mobile & Tablet) -->
+          <div class="col-md-7 col-12 order-details track-2">
+            <h6 class="mb-1 fw-bold text-maroon">Liquor Baron</h6>
+            <p class="small mb-1">{{ getOrderType(order?.delivery_type) }}</p>
+            <p class="small text-muted mb-1">
+              <span>{{ order?.order_number }} | {{ order?.created_at | date }}</span>
+            </p>
+            <p class="fw-bold text-maroon mb-1 view-details" (click)="openModal(orderModal, order)">
+              View Details
             </p>
           </div>
-          <div class="text-end">
-            <p class="fw-bold text-success mb-0">Total Paid: ${{ order?.total_amount }}</p>
+
+          <!-- Delivery Time -->
+          <div class="col-md-3 col-12 text-md-end text-start track-3">
+            <span *ngIf="order?.delivery_type !== 'store'">
+              <p class="mb-1 small"><b>Delivery Date:</b></p>
+              <p class="small text-secondary">{{ order?.delivery_time | date }}</p>
+            </span>
+              <span *ngIf="order?.delivery_type === 'store'">
+              <p class="mb-1 small"><b>Order Date:</b></p>
+              <p class="small text-secondary">{{ order?.created_at | date }}</p>
+            </span>
           </div>
         </div>
-        <button class="btn btn-maroon mt-2" type="button" (click)="reorder(order, $event)">Reorder</button>
+
+
+        <hr class="mt-2 mb-2" style="border: none; border-top: 2px dashed maroon; margin: 10px 0;">
+
+        <!-- Items and Total Paid -->
+        <div class="col-12">
+          <div class="d-flex flex-wrap justify-content-between">
+            <div>
+              <p class="small mb-1"><b>Items:</b>
+                <span *ngFor="let item of order?.items">
+                  {{ item?.product_name }} × {{ item?.quantity }},
+                </span>
+              </p>
+            </div>
+            <div class="text-end">
+              <p class="fw-bold text-success mb-0">Total Paid: ${{ order?.total_amount }}</p>
+            </div>
+          </div>
+          <button class="btn btn-maroon mt-2" type="button" (click)="reorder(order, $event)">Reorder</button>
+        </div>
+
+
       </div>
+    </span>
 
-
+    <div class="no-data-found text-center" *ngIf="!(orders.length > 0 || completed_orders.length > 0)">
+      <img src="https://bepharco.com/no-products-found.png" alt="no-data-found" />
     </div>
-  </span>
-
-  <div class="no-data-found text-center" *ngIf="!(orders.length > 0 || completed_orders.length > 0)">
-    <img src="https://bepharco.com/no-products-found.png" alt="no-data-found" />
-  </div>
 
   </div>
 
@@ -150,7 +162,8 @@
         'order-reject': currentOrder?.order_status === 'cancelled'
       }">
         <img src="assets/image/shipping/green-tick.png" alt="green-tick" class="status-icon">
-        <p class="fs-5 fw-bold">{{ currentOrder?.order_status == 'new' ? 'Pending' : currentOrder?.order_status | titlecase }}</p>
+        <p class="fs-5 fw-bold">{{ currentOrder?.order_status == 'new' ? 'Pending' : currentOrder?.order_status |
+          titlecase }}</p>
         <p class="text-muted">Your order will be delivered on {{currentOrder?.delivery_time}}</p>
       </div>
 
