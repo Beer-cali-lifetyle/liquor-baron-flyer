@@ -30,10 +30,10 @@ export class BaseLayoutComponent implements AfterViewInit {
       if (this.header?.nativeElement) {
         const height = this.header.nativeElement.offsetHeight;
         console.log("Header Height:", height);
-        document.documentElement.style.setProperty('--header-height', `${height}px`);
+        document.documentElement.style.setProperty('--header-height', `${height - 25}px`);
       } else {
         console.warn("Header reference is not available.");
       }
-    }, 100); // Small delay to ensure accurate height
+    }, 500); 
   }
 }

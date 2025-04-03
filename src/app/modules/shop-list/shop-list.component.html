@@ -23,7 +23,9 @@
               <div class="mb-2" *ngFor="let item of categories">
                 <!-- <input class="me-2 " type="radio" name="categoryFilter" [value]="item.id" [id]="item.id"
                   [checked]="selectedCategory === item.id" (change)="onCategoryChange(item.id, item.catname)"> -->
-                  <input type="radio" (input)="onCategoryChange(item.id, item.catname)" formControlName="selectedCategory" [value]="item?.id" [id]="item.id" class="me-2 form-check-input" />
+                  <input class="category-filter" type="radio" name="categoryFilter" [value]="item.id"  formControlName="selectedCategory"  [id]="item.id" class="me-2" 
+                  (click)="onCategoryChange(item.id, item.catname)">
+                  <!-- <input type="radio" class="form-check-input" (input)="onCategoryChange(item.id, item.catname)" formControlName="selectedCategory" [value]="item?.id" [id]="item.id" class="me-2 form-check-input" /> -->
                 <label class="form-check-label" [for]="item.id">{{ item?.catname | titlecase }}</label>
               </div>
             </div>
@@ -54,20 +56,20 @@
                 <h5>Category</h5>
                 <div class="my-4 border-bottom border-2">
                   <div class="form-check mb-2" *ngFor="let item of categories">
-                    <input class="form-check-input category-filter" type="radio" name="categoryFilter" [value]="item.id"
-                      [checked]="selectedCategory === item.id" (click)="onCategoryChange(item.id, item.catname)">
-                    <label class="form-check-label" for="cat1">{{ item?.catname }}</label>
+                    <input class="category-filter" type="radio" name="categoryFilter" [value]="item.id"
+                 (click)="onCategoryChange(item.id, item.catname)">
+                    <label class="form-check-label ms-2" for="cat1">{{ item?.catname }}</label>
                   </div>
                 </div>
         
-                <h5 class="mt-3">Brand</h5>
+                <!-- <h5 class="mt-3">Brand</h5>
                 <div class="my-4">
                   <div class="form-check mb-2" *ngFor="let item of brands">
                     <input class="form-check-input brand-filter" type="radio" name="brandFilter" [value]="item.id"
-                      [checked]="selectedBrand === item.id" (click)="onBrandChange(item.id, item.name)">
+                     (click)="onBrandChange(item.id, item.name)">
                     <label class="form-check-label" for="brand1">{{ item?.name }}</label>
                   </div>
-                </div>
+                </div> -->
               </div>
             </div>
           </div>

@@ -93,9 +93,11 @@ export class HeaderComponent implements OnInit {
 
   @HostListener('window:scroll', [])
   onWindowScroll() {
+    if (!this.isNavbarCollapsed) {
+      this.isNavbarCollapsed = true;
+    }
     const navElement = document.querySelector('.main-nav') as HTMLElement;
     const scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
-
     if (scrollPosition > this.headerHeight) {
       navElement.classList.add(this.scrolledClass);
     } else {

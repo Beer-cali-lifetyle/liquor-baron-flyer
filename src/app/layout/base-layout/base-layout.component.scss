@@ -9,6 +9,6 @@
 }
 
 .content-wrapper {
-  padding-top: calc(var(--header-height, 35px) + max(var(--header-height, 0) * 0, 28px));
+  padding-top: calc(var(--header-height, 0px) + max(var(--header-height, 0) * 0, 0px));
 
 }

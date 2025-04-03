@@ -1495,42 +1495,7 @@ html {
 .text-maroon {
   color: #840029 !important;
 }
-.form-check-input {
-  appearance: none;
-  -webkit-appearance: none;
-  background-color: #fff;
-  border: 2px solid maroon;
-  width: 20px;
-  height: 20px;
-  cursor: pointer;
-  position: relative;
-  border-radius: 50%; /* Makes it circular */
-  outline: none;
-  transition: all 0.3s ease-in-out;
-}
 
-/* When checked */
-.form-check-input:checked {
-  // background-color: maroon !important;
-  color: maroon !important;
-  border-color: maroon !important;
-}
-
-/* Add a dot when selected */
-.form-check-input:checked::before {
-  content: "✔" !important;
-  color: maroon !important;
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  background-color: white;
-  border-radius: 50%;
-  // top: 50%;
-  left: 10%;
-  transform: translate(-50%, -50%);
-}
-
-/* Ensures a modern look */
 input[type="radio"]:checked {
   accent-color: maroon !important;
 }
