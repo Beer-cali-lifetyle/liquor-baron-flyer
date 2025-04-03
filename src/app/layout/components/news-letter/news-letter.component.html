@@ -12,6 +12,12 @@
                 <button class="btn btn-primary border-0" type="submit">Subscribe</button>
               </div>
             </div>
+            <div *ngIf="form.get('email')?.touched && form.get('email')?.invalid">
+              <!-- <div class="text-light p-small" *ngIf="form.get('email')?.errors?.['required']">Email is required.
+              </div> -->
+              <div class="text-light p-small" *ngIf="form.get('email')?.errors?.['email']">Enter a valid email.
+              </div>
+            </div>
           </form>
         </div>
       </div>

@@ -9,6 +9,7 @@ import { AppBase } from '../../../app-base.component';
 import { ContextService } from '../../core/services/context.service';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { InfiniteScrollDirective } from 'ngx-infinite-scroll';
+import { CartService } from '../../shared/services/cart.service';
 
 
 @Component({
@@ -33,6 +34,7 @@ export class ShopListComponent extends AppBase implements OnInit, AfterViewInit 
   imgBaseUrl: string = environment.api.base_url;
   constructor(
     private ApiService: ApiService,
+    private cartService: CartService,
     private toaster: UiToasterService,
     private router: Router,
     private route: ActivatedRoute,
@@ -48,7 +50,7 @@ export class ShopListComponent extends AppBase implements OnInit, AfterViewInit 
     })
     Promise.all([
       this.fetchCategories(),
-      this.fetchBrands()
+      // this.fetchBrands()
     ])
     this.route.queryParams.subscribe(async (params) => {
       this.categoryId = params['categoryId'] ? parseInt(params['categoryId']) : null;
@@ -77,6 +79,9 @@ export class ShopListComponent extends AppBase implements OnInit, AfterViewInit 
       } else {
         await this.fetchRandomProducts(payload);
       }
+    });
+    this.cartService.cartUpdated$.subscribe(() => {
+      this.getCart();
     });
   }
 
@@ -226,6 +231,7 @@ export class ShopListComponent extends AppBase implements OnInit, AfterViewInit 
   async getCart() {
     if (this.contextService.user()) {
       await this.ApiService.getCartProducts().then((res) => {
+        this.products.forEach((product: any) => product['cart_details'] = null);
         res?.data.forEach((dataItem: any) => {
           const productIndex = this.products.findIndex((prod: any) => prod.id === dataItem.product_id);
 

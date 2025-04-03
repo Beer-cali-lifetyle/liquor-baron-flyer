@@ -38,7 +38,7 @@ export class MiniCartComponent implements OnInit {
   }
 
   async getCart() {
-    await this.ApiService.getCartProducts().then((res) => {
+    await this.ApiService.getCartProducts().then(async(res) => {
       this.contextService.cart.set(res)
       this.cdr.detectChanges();
       this.cartService.triggerCartUpdate();

@@ -117,7 +117,7 @@
             <h2>You May Also Like </h2>
             <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 product-card-container cards-porduct" *ngFor="let product of relatedProducts; let i=index">
       
-              <div class="product-card mx-2" [routerLink]="['/product', product?.id]">
+              <div class="product-card mx-2" (click)="goToProduct(product?.id)">
                 <div class="product-tumb pt-4 pb-1">
                   <img [src]="imgBaseUrl + product?.product_image" class="img-fluid uniform-img" alt="product">
       
@@ -137,9 +137,9 @@
                         <del>  ${{ product?.discount }}</del>
                       </span>
                     </div>
-                    <div class="bag-container" *ngIf="!product?.cart_details">
+                    <div class="bag-container" *ngIf="!product?.cart_details" (click)="addToCart($event, product?.id, i, 1)">
                       <i class="bi bi-lg bi-bag-plus bag-icon" *ngIf="!product?.product?.cart_details"
-                        (click)="addToCart($event, product?.id, i, 1)">
+                        >
                       </i>
                       <span class="hover-text">Add</span>
                     </div>

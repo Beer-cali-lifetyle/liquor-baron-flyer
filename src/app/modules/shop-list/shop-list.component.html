@@ -28,15 +28,13 @@
               </div>
             </div>
         
-            <h5 class="mt-3">Brand</h5>
+            <!-- <h5 class="mt-3">Brand</h5>
             <div class="my-4">
               <div class="form-check mb-2" *ngFor="let item of brands">
-                <!-- <input class="me-2" type="radio" name="brandFilter" [value]="item.id" [id]="item.id"
-                  [checked]="selectedBrand === item.id" (change)="onBrandChange(item.id, item.name)"> -->
                   <input type="radio" (input)="onBrandChange(item.id, item.name)" formControlName="selectedBrand" [value]="item?.id" [id]="item.id" class="me-2 form-check-input" />
                 <label class="form-check-label" [for]="item.id">{{ item?.name | titlecase }}</label>
               </div>
-            </div>
+            </div> -->
           </div>
         
           <!-- Responsive Offcanvas Sidebar for Small Screens -->
@@ -110,9 +108,9 @@
                               <del> ${{ product?.discount }}</del>
                             </span>
                           </div>
-                          <div class="bag-container" *ngIf="!product?.cart_details">
+                          <div class="bag-container" *ngIf="!product?.cart_details" (click)="addToCart($event, product?.id, i)">
                             <i class="bi bi-lg bi-bag-plus bag-icon" *ngIf="!product?.product?.cart_details"
-                              (click)="addToCart($event, product?.id, i)">
+                              >
                             </i>
                             <span class="hover-text">Add</span>
                           </div>

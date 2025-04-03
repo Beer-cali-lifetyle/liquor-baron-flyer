@@ -35,7 +35,7 @@ import { MiniCartComponent } from "../../../modules/shopping-cart/mini-cart/mini
 <span *ngIf="toast?.cart">
 <div style="display: flex; justify-content: space-between; align-items: center;">
   <button class="btn btn-close" (click)="close(toast)"></button>
-  <app-mini-cart></app-mini-cart>
+  <app-mini-cart class="w-100"></app-mini-cart>
 </div>
 
 </span>

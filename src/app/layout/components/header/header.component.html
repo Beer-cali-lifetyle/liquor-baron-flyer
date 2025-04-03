@@ -35,7 +35,7 @@
             <a class="nav-link active" aria-current="page">{{ item?.name }}</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link active" aria-current="page" routerLink="auth/sign-in"
+            <a class="nav-link active" aria-current="page" routerLink="/auth/sign-in"
               *ngIf="(this.contextService.user()?.is_guest === true || contextService.user()?.is_guest === '1') || !(this.contextService.user())" (click)="toggleNavbar()">E-Flyer Sign
               up</a>
             <a class="nav-link active" aria-current="page" routerLink="my-account"

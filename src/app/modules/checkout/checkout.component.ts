@@ -32,6 +32,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
   tax_percentage = 0;
   subTotal = 0;
   total = 0;
+  showAddressForm: boolean = false;
   selectedState: any = '5297c752-eaae-4e66-992e-fefd6f3ba2d4';
   activeTab = 1;
   addresses: any = [];
@@ -63,6 +64,8 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
   autocompleteInput: string = '';
   disabledDays: number[] = [];
   queryWait: boolean = false;
+  workingDays: Date[] = [];
+  timeSlots: any = [];
   constructor(
     private http: HttpClient,
     private ApiService: ApiService,
@@ -123,7 +126,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
       mobileNumber: ['', [Validators.required, Validators.pattern(/^\+?[1-9]\d{1,14}$/)]],
       pinCode: ['', Validators.required],
       address: ['', Validators.required],
-      locality: ['', Validators.required],
+      locality: [''],
       city: ['', Validators.required],
       state: ['', Validators.required],
       landmark: [''],
@@ -163,22 +166,6 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
     if (!this.contextService.user()?.is_age_verified) {
       this.initSwal();
     }
-    // this.googleMapsService
-    //   .loadGoogleMaps('AIzaSyBFtrosISezP-8z2NwTWKhD_5pNHoi0wRw')
-    //   .then(() => {
-    //     const inputElement = this.addressInput.nativeElement;
-    //     const autocomplete = new google.maps.places.Autocomplete(inputElement, {
-    //       types: ['address'],
-    //     });
-
-    //     autocomplete.addListener('place_changed', () => {
-    //       const place = autocomplete.getPlace();
-    //       console.log(place);
-    //     });
-    //   })
-    //   .catch((error) => {
-    //     console.error(error);
-    //   });
   }
 
   initSwal() {
@@ -213,6 +200,9 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
           allowOutsideClick: false,  // Prevents closing when clicking outside
           allowEscapeKey: false  // Prevents closing on Escape key
         });
+        setTimeout(() => {
+          window.location.href = "https://www.google.com"; // Redirects instead
+        }, 3000);
       }
     });
 
@@ -232,14 +222,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
     // await this.fetchTaxes();
   }
 
-  async setAddress(event: Event, directId?: any) {
-    if (this.activeTab === 2 && !(this.deliveryForm.value.deliveryDate)) {
-      this.toaster.Warning('Please Select delivery date first')
-      this.deliveryForm.get('deliveryAddress')?.setValue(null);
-      event.preventDefault;
-      event.stopPropagation();
-      return
-    }
+  async setAddress(event: any, directId?: any) {
     if (directId) {
       this.selectedState = directId;
     } else {
@@ -251,37 +234,59 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
     if (this.storePickupForm.get('selectedStore').value) {
       const selectedStore = this.stores.data.data.find((store: any) => store.id == this.storePickupForm.get('selectedStore').value);
       if (selectedStore) {
-        this.setDisabledDays(selectedStore.days);
+        debugger;
+        this.getNextWorkingDays(selectedStore.days, selectedStore.opening_time, selectedStore.closing_time);
+        // this.setDisabledDays(selectedStore.days);
       }
     }
   }
 
-  setDisabledDays(availableDays: string) {
+  private getNextWorkingDays(availableDays: any, openingTime: any, closingTime: any) {
     const weekdaysMap: { [key: string]: number } = {
       'Sunday': 0, 'Monday': 1, 'Tuesday': 2, 'Wednesday': 3,
       'Thursday': 4, 'Friday': 5, 'Saturday': 6
     };
+    const availableDaysArray = availableDays.split(',')
+      .map((day: any) => weekdaysMap[day.trim()]);
 
-    const availableDaysArray = availableDays.split(',').map(day => weekdaysMap[day.trim()]);
-    this.disabledDays = Array.from({ length: 7 }, (_, i) => i).filter(day => !availableDaysArray.includes(day));
+    const workingDates: Date[] = [];
+    let currentDate = new Date();
+
+    while (workingDates.length < 5) {
+      if (availableDaysArray.includes(currentDate.getDay())) {
+        workingDates.push(new Date(currentDate));
+      }
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    this.workingDays = workingDates;
+
+    function generateTimeSlots(openingTime: any, closingTime: any) {
+      let slots = [];
+      let start = new Date(`${openingTime}`);
+      let end = new Date(`${closingTime}`);
+
+      while (start <= end) {
+        let hours = start.getHours();
+        let minutes = start.getMinutes();
+        let period = hours >= 12 ? "PM" : "AM";
+        hours = hours % 12 || 12; // Convert to 12-hour format
+        let formattedTime = `${hours}:${minutes.toString().padStart(2, '0')} ${period}`;
+        slots.push(formattedTime);
+        start.setHours(start.getHours() + 1); // Increment by 1 hour
+      }
+
+      return slots;
+    }
+    this.timeSlots = generateTimeSlots(openingTime, closingTime);
   }
 
-  // Validate selected date and clear if it's a disabled day
-  validateDate(event: any) {
-    const weekdaysMap: { [key: string]: number } = {
-      'Sunday': 0, 'Monday': 1, 'Tuesday': 2, 'Wednesday': 3,
-      'Thursday': 4, 'Friday': 5, 'Saturday': 6
-    };
-    if (!this.storePickupForm.get('selectedStore').value) {
-      this.toaster.Warning('Select store first.')
-    }
-    debugger;
-    const selectedDate = new Date(event.target.value);
-    if (this.disabledDays.includes(selectedDate.getDay())) {
-      this.toaster.Warning(`Store is not open on these days: ${this.disabledDays.map(day => Object.keys(weekdaysMap).find(key => weekdaysMap[key] === day)).join(', ')}.`);
-
-      this.storePickupForm.get('pickupDate')?.setValue('');
-    }
+  formatDate(date: Date): string {
+    return date.toLocaleDateString('en-US', {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric'
+    });
   }
 
   openModal(content: any) {
@@ -389,63 +394,6 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
     return itemsTotal
   }
 
-  // async calculateShipping() {
-  //   try {
-  //     const headers = new HttpHeaders({
-  //       'Content-Type': 'application/json',
-  //       'Authorization': `Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IkJCT2pNMGZTNTBhdHVyVHBqMUpPbyJ9.eyJvcmdhbml6YXRpb25JZCI6IjUxIiwiYWNjb3VudElkIjoiNTIiLCJhcHBfZ3JvdXBzIjpbIldpbmVTaGlwcGVyX0N1c3RvbWVyX1NoaXBwZXIiXSwiY2lkIjoiWk5kTDdHQzNHMm5RSkJURlkxbTlYa1lHRm04cll2bUMiLCJpc3MiOiJodHRwczovL2xvZ2luLWIyYi1hdHMtaGVhbHRoY2FyZS51cy5hdXRoMC5jb20vIiwic3ViIjoiWk5kTDdHQzNHMm5RSkJURlkxbTlYa1lHRm04cll2bUNAY2xpZW50cyIsImF1ZCI6Imh0dHBzOi8vdGVzdC5hcGkuYXRzLmhlYWx0aGNhcmUiLCJpYXQiOjE3NDE2MzMyNTksImV4cCI6MTc0MTcxOTY1OSwiZ3R5IjoiY2xpZW50LWNyZWRlbnRpYWxzIiwiYXpwIjoiWk5kTDdHQzNHMm5RSkJURlkxbTlYa1lHRm04cll2bUMifQ.C1V5Nt-KZbkxopTttn1XM08vSy2zWNKKwztTW0yyP2IN8vNi9GxJIlkmbJDijjlKm3x1QY_x7rAv72yrx2sJsq3m9V-bFZhCkPGcz_rfv5YDcoIrpZaHggiMIgKTZtMXXb82_NR5TUb2nfy05A0CsKQJGp8uig1JSWAwKbhKU8rJTZRw8BDbPVhg0pSsWp9Xn14yTSw6i7fdtPHd2dPLC9Lli8m8fRdalIjJgnZ03fLbH_3PfVn8eV-5kgHhC3peZmTgYGVO-fEXj1GKijT3QRT2mKbEtvDIGGs_ks_O7RCiJ4hyVgRVzuyMo5DeitmqG9iSajJVCWiY2nsXQlEXvg`
-  //     });
-
-  //     let address = this.addresses.find((item: any) => item?.id === this.deliveryForm.get('deliveryAddress')?.value) ||
-  //                   this.addresses.find((item: any) => item?.id === this.shippingForm.get('shippingddress')?.value);
-
-  //     const count = this.contextService.cart()?.data?.reduce((sum: any, item: any) => sum + (item.quantity ?? 0), 0) || 0;
-
-  //     const body = {
-  //       "serviceCode": "GE",
-  //       "address": {
-  //         "address1": address?.address,
-  //         "address2": address?.locality,
-  //         "city": address?.city,
-  //         "province": address?.state?.NAME || address?.state_name,
-  //         "postalCode": address?.pin_code,
-  //         "country": "Canada",
-  //         "isResidential": false
-  //       },
-  //       "pieces": count,
-  //       "packages": [],
-  //       "totalWeight": 1.5 * count,
-  //       "isPallet": false,
-  //       "shipDate": this.deliveryForm.value.deliveryDate,
-  //       "shipmentTypeEnum": "regular",
-  //       "selectedAccessorials": [],
-  //       "declaredValue": 100.00
-  //     };
-
-  //     console.log('Request Payload:', JSON.stringify(body));
-
-  //     const result: any = await firstValueFrom(
-  //       this.http.post(this.shippingApiUrl, body, { headers }).pipe(
-  //         timeout(15000), // 15 seconds timeout
-  //         catchError(err => {
-  //           console.error('Request failed:', err);
-  //           return throwError(() => err);
-  //         })
-  //       )
-  //     );
-
-  //     console.log('Response:', result);
-
-  //     this.shippingCharges = result?.total ? result.total : result;
-  //     this.total  = this.total + this.shippingCharges;
-  //     return result?.total;
-
-  //   } catch (error) {
-  //     console.error('Error fetching shipping charges:', error);
-  //     return undefined; // Avoid breaking the UI
-  //   }
-  // }
-
   async getAuthToken() {
     const tokenData = localStorage.getItem('ats_token');
 
@@ -495,12 +443,6 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
         this.addresses.find((item: any) => item?.id === this.shippingForm.get('shippingAddress')?.value);
 
       const count = this.contextService.cart()?.data?.reduce((sum: any, item: any) => sum + (item.quantity ?? 0), 0) || 0;
-      // const token = await this.getAuthToken();
-      // const headers = new HttpHeaders({
-      //   'Content-Type': 'application/json',
-      //   'Authorization': `Bearer ${token}`
-      // });
-      // debugger;
       const body = {
         serviceCode: "GE",
         address: {
@@ -524,15 +466,6 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
         declaredValue: this.subTotal,
       };
       const result: any = await this.ApiService.getShippingCharges(body);
-      // const result: any = await firstValueFrom(
-      //             this.http.post(this.shippingApiUrl, body, { headers }).pipe(
-      //               catchError(err => {
-      //                 console.error('Request failed:', err);
-      //                 return throwError(() => err);
-      //               })
-      //             )
-      //           );
-
       console.log('Response:', result);
       debugger;
       this.shippingCharges = result?.total ? result.total : result;
@@ -547,11 +480,12 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
 
   async placeOrder() {
     if ((this.contextService.user()?.is_guest === true || this.contextService.user()?.is_guest === '1')) {
-      await this.onSignUp();
-      debugger;
-      console.log('hello')
+      if (this.signUpForm.valid) {
+        await this.onSignUp();
+      } else {
+        return this.validateForm(this.signUpForm);
+      }
     }
-    debugger;
     switch (this.activeTab) {
       case 1:
         if (this.storePickupForm.valid) {
@@ -582,42 +516,90 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
         }
         break;
       case 2:
-        if (this.deliveryForm.valid && this.shippingCharges > 0) {
-          const localDeliveryPayload = {
-            user_id: this.contextService.user()?.id,
-            items: this.contextService.cart()?.data?.map((product: any) => {
-              return {
-                product_id: product?.product?.id,
-                name: product?.product?.name,
-                quantity: product?.quantity,
-                price: product?.product?.price
+        if (!this.deliveryForm.get('deliveryAddress')?.value && this.showAddressForm) {
+          await this.onSubmit().then(async (res: any) => {
+            this.setAddress(event, res[0]?.state_id)
+            this.deliveryForm.patchValue({
+              deliveryAddress: res[0]?.id
+            })
+            this.deliveryForm.get('deliveryAddress')?.value
+            if (this.deliveryForm.valid && this.shippingCharges > 0) {
+              const localDeliveryPayload = {
+                user_id: this.contextService.user()?.id,
+                items: this.contextService.cart()?.data?.map((product: any) => {
+                  return {
+                    product_id: product?.product?.id,
+                    name: product?.product?.name,
+                    quantity: product?.quantity,
+                    price: product?.product?.price
+                  };
+                }),
+                total_amount: this.subTotal,
+                delivery_address: this.formatAddress(this.addresses.find((item: any) => item?.id === this.deliveryForm.get('deliveryAddress')?.value)),
+                payment_method: this.selectedPaymentMethod,
+                delivery_type: "local",
+                pickup_date: this.deliveryForm.value.deliveryDate,
+                delivery_time: this.selectedTime,
+                total_tax: this.total_tax,
+                shipping_charge: this.shippingCharges
               };
-            }),
-            total_amount: this.subTotal,
-            delivery_address: this.formatAddress(this.addresses.find((item: any) => item?.id === this.deliveryForm.get('deliveryAddress')?.value)),
-            payment_method: this.selectedPaymentMethod,
-            delivery_type: "local",
-            pickup_date: this.deliveryForm.value.deliveryDate,
-            delivery_time: this.selectedTime,
-            total_tax: this.total_tax,
-            shipping_charge: this.shippingCharges
-          };
-          console.log(JSON.stringify(localDeliveryPayload))
-          await this.ApiService.placeOrder(localDeliveryPayload).then((res) => {
-            debugger;
-            console.log(res)
-            const checkoutUrl = res?.checkout_url;
-            if (checkoutUrl) {
-              // Redirect to the checkout URL
-              window.location.href = checkoutUrl;
+              console.log(JSON.stringify(localDeliveryPayload))
+              await this.ApiService.placeOrder(localDeliveryPayload).then((res) => {
+                debugger;
+                console.log(res)
+                const checkoutUrl = res?.checkout_url;
+                if (checkoutUrl) {
+                  // Redirect to the checkout URL
+                  window.location.href = checkoutUrl;
+                } else {
+                  console.error('Checkout URL not found');
+                }
+              })
             } else {
-              console.error('Checkout URL not found');
+              this.validateForm(this.deliveryForm);
+              if (!this.shippingCharges && this.deliveryForm.valid) {
+                this.toaster.Warning('Please try again after some time.')
+              }
             }
           })
         } else {
-          this.validateForm(this.deliveryForm);
-          if (!this.shippingCharges && this.deliveryForm.valid) {
-            this.toaster.Warning('Please try again after some time.')
+          if (this.deliveryForm.valid && this.shippingCharges > 0) {
+            const localDeliveryPayload = {
+              user_id: this.contextService.user()?.id,
+              items: this.contextService.cart()?.data?.map((product: any) => {
+                return {
+                  product_id: product?.product?.id,
+                  name: product?.product?.name,
+                  quantity: product?.quantity,
+                  price: product?.product?.price
+                };
+              }),
+              total_amount: this.subTotal,
+              delivery_address: this.formatAddress(this.addresses.find((item: any) => item?.id === this.deliveryForm.get('deliveryAddress')?.value)),
+              payment_method: this.selectedPaymentMethod,
+              delivery_type: "local",
+              pickup_date: this.deliveryForm.value.deliveryDate,
+              delivery_time: this.selectedTime,
+              total_tax: this.total_tax,
+              shipping_charge: this.shippingCharges
+            };
+            console.log(JSON.stringify(localDeliveryPayload))
+            await this.ApiService.placeOrder(localDeliveryPayload).then((res) => {
+              debugger;
+              console.log(res)
+              const checkoutUrl = res?.checkout_url;
+              if (checkoutUrl) {
+                // Redirect to the checkout URL
+                window.location.href = checkoutUrl;
+              } else {
+                console.error('Checkout URL not found');
+              }
+            })
+          } else {
+            this.validateForm(this.deliveryForm);
+            if (!this.shippingCharges && this.deliveryForm.valid) {
+              this.toaster.Warning('Please try again after some time.')
+            }
           }
         }
         break;
@@ -705,7 +687,6 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
         password: this.signUpForm.value.newPassword,
         is_guest: 0
       }
-      debugger;
       await this.ApiService.updateUser(payload).then(res => {
         this.contextService.user.set(res?.user);
         localStorage.setItem('user_id', res?.user?.id);

@@ -33,30 +33,32 @@ export class SignUpComponent extends AppBase implements OnInit {
     }, { validator: this.mustMatch('password', 'password_confirmation') });
   }
 
- async onSignup() {
-  console.log(this.form.value)
-    if (this.form.valid) {
-      try {
-        const payload ={
-            name: this.form.value.firstName + ' ' + this.form.value.lastName ,
+  async onSignup() {
+    if ((this.context.user()?.is_guest === true || this.context.user()?.is_guest === '1')) { this.onSignUpGuest() } else {
+      console.log(this.form.value)
+      if (this.form.valid) {
+        try {
+          const payload = {
+            name: this.form.value.firstName + ' ' + this.form.value.lastName,
             first_name: this.form.value.firstName,
             last_name: this.form.value.lastName,
-            email :this.form.value.email,
+            email: this.form.value.email,
             password: this.form.value.password,
             password_confirmation: this.form.value.password_confirmation
-        }
-        const res = await this.ApiService.SignUp(payload);
-        
-        this.context.user.set(res?.user);
+          }
+          const res = await this.ApiService.SignUp(payload);
+
+          this.context.user.set(res?.user);
           localStorage.setItem('access_token', res?.token);
           localStorage.setItem('user_id', res?.user?.id);
           localStorage.setItem('user', JSON.stringify(res?.user));
-        this.router.navigate(['/home'])
-      } catch (error) {
-        console.error('Sign-in error:', error);
+          this.router.navigate(['/home'])
+        } catch (error) {
+          console.error('Sign-in error:', error);
+        }
+      } else {
+        this.validateForm();
       }
-    } else {
-      this.validateForm();
     }
   }
 
@@ -64,11 +66,11 @@ export class SignUpComponent extends AppBase implements OnInit {
     return (formGroup: FormGroup) => {
       const passControl = formGroup.controls[password];
       const confirmPassControl = formGroup.controls[password_confirmation];
-  
+
       if (confirmPassControl.errors && !confirmPassControl.errors['mustMatch']) {
         return;
       }
-  
+
       if (passControl.value !== confirmPassControl.value) {
         confirmPassControl.setErrors({ mustMatch: true });
       } else {
@@ -76,10 +78,33 @@ export class SignUpComponent extends AppBase implements OnInit {
       }
     };
   }
-  
+
 
   togglePasswordVisibility() {
     this.passwordFieldType = this.passwordFieldType === 'password' ? 'text' : 'password';
+  }
+
+
+  async onSignUpGuest() {
+    if (this.form.invalid) {
+      this.validateForm();
+    } else {
+      const payload = {
+        name: this.form.value.firstName + ' ' + this.form.value.lastName,
+        first_name: this.form.value.firstName,
+        last_name: this.form.value.lastName,
+        email: this.form.value.email,
+        password: this.form.value.password,
+        password_confirmation: this.form.value.password_confirmation,
+        is_guest: 0
+      }
+      await this.ApiService.updateUser(payload).then(res => {
+        this.context.user.set(res?.user);
+        localStorage.setItem('user_id', res?.user?.id);
+        localStorage.setItem('user', JSON.stringify(res?.user));
+        this.router.navigate(['/my-account'])
+      })
+    }
   }
 
 }

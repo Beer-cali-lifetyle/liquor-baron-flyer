@@ -57,7 +57,7 @@ const ModuleRoutes: Routes = [
         path: 'hls', loadComponent: () => import('./index').then(c => c.HlsPlayerComponent)
     },
     {
-        path: 'cart', canActivate: [AuthGuard], loadComponent: () => import('./index').then(c => c.ShoppingCartComponent)
+        path: 'cart', loadComponent: () => import('./index').then(c => c.ShoppingCartComponent)
     },
     {
         path: 'checkout', canActivate: [AuthGuard], loadComponent: () => import('./index').then(c => c.CheckoutComponent)

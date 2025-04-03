@@ -10,6 +10,7 @@ import { ContextService } from '../../core/services/context.service';
 import { environment } from '../../../environments/environment';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CarouselModule } from 'ngx-owl-carousel-o';
+import { CartService } from '../../shared/services/cart.service';
 @Component({
   selector: 'app-product-info',
   templateUrl: './product-info.component.html',
@@ -44,7 +45,8 @@ export class ProductInfoComponent extends AppBase implements OnInit {
     public contextService: ContextService,
     private fb: FormBuilder,
     private modal: NgbModal,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private cartService: CartService,
   ) {
     super();
     this.checkMode(this.activatedRoute.snapshot.params);
@@ -85,6 +87,9 @@ export class ProductInfoComponent extends AppBase implements OnInit {
         this.fetchRelatedProducts(),
       ])
     })
+    this.cartService.cartUpdated$.subscribe(() => {
+      this.getCart();  
+    });
   }
 
   increment() {
@@ -170,6 +175,7 @@ export class ProductInfoComponent extends AppBase implements OnInit {
   async getCart() {
     if (this.contextService.user()) {
       await this.ApiService.getCartProducts().then((res) => {
+        this.relatedProducts.forEach((product: any) => product['cart_details'] = null);
         this.contextService.cart.set(res);
         res?.data.forEach((dataItem: any) => {
           const productIndex = this.relatedProducts.findIndex((prod: any) => prod.id === dataItem.product_id);
@@ -259,8 +265,8 @@ export class ProductInfoComponent extends AppBase implements OnInit {
       this.cdr.detectChanges();
     });
   }
-  
-  
+
+
 
   async selectRelated(id: any) {
     await this.ApiService.fetchProduct(id).then((res) => {
@@ -349,6 +355,46 @@ export class ProductInfoComponent extends AppBase implements OnInit {
       if (this.relatedProducts[i].cart_details.quantity === 0) {
         this.relatedProducts[i].cart_details = null
       }
+    });
+  }
+
+  async goToProduct(productId: string) {
+    this.router.navigate(['/product', productId]).then(async () => {
+      this.productInfo = null;
+      this.cartInfo = null;
+      this.quantity = 'Add';
+      this.wishlist = null;
+      this.mainProductImage = '';
+      this.form = this.fb.group({
+        rating: [null, Validators.required],
+        review: ['', Validators.required],
+        headline: ['', Validators.required],
+        name: [''],
+        email: [''],
+        media: [''],
+        terms: [false, Validators.requiredTrue],
+      });
+      await this.ApiService.fetchProduct(productId).then(async (res) => {
+        this.productInfo = res;
+        this.mainProductImage = res?.product?.product_image;
+        let imgObj = { product_sub_image: res?.product?.product_image }
+        this.productInfo?.images.unshift(imgObj);
+        this.productInfo.reviews.forEach((review: any) => {
+          const star = review.rating;
+          const ratingItem = this.ratings.find(r => r.stars === star);
+          if (ratingItem) {
+            ratingItem.count += 1;
+          }
+        });
+        this.totalRatings = this.productInfo?.reviews.reduce((sum: any, item: any) => sum + item.rating, 0);
+        this.averageRating = this.totalRatings / this.productInfo?.reviews.length;
+        console.log(this.productInfo)
+        Promise.all([
+          this.getCart(),
+          this.fetchWishlist(),
+          this.fetchRelatedProducts(),
+        ])
+      })
     });
   }
 

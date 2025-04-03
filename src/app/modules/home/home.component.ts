@@ -8,7 +8,6 @@ import { Router } from '@angular/router';
 import { ContextService } from '../../core/services/context.service';
 import { AppBase } from '../../../app-base.component';
 import { UiToasterService } from '../../core/services/toaster.service';
-import { MiniCartComponent } from "../shopping-cart/mini-cart/mini-cart.component";
 import { CartService } from '../../shared/services/cart.service';
 declare var bootstrap: any;
 
@@ -16,7 +15,6 @@ declare var bootstrap: any;
   imports: [
     CommonModule,
     SharedModule,
-    MiniCartComponent
   ],
   selector: 'app-home',
   templateUrl: './home.component.html',
@@ -51,7 +49,7 @@ export class HomeComponent extends AppBase implements OnInit, AfterViewInit {
       await this.fetchFlyers(),
       await this.fetchCategories(),
       await this.fetchProducts(),
-      await this.getCart(),
+      // await this.getCart(),
     ])
   }
 
@@ -128,6 +126,7 @@ export class HomeComponent extends AppBase implements OnInit, AfterViewInit {
   async getCart() {
     if (this.contextService.user()) {
       await this.ApiService.getCartProducts().then((res) => {
+        this.products.forEach((product: any) => product['cart_details'] = null);
         res?.data.forEach((dataItem: any) => {
           const productIndex = this.products.findIndex((prod: any) => prod.id === dataItem.product_id);
           if (productIndex !== -1) {

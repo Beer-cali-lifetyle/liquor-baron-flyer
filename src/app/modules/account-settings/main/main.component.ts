@@ -87,6 +87,7 @@ export class MainComponent extends AppBase implements OnInit {
   }
 
   async ngOnInit() {
+    if ((this.contextService.user()?.is_guest === true || this.contextService.user()?.is_guest === '1')) { this.router.navigate(['/auth/sign-in']); }
     this.route.fragment.subscribe((fragment) => {
       if (fragment) {
         this.setTabByFragment(fragment);
