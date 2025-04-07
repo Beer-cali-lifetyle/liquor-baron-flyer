@@ -1,6 +1,8 @@
 .three-section {
     display: flex;
-    gap: 15px; /* Adjust spacing between boxes */
+    justify-content: center;
+    gap: 15px;
+    margin-top: 15px;
   }
   
   .one-box {
@@ -180,9 +182,9 @@ select {
     font-size: 14px;
 }
 
-.card_payment .card {
-    background-color: #ecf7f5;
-}
+// .card_payment .card {
+//     background-color: #ecf7f5;
+// }
 
 .cont_text {
     font-size: 14px;
@@ -407,3 +409,13 @@ select {
 .sticky-element {
     position: sticky;
   }
+
+
+
+.payment-label {
+    background-color: #f0f5ff;
+    display: flex;
+    width: 100%;
+    margin-bottom: 5px;
+    padding: 5px 15px;
+}

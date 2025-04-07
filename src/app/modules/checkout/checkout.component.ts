@@ -1,20 +1,34 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, ViewChild, TemplateRef, ChangeDetectorRef, ElementRef, NgZone, AfterViewChecked, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, ElementRef, AfterViewInit, Pipe, PipeTransform } from '@angular/core';
 import { ApiService } from '../../shared/services/api.service';
-import { NgbModal, NgbNavModule, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
+import { NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AppBase } from '../../../app-base.component';
 import { UiToasterService } from '../../core/services/toaster.service';
 import { ContextService } from '../../core/services/context.service';
 import { environment } from '../../../environments/environment';
 import { PaymentComponent } from "../payment/payment.component";
-import { GooglePlacesAutocompleteDirective } from '../../core/directives/google-places.directive';
 import { GooglePlacesAutocompleteComponent } from '../../shared/ui/google-places/google-places.component';
 import Swal from 'sweetalert2';
-import { catchError, firstValueFrom, Observable, throwError, timeout } from 'rxjs';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { jwtDecode } from 'jwt-decode';
-// declare const google: any;
+
+@Pipe({
+  name: 'cardNumber',
+  standalone: true
+})
+export class CardNumberPipe implements PipeTransform {
+  transform(value: string): string {
+    // Remove any non-digit characters from the input value
+    const digitsOnly = value.replace(/\D/g, '');
+
+    // Split the digits into groups of 4
+    const groups = digitsOnly.match(/.{1,4}/g);
+
+    // Join the groups with dashes
+    const formattedValue = groups ? groups.join(' ') : '';
+
+    return formattedValue;
+  }
+}
 @Component({
   selector: 'app-checkout',
   templateUrl: './checkout.component.html',
@@ -22,8 +36,9 @@ import { jwtDecode } from 'jwt-decode';
   standalone: true,
   imports: [
     CommonModule, FormsModule, ReactiveFormsModule, NgbNavModule,
-    PaymentComponent, PaymentComponent, GooglePlacesAutocompleteComponent
-  ]
+    PaymentComponent, PaymentComponent, GooglePlacesAutocompleteComponent, CardNumberPipe
+  ],
+  providers: [CardNumberPipe]
 })
 export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit {
   selectedLocation: any = null;
@@ -38,50 +53,104 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
   addresses: any = [];
   stores: any = [];
   signUpForm!: any;
+  ccForm!: any;
   storePickupForm!: any;
   deliveryForm!: any;
   shippingForm!: any;
   selectedTime: any;
   shippingCharges: number = 0;
-  @ViewChild('modalContent') modalContent: TemplateRef<any> | undefined;
   selectedBillingAddress: any;
   selectedPaymentMethod: any = 'online';
   imgBaseUrl: string = environment.api.base_url;
   showPayment: boolean = false;
   CanadianProvincesAndTerritories: any = [];
-  private shippingApiUrl = 'https://admin.liquorbaronflyer.ca/api/shipping/rate';
-  // private shippingApiUrl = 'https://atsapi-dev.azurewebsites.net/v1/Shipments/rate';
-  // USStates = [
-  //   "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut",
-  //   "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana",
-  //   "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts",
-  //   "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada",
-  //   "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina",
-  //   "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island",
-  //   "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont",
-  //   "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming"
-  // ];
   autocompleteInput: string = '';
   disabledDays: number[] = [];
   queryWait: boolean = false;
   workingDays: Date[] = [];
   timeSlots: any = [];
+  cardLogoImg: any;
+  month: Array<{ key: string, value: string }> = [];
+  months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+  years: Array<any> = []
   constructor(
-    private http: HttpClient,
     private ApiService: ApiService,
-    private modalService: NgbModal,
     private fb: FormBuilder,
-    private ngZone: NgZone,
     private toaster: UiToasterService,
     private cdr: ChangeDetectorRef,
     public contextService: ContextService,
-    // private googleMapsService: GoogleMapsService
+    private cardPipe: CardNumberPipe
   ) {
     super();
     const now = new Date();
     this.today = now.toISOString().split('T')[0];
   }
 
+  async ngOnInit() {
+    this.form = this.fb.group({
+      fullName: ['', Validators.required],
+      mobileNumber: ['', [Validators.required, Validators.pattern(/^\+?[1-9]\d{1,14}$/)]],
+      pinCode: ['', Validators.required],
+      address: ['', Validators.required],
+      locality: [''],
+      city: ['', Validators.required],
+      state: ['', Validators.required],
+      landmark: [''],
+      altPhoneNumber: ['', Validators.pattern(/^\+?[1-9]\d{1,14}$/)],
+      defaultAddress: [false]
+    });
+    this.month = [];
+    this.months.forEach((key, index) => {
+      this.month.push({ key: `${index + 1}`, value: key })
+    });
+    this.storePickupForm = this.fb.group({
+      selectedStore: ['', Validators.required],
+      pickupDate: ['', Validators.required],
+      pickupTime: ['']
+    })
+    this.deliveryForm = this.fb.group({
+      deliveryAddress: ['', Validators.required],
+      deliveryDate: ['', Validators.required],
+      deliveryTime: ['']
+    })
+    this.signUpForm = this.fb.group({
+      firstName: ['', Validators.required],
+      lastName: [''],
+      newEmail: ['', Validators.required],
+      newPassword: ['', Validators.required],
+    })
+    this.ccForm = this.fb.group({
+      holder_name: ['', [Validators.required]],
+      card_number: ['', [Validators.required, Validators.pattern(/^(4|5)\d+/), Validators.maxLength(19), Validators.minLength(16)]],
+      exp_month: ['', [Validators.required]],
+      exp_year: ['', [Validators.required]],
+      cvv: ['', [Validators.required, Validators.maxLength(3), Validators.minLength(3)]],
+    });
+    Promise.all([
+      this.fetchStates(),
+      this.fetchAddres(),
+      this.fetchStores(),
+      this.getCart(),
+      this.calculateSubTotal(),
+    ])
+    const currentYear = new Date().getFullYear();
+    for (let i = currentYear; i <= currentYear + 20; i++) {
+      this.years.push(i);
+    }
+  }
+
+  ngAfterViewInit() {
+    console.log(this.contextService.user())
+    if (!this.contextService.user()?.is_age_verified) {
+      this.initSwal();
+    }
+  }
+
+  formatCardNumber(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const formatted = this.cardPipe.transform(input.value);
+    this.ccForm.get('card_number')!.setValue(formatted);
+  }
 
   handlePlaceSelection(place: any) {
     if (!place) return;
@@ -118,54 +187,6 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
       city,
       locality
     });
-  }
-
-  async ngOnInit() {
-    this.form = this.fb.group({
-      fullName: ['', Validators.required],
-      mobileNumber: ['', [Validators.required, Validators.pattern(/^\+?[1-9]\d{1,14}$/)]],
-      pinCode: ['', Validators.required],
-      address: ['', Validators.required],
-      locality: [''],
-      city: ['', Validators.required],
-      state: ['', Validators.required],
-      landmark: [''],
-      altPhoneNumber: ['', Validators.pattern(/^\+?[1-9]\d{1,14}$/)],
-      defaultAddress: [false]
-    });
-    this.storePickupForm = this.fb.group({
-      selectedStore: ['', Validators.required],
-      pickupDate: ['', Validators.required],
-      pickupTime: ['']
-    })
-    this.deliveryForm = this.fb.group({
-      deliveryAddress: ['', Validators.required],
-      deliveryDate: ['', Validators.required],
-      deliveryTime: ['']
-    })
-    this.shippingForm = this.fb.group({
-      shippingAddress: ['', Validators.required],
-    })
-    this.signUpForm = this.fb.group({
-      firstName: ['', Validators.required],
-      lastName: [''],
-      newEmail: ['', Validators.required],
-      newPassword: ['', Validators.required],
-    })
-    Promise.all([
-      this.fetchStates(),
-      this.fetchAddres(),
-      this.fetchStores(),
-      this.getCart(),
-      this.calculateSubTotal(),
-    ])
-  }
-
-  ngAfterViewInit() {
-    console.log(this.contextService.user())
-    if (!this.contextService.user()?.is_age_verified) {
-      this.initSwal();
-    }
   }
 
   initSwal() {
@@ -208,110 +229,6 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
 
   }
 
-  async markAgeverified(data: any) {
-    await this.ApiService.markAgeVerified(data).then((res) => {
-
-      this.contextService.user.set(res?.user);
-      localStorage.setItem('user', JSON.stringify(res?.user));
-    })
-  }
-
-  async getAddress(event: Event) {
-    const selectElement = event.target as HTMLSelectElement; // Cast event target as HTMLSelectElement
-    console.log('Selected State:', selectElement.value);
-    // await this.fetchTaxes();
-  }
-
-  async setAddress(event: any, directId?: any) {
-    if (directId) {
-      this.selectedState = directId;
-    } else {
-      const selectElement = event.target as HTMLSelectElement; // Cast event target as HTMLSelectElement
-      this.selectedState = selectElement.value; // Get the selected value
-      console.log('Selected State:', this.selectedState);
-    }
-    await this.fetchTaxes();
-    if (this.storePickupForm.get('selectedStore').value) {
-      const selectedStore = this.stores.data.data.find((store: any) => store.id == this.storePickupForm.get('selectedStore').value);
-      if (selectedStore) {
-        debugger;
-        this.getNextWorkingDays(selectedStore.days, selectedStore.opening_time, selectedStore.closing_time);
-        // this.setDisabledDays(selectedStore.days);
-      }
-    }
-  }
-
-  private getNextWorkingDays(availableDays: any, openingTime: any, closingTime: any) {
-    const weekdaysMap: { [key: string]: number } = {
-      'Sunday': 0, 'Monday': 1, 'Tuesday': 2, 'Wednesday': 3,
-      'Thursday': 4, 'Friday': 5, 'Saturday': 6
-    };
-    const availableDaysArray = availableDays.split(',')
-      .map((day: any) => weekdaysMap[day.trim()]);
-
-    const workingDates: Date[] = [];
-    let currentDate = new Date();
-
-    while (workingDates.length < 5) {
-      if (availableDaysArray.includes(currentDate.getDay())) {
-        workingDates.push(new Date(currentDate));
-      }
-      currentDate.setDate(currentDate.getDate() + 1);
-    }
-
-    this.workingDays = workingDates;
-
-    function generateTimeSlots(openingTime: any, closingTime: any) {
-      let slots = [];
-      let start = new Date(`${openingTime}`);
-      let end = new Date(`${closingTime}`);
-
-      while (start <= end) {
-        let hours = start.getHours();
-        let minutes = start.getMinutes();
-        let period = hours >= 12 ? "PM" : "AM";
-        hours = hours % 12 || 12; // Convert to 12-hour format
-        let formattedTime = `${hours}:${minutes.toString().padStart(2, '0')} ${period}`;
-        slots.push(formattedTime);
-        start.setHours(start.getHours() + 1); // Increment by 1 hour
-      }
-
-      return slots;
-    }
-    this.timeSlots = generateTimeSlots(openingTime, closingTime);
-  }
-
-  formatDate(date: Date): string {
-    return date.toLocaleDateString('en-US', {
-      weekday: 'long',
-      month: 'long',
-      day: 'numeric'
-    });
-  }
-
-  openModal(content: any) {
-    const modalRef: NgbModalRef = this.modalService.open(content, {
-      centered: true,
-      backdrop: 'static',
-      keyboard: false,
-      size: 'lg'
-    });
-
-  }
-
-  async setActiveTab(tabNumber: number) {
-    this.activeTab = tabNumber;
-    console.log('Active Tab Number:', this.activeTab); // Optional for debugging
-    this.selectedTime = null;
-    this.storePickupForm.reset();
-    this.deliveryForm.reset();
-    this.shippingForm.reset();
-    this.total_tax = 0;
-    this.total = 0;
-    this.shippingCharges = 0;
-    await this.calculateSubTotal();
-  }
-
   async fetchStores() {
     await this.ApiService.fetchStores().then((res) => {
       this.stores = res
@@ -324,8 +241,10 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
     })
   }
 
-  triggerClick(inputElement: HTMLInputElement) {
-    inputElement.showPicker(); // Triggers the native date/time picker
+  async getAddress(event: Event) {
+    const selectElement = event.target as HTMLSelectElement; // Cast event target as HTMLSelectElement
+    console.log('Selected State:', selectElement.value);
+    // await this.fetchTaxes();
   }
 
   async fetchTaxes() {
@@ -351,16 +270,100 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
     })
   }
 
-  openModalToAdd() {
-    this.modalService.open(this.modalContent, { centered: true, backdrop: 'static', keyboard: false, size: 'lg' });
+  async markAgeverified(data: any) {
+    await this.ApiService.markAgeVerified(data).then((res) => {
+
+      this.contextService.user.set(res?.user);
+      localStorage.setItem('user', JSON.stringify(res?.user));
+    })
   }
 
-  closeModal() {
-    this.form.reset();
-    this.modalService.dismissAll()
+  async setAddress(event: any, directId?: any) {
+    if (directId) {
+      this.selectedState = directId;
+    } else {
+      const selectElement = event.target as HTMLSelectElement; // Cast event target as HTMLSelectElement
+      this.selectedState = selectElement.value; // Get the selected value
+      console.log('Selected State:', this.selectedState);
+    }
+    await this.fetchTaxes();
+    if (this.storePickupForm.get('selectedStore').value) {
+      const selectedStore = this.stores.data.data.find((store: any) => store.id == this.storePickupForm.get('selectedStore').value);
+      if (selectedStore) {
+        this.getNextWorkingDays(selectedStore.days, selectedStore.opening_time, selectedStore.closing_time);
+      }
+    }
   }
 
-  async onSubmit() {
+  private getNextWorkingDays(availableDays: any, openingTime: any, closingTime: any) {
+    const weekdaysMap: { [key: string]: number } = {
+      'Sunday': 0, 'Monday': 1, 'Tuesday': 2, 'Wednesday': 3,
+      'Thursday': 4, 'Friday': 5, 'Saturday': 6
+    };
+    const availableDaysArray = availableDays.split(',')
+      .map((day: any) => weekdaysMap[day.trim()]);
+
+    const workingDates: Date[] = [];
+    let currentDate = new Date();
+
+    while (workingDates.length < 5) {
+      if (availableDaysArray.includes(currentDate.getDay())) {
+        workingDates.push(new Date(currentDate));
+      }
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+
+    this.workingDays = workingDates;
+
+    function generateTimeSlots(openingTime: string, closingTime: string) {
+      const slots = [];
+      let [startHour, startMinute] = openingTime.split(":").map(Number);
+      let [endHour, endMinute] = closingTime.split(":").map(Number);
+      while (
+        startHour < endHour ||
+        (startHour === endHour && startMinute <= endMinute)
+      ) {
+        const period = startHour >= 12 ? "PM" : "AM";
+        const hour12 = startHour % 12 || 12;
+        const formattedTime = `${hour12}:${startMinute
+          .toString()
+          .padStart(2, "0")} ${period}`;
+        slots.push(formattedTime);
+        startHour += 1;
+        if (startHour === 24) break;
+      }
+      return slots;
+    }
+
+    this.timeSlots = generateTimeSlots(openingTime, closingTime);
+  }
+
+  formatDate(date: Date): string {
+    return date.toLocaleDateString('en-US', {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric'
+    });
+  }
+
+  async setActiveTab(tabNumber: number) {
+    this.activeTab = tabNumber;
+    console.log('Active Tab Number:', this.activeTab); // Optional for debugging
+    this.selectedTime = null;
+    this.storePickupForm.reset();
+    this.deliveryForm.reset();
+    this.shippingForm.reset();
+    this.total_tax = 0;
+    this.total = 0;
+    this.shippingCharges = 0;
+    await this.calculateSubTotal();
+  }
+
+  triggerClick(inputElement: HTMLInputElement) {
+    inputElement.showPicker(); // Triggers the native date/time picker
+  }
+
+  async onSubmitAddress() {
     if (this.form.valid) {
       const value = {
         full_name: this.form.value.fullName,
@@ -378,7 +381,6 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
         this.toaster.Success('Address Added Successfully');
       })
       await this.fetchAddres()
-      this.closeModal();
     } else { this.validateForm(); }
 
   }
@@ -392,49 +394,6 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
     this.total_tax = (this.tax_percentage / 100) * parseFloat(itemsTotal);
     this.total = itemsTotal + this.total_tax;
     return itemsTotal
-  }
-
-  async getAuthToken() {
-    const tokenData = localStorage.getItem('ats_token');
-
-    if (tokenData) {
-      const tokenObj = JSON.parse(tokenData);
-      const decoded: any = jwtDecode(tokenObj.access_token);
-
-      // Check if token is expired
-      if (decoded.exp * 1000 > Date.now()) {
-        return tokenObj.access_token;
-      }
-    }
-
-    // Fetch new token if not found or expired
-    const body = {
-      "client_id": "ZNdL7GC3G2nQJBTFY1m9XkYGFm8rYvmC",
-      "client_secret": "0fw-N811uBmlGS6wyioOKM4-a2OqrFachUpfVcJUT3LiUf33EBgUeTbgbO61QXbA",
-      "audience": "https://test.api.ats.healthcare",
-      "grant_type": "client_credentials"
-    };
-
-    try {
-      const result: any = await firstValueFrom(
-        this.http.post('https://admin.liquorbaronflyer.ca/api/stripe/token', body, {
-          headers: new HttpHeaders({
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-          })
-        })
-      );
-
-      if (result.access_token) {
-        localStorage.setItem('ats_token', JSON.stringify(result));
-        return result.access_token;
-      }
-
-      throw new Error('Failed to retrieve token');
-    } catch (error) {
-      console.error('Token Fetch Error:', error);
-      throw error;
-    }
   }
 
   async calculateShipping() {
@@ -467,7 +426,6 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
       };
       const result: any = await this.ApiService.getShippingCharges(body);
       console.log('Response:', result);
-      debugger;
       this.shippingCharges = result?.total ? result.total : result;
       this.total = this.total + this.shippingCharges;
       return result?.total;
@@ -489,6 +447,8 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
     switch (this.activeTab) {
       case 1:
         if (this.storePickupForm.valid) {
+          const timestamp = this.storePickupForm.value.pickupDate;
+          const dateOnly = new Date(timestamp).toISOString().split('T')[0];
           const storePickupPayload = {
             user_id: this.contextService.user()?.id,
             items: this.contextService.cart()?.data?.map((product: any) => {
@@ -497,12 +457,20 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
             total_amount: this.subTotal,
             payment_method: this.selectedPaymentMethod,
             delivery_type: "store",
-            pickup_date: this.storePickupForm.value.pickupDate,
-            delivery_time: this.selectedTime,
+            pickup_date: dateOnly,
+            pickup_time: this.storePickupForm.value.pickupTime,
+            delivery_time: this.storePickupForm.value.pickupTime,
             store: this.storePickupForm.value.selectedStore,
             total_tax: this.total_tax,
+            card_details: {
+              number: this.ccForm.value.card_number?.replace(/\s+/g, ''),
+              exp_month: this.ccForm.value.exp_month, 
+              exp_year: this.ccForm.value.exp_year,       
+              cvc: this.ccForm.value.cvv               
+            }
           }
           console.log(JSON.stringify(storePickupPayload))
+          debugger;
           await this.ApiService.placeOrder(storePickupPayload).then((res) => {
             const checkoutUrl = res?.checkout_url;
             if (checkoutUrl) {
@@ -517,7 +485,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
         break;
       case 2:
         if (!this.deliveryForm.get('deliveryAddress')?.value && this.showAddressForm) {
-          await this.onSubmit().then(async (res: any) => {
+          await this.onSubmitAddress().then(async (res: any) => {
             this.setAddress(event, res[0]?.state_id)
             this.deliveryForm.patchValue({
               deliveryAddress: res[0]?.id
@@ -545,7 +513,6 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
               };
               console.log(JSON.stringify(localDeliveryPayload))
               await this.ApiService.placeOrder(localDeliveryPayload).then((res) => {
-                debugger;
                 console.log(res)
                 const checkoutUrl = res?.checkout_url;
                 if (checkoutUrl) {
@@ -585,7 +552,6 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
             };
             console.log(JSON.stringify(localDeliveryPayload))
             await this.ApiService.placeOrder(localDeliveryPayload).then((res) => {
-              debugger;
               console.log(res)
               const checkoutUrl = res?.checkout_url;
               if (checkoutUrl) {
@@ -643,7 +609,6 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
     }
   }
 
-
   formatAddress(address: any) {
     if (!address) return null; // Handle case where no address is provided
 
@@ -696,4 +661,104 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
     }
   }
 
+
+  handleKeyPressName(e: any) {
+    var x = e.which || e.keyCode;
+    if ((x >= 65 && x <= 90) || (x >= 97 && x <= 122) || x === 32) {
+      return true;
+    }
+    return false;
+  }
+
+  disablePaste(event: ClipboardEvent) {
+    event.preventDefault();
+  }
+
+  cardLogo(e: any) {
+    let firstLetter = this.ccForm.value.card_number.slice(0, 2);
+    switch (firstLetter) {
+      case "34":
+      case "37":
+        this.cardLogoImg = 'assets/images/credit_card/amex.svg';
+        break;
+      case "40":
+      case "41":
+      case "42":
+      case "43":
+      case "44":
+      case "45":
+      case "46":
+      case "47":
+      case "48":
+      case "49":
+        this.cardLogoImg = 'assets/images/credit_card/visa.svg';
+        break;
+      case "51":
+      case "52":
+      case "53":
+      case "54":
+      case "55":
+        this.cardLogoImg = 'assets/images/credit_card/mastercard.svg';
+        break;
+      case "36":
+      case "38":
+      case "30":
+        this.cardLogoImg = 'assets/images/credit_card/diners.svg';
+        break;
+      case "60":
+        this.cardLogoImg = 'assets/images/credit_card/discover.svg';
+        break;
+      case "18":
+      case "21":
+      case "30":
+      case "32":
+      case "33":
+      case "35":
+        this.cardLogoImg = 'assets/images/credit_card/jcb.svg';
+        break;
+      default:
+        this.cardLogoImg = null;
+        break;
+    }
+  }
+
+  handleKeyPress(e: any) {
+    var x = e.which || e.keyCode;
+    if (x > 64 && x < 91 || x > 96 && x < 123 || (x >= 33 && x <= 47) || (x >= 58 && x <= 64) || (x >= 91 && x <= 96) || (x >= 123 && x <= 126)) {
+      return false;
+    }
+
+    this.cardNumberInput();
+    return true;
+  }
+
+  cvvInput(e: any) {
+    var x = e.which || e.keyCode;
+    if (x > 64 && x < 91 || x > 96 && x < 123 || (x >= 33 && x <= 47) || (x >= 58 && x <= 64) || (x >= 91 && x <= 96) || (x >= 123 && x <= 126)) {
+      return false;
+    }
+
+    this.ccForm.get('cvv')?.valueChanges.subscribe((value: any) => {
+      if (value.length > 3) {
+        value = value.slice(0, 3);
+        this.ccForm.get('cvv')?.setValue(value);
+      }
+    });
+    return true
+  }
+
+  cardNumberInput() {
+    this.ccForm.get('card_number')?.valueChanges.subscribe((value: any) => {
+      if (value.length > 19) {
+        value = value.slice(0, 19);
+        this.ccForm.get('card_number')?.setValue(value);
+      }
+    });
+  }
+
 }
+
+
+
+
+
