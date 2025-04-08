@@ -171,7 +171,7 @@
                 </div>
 
               </div>
-              <button class="btn btn-maroon" *ngIf="addresses.length > 0" (click)="showAddressForm = true">Add
+              <button class="btn btn-maroon" *ngIf="addresses.length > 0" (click)="showAddressFormFunc()">Add
                 Address</button>
 
               <div class="list-group mt-4" *ngIf="addresses.length > 0">
@@ -372,9 +372,19 @@
             </div>
           </div>
 
+          <label class="payment-label" *ngIf="activeTab === 1">
+            <input type="radio" name="paymentMethod" [(ngModel)]="selectedPaymentMethod" value="cod" />
+            <h6 class="fw-bold ms-3"> COD</h6>
+          </label>
+
+          <label class="payment-label">
+            <input type="radio" name="paymentMethod" [(ngModel)]="selectedPaymentMethod" value="stripe" />
+            <h6 class="fw-bold ms-3"> Stripe</h6>
+          </label>
+
           <label class="payment-label">
             <input type="radio" name="paymentMethod" [(ngModel)]="selectedPaymentMethod" value="paypal" />
-            <h6 class="fw-bold ms-3"> Stripe</h6>
+            <h6 class="fw-bold ms-3"> Paypal</h6>
           </label>
         </div>
 

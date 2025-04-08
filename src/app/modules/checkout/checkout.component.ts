@@ -287,6 +287,8 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
       console.log('Selected State:', this.selectedState);
     }
     await this.fetchTaxes();
+    this.form.reset();
+    this.showAddressForm = false;
     if (this.storePickupForm.get('selectedStore').value) {
       const selectedStore = this.stores.data.data.find((store: any) => store.id == this.storePickupForm.get('selectedStore').value);
       if (selectedStore) {
@@ -462,12 +464,12 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
             delivery_time: this.storePickupForm.value.pickupTime,
             store: this.storePickupForm.value.selectedStore,
             total_tax: this.total_tax,
-            card_details: {
+            card_details: this.selectedPaymentMethod === 'card' ? {
               number: this.ccForm.value.card_number?.replace(/\s+/g, ''),
               exp_month: this.ccForm.value.exp_month, 
               exp_year: this.ccForm.value.exp_year,       
               cvc: this.ccForm.value.cvv               
-            }
+            } : null
           }
           console.log(JSON.stringify(storePickupPayload))
           debugger;
@@ -487,6 +489,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
         if (!this.deliveryForm.get('deliveryAddress')?.value && this.showAddressForm) {
           await this.onSubmitAddress().then(async (res: any) => {
             this.setAddress(event, res[0]?.state_id)
+            await this.fetchAddres(),
             this.deliveryForm.patchValue({
               deliveryAddress: res[0]?.id
             })
@@ -548,7 +551,13 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
               pickup_date: this.deliveryForm.value.deliveryDate,
               delivery_time: this.selectedTime,
               total_tax: this.total_tax,
-              shipping_charge: this.shippingCharges
+              shipping_charge: this.shippingCharges,
+              card_details: {
+                number: this.ccForm.value.card_number?.replace(/\s+/g, ''),
+                exp_month: this.ccForm.value.exp_month, 
+                exp_year: this.ccForm.value.exp_year,       
+                cvc: this.ccForm.value.cvv               
+              }
             };
             console.log(JSON.stringify(localDeliveryPayload))
             await this.ApiService.placeOrder(localDeliveryPayload).then((res) => {
@@ -754,6 +763,14 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
         this.ccForm.get('card_number')?.setValue(value);
       }
     });
+  }
+
+
+  showAddressFormFunc() {
+    this.showAddressForm = true;
+    this.deliveryForm.patchValue({
+      deliveryAddress: ''
+    })
   }
 
 }
