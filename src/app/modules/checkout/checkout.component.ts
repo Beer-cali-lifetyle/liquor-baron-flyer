@@ -110,7 +110,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
     })
     this.deliveryForm = this.fb.group({
       deliveryAddress: ['', Validators.required],
-      deliveryDate: ['', Validators.required],
+      deliveryDate: [''],
       deliveryTime: ['']
     })
     this.signUpForm = this.fb.group({
@@ -446,6 +446,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
         return this.validateForm(this.signUpForm);
       }
     }
+    debugger;
     switch (this.activeTab) {
       case 1:
         if (this.storePickupForm.valid) {
@@ -533,7 +534,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
             }
           })
         } else {
-          if (this.deliveryForm.valid && this.shippingCharges > 0) {
+          if (this.deliveryForm.valid && Number(this.shippingCharges) > 0) {
             const localDeliveryPayload = {
               user_id: this.contextService.user()?.id,
               items: this.contextService.cart()?.data?.map((product: any) => {
@@ -575,41 +576,6 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
             if (!this.shippingCharges && this.deliveryForm.valid) {
               this.toaster.Warning('Please try again after some time.')
             }
-          }
-        }
-        break;
-      case 3:
-        if (this.shippingForm.get('shippingAddress')?.value && this.shippingCharges > 0) {
-          const shippingPayload = {
-            user_id: this.contextService.user()?.id,
-            items: this.contextService.cart()?.data?.map((product: any) => {
-              return {
-                product_id: product?.product?.id,
-                name: product?.product?.name,
-                quantity: product?.quantity,
-                price: product?.product?.price
-              };
-            }),
-            total_amount: this.subTotal,
-            delivery_address: this.formatAddress(this.addresses.find((item: any) => item?.id === this.shippingForm.get('shippingAddress')?.value)),
-            payment_method: this.selectedPaymentMethod,
-            delivery_type: "shipping",
-            total_tax: this.total_tax,
-            shipping_charge: this.shippingCharges
-          };
-          await this.ApiService.placeOrder(shippingPayload).then((res) => {
-            const checkoutUrl = res?.checkout_url;
-            if (checkoutUrl) {
-              // Redirect to the checkout URL
-              window.location.href = checkoutUrl;
-            } else {
-              console.error('Checkout URL not found');
-            }
-          })
-        } else {
-          this.validateForm(this.shippingForm);
-          if (!this.shippingCharges && this.shippingForm.valid) {
-            this.toaster.Warning('Please try again after some time.')
           }
         }
         break;
