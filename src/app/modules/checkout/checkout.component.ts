@@ -9,6 +9,7 @@ import { ContextService } from '../../core/services/context.service';
 import { environment } from '../../../environments/environment';
 import { PaymentComponent } from "../payment/payment.component";
 import { GooglePlacesAutocompleteComponent } from '../../shared/ui/google-places/google-places.component';
+import { loadStripe, Stripe, StripeCardElement } from '@stripe/stripe-js';
 import Swal from 'sweetalert2';
 
 @Pipe({
@@ -73,6 +74,8 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
   month: Array<{ key: string, value: string }> = [];
   months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
   years: Array<any> = []
+  stripe: Stripe | null = null;
+  card: StripeCardElement | null = null;
   constructor(
     private ApiService: ApiService,
     private fb: FormBuilder,
@@ -139,7 +142,17 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
     }
   }
 
-  ngAfterViewInit() {
+  async ngAfterViewInit() {
+    this.stripe = await loadStripe('pk_test_51QCfgaLZHrsKgB4f6WCVMKuK5YpVd3SsUb9BNd4qJ0B9ycoK2BJdL4LTFWBp2dZMRptgaVRi86b76TaVlv8h5UiD00rTDU5Lbr');
+    if (!this.stripe) {
+      console.error('Stripe failed to load.');
+      return;
+    }
+  
+    const elements = this.stripe.elements(); // No more TS warning
+    this.card = elements?.create('card', { hidePostalCode: true });
+    this.card.mount('#card-element');
+
     console.log(this.contextService.user())
     if (!this.contextService.user()?.is_age_verified) {
       this.initSwal();
@@ -446,7 +459,6 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
         return this.validateForm(this.signUpForm);
       }
     }
-    debugger;
     switch (this.activeTab) {
       case 1:
         if (this.storePickupForm.valid) {
@@ -458,7 +470,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
               return { product_id: product?.product?.id, name: product?.product?.name, quantity: product?.quantity, price: product?.product?.price }
             }),
             total_amount: this.subTotal,
-            payment_method: this.selectedPaymentMethod,
+            payment_method: 'stripe',
             delivery_type: "store",
             pickup_date: dateOnly,
             pickup_time: this.storePickupForm.value.pickupTime,
@@ -473,13 +485,28 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
             } : null
           }
           console.log(JSON.stringify(storePickupPayload))
-          debugger;
-          await this.ApiService.placeOrder(storePickupPayload).then((res) => {
-            const checkoutUrl = res?.checkout_url;
-            if (checkoutUrl) {
-              window.location.href = checkoutUrl;
-            } else {
-              console.error('Checkout URL not found');
+          await this.ApiService.placeOrder(storePickupPayload).then(async (res) => {
+            if (!this.card) {
+              alert('Card Element is not initialized');
+              return;
+            }
+            const { error, paymentIntent }: any = await this?.stripe?.confirmCardPayment(res?.client_secret, {
+              payment_method: {
+                card: this.card,
+                billing_details: {
+                  name: 'John Doe',
+                  email: 'john@example.com',
+                },
+              },
+            });
+      
+            if (error) {
+              console.error('Payment authorization failed:', error.message);
+              this.toaster.Error(error.message);
+            } else if (paymentIntent?.status === 'requires_capture') {
+              console.log('Payment authorized, pending capture.');
+              this.toaster.Success('Payment authorized successfully! Awaiting capture.');
+              // optionally call backend to notify
             }
           })
         } else {
@@ -508,7 +535,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
                 }),
                 total_amount: this.subTotal,
                 delivery_address: this.formatAddress(this.addresses.find((item: any) => item?.id === this.deliveryForm.get('deliveryAddress')?.value)),
-                payment_method: this.selectedPaymentMethod,
+                payment_method: 'stripe',
                 delivery_type: "local",
                 pickup_date: this.deliveryForm.value.deliveryDate,
                 delivery_time: this.selectedTime,
@@ -516,14 +543,28 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
                 shipping_charge: this.shippingCharges
               };
               console.log(JSON.stringify(localDeliveryPayload))
-              await this.ApiService.placeOrder(localDeliveryPayload).then((res) => {
-                console.log(res)
-                const checkoutUrl = res?.checkout_url;
-                if (checkoutUrl) {
-                  // Redirect to the checkout URL
-                  window.location.href = checkoutUrl;
-                } else {
-                  console.error('Checkout URL not found');
+              await this.ApiService.placeOrder(localDeliveryPayload).then(async (res) => {
+                if (!this.card) {
+                  alert('Card Element is not initialized');
+                  return;
+                }
+                const { error, paymentIntent }: any = await this?.stripe?.confirmCardPayment(res?.client_secret, {
+                  payment_method: {
+                    card: this.card,
+                    billing_details: {
+                      name: 'John Doe',
+                      email: 'john@example.com',
+                    },
+                  },
+                });
+          
+                if (error) {
+                  console.error('Payment authorization failed:', error.message);
+                  alert(error.message);
+                } else if (paymentIntent?.status === 'requires_capture') {
+                  console.log('Payment authorized, pending capture.');
+                  alert('Payment authorized successfully! Awaiting capture.');
+                  // optionally call backend to notify
                 }
               })
             } else {

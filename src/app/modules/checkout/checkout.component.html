@@ -297,7 +297,15 @@
 
           </label>
 
-          <div class="card_payment mb-4" *ngIf="selectedPaymentMethod === 'card'">
+    
+          <div [hidden]="selectedPaymentMethod !== 'card'">
+            <form>
+              <div id="card-element" class="border p-3 rounded shadow-sm mb-3"></div>
+            </form>
+          </div>
+          
+
+          <!-- <div class="card_payment mb-4" *ngIf="selectedPaymentMethod === 'card'">
             <div [formGroup]="ccForm" class="card">
               <div class="row card-body">
                 <div class="col-md-12 mb-3">
@@ -370,7 +378,7 @@
                 </div>
               </div>
             </div>
-          </div>
+          </div> -->
 
           <label class="payment-label" *ngIf="activeTab === 1">
             <input type="radio" name="paymentMethod" [(ngModel)]="selectedPaymentMethod" value="cod" />
@@ -388,6 +396,7 @@
           </label>
         </div>
 
+        
         <div class="text-check inputting-check">
           <div class="button-flex button-return">
           </div>
