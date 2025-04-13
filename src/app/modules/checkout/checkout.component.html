@@ -193,7 +193,7 @@
                   </div>
                 </label>
                 <div
-                  *ngIf="deliveryForm.get('deliveryAddress')?.invalid && deliveryForm.get('deliveryAddress')?.touched"
+                  *ngIf="deliveryForm.get('deliveryAddress')?.invalid && deliveryForm.get('deliveryAddress')?.touched && !showAddressForm"
                   class="text-danger">
                   Please select Address.
                 </div>

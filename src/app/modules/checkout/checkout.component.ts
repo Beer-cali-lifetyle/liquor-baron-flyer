@@ -272,7 +272,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
   }
 
   async fetchAddres() {
-    await this.ApiService.fetchAddress().then((res) => {
+    return await this.ApiService.fetchAddress().then((res) => {
       this.addresses = res;
       if (!(this.addresses.length > 0)) {
         this.showAddressForm = true;
@@ -399,8 +399,9 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
       }
       await this.ApiService.saveAddress(value).then(async (res) => {
         this.toaster.Success('Address Added Successfully');
+        await this.fetchAddres();
+        return res;
       })
-      await this.fetchAddres()
     } else { this.validateForm(); }
 
   }
@@ -435,7 +436,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
         },
         pieces: count,
         packages: [],
-        totalWeight: 1.5 * count,
+        totalWeight: 1 * count,
         isPallet: false, // Corrected syntax
         shipDate: this.deliveryForm.value.deliveryDate instanceof Date
           ? this.deliveryForm.value.deliveryDate.toISOString()
@@ -445,7 +446,9 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
         declaredValue: this.subTotal,
       };
       const result: any = await this.ApiService.getShippingCharges(body);
+      debugger;
       console.log('Response:', result);
+      if (result.error) { this.toaster.Warning('Please add valid proper Address') }
       this.shippingCharges = result?.total ? result.total : result;
       this.total = this.total + this.shippingCharges;
       return result?.total;
@@ -482,12 +485,6 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
             delivery_time: this.storePickupForm.value.pickupTime,
             store: this.storePickupForm.value.selectedStore,
             total_tax: this.total_tax,
-            card_details: this.selectedPaymentMethod === 'card' ? {
-              number: this.ccForm.value.card_number?.replace(/\s+/g, ''),
-              exp_month: this.ccForm.value.exp_month,
-              exp_year: this.ccForm.value.exp_year,
-              cvc: this.ccForm.value.cvv
-            } : null
           }
           console.log(JSON.stringify(storePickupPayload))
           await this.ApiService.placeOrder(storePickupPayload).then(async (res) => {
@@ -510,7 +507,8 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
               this.toaster.Error(error.message);
             } else if (paymentIntent?.status === 'requires_capture') {
               console.log('Payment authorized, pending capture.');
-              this.toaster.Success('Payment authorized successfully! Awaiting capture.');
+              this.toaster.Success('Payment authorized successfully.');
+              this.router.navigate(['/order-confirmation'], { queryParams: { order_id: res?.order?.id } });
               // optionally call backend to notify
             }
           })
@@ -522,67 +520,81 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
         debugger;
         if (!this.deliveryForm.get('deliveryAddress')?.value && this.showAddressForm) {
           debugger;
-          await this.onSubmitAddress().then(async (res: any) => {
-            this.setAddress(event, res[0]?.state_id)
-            await this.fetchAddres(),
-              this.deliveryForm.patchValue({
-                deliveryAddress: res[0]?.id
-              })
-            console.log(this.deliveryForm.value)
-            if (this.deliveryForm.valid && this.shippingCharges > 0) {
-              const localDeliveryPayload = {
-                user_id: this.contextService.user()?.id,
-                items: this.contextService.cart()?.data?.map((product: any) => {
-                  return {
-                    product_id: product?.product?.id,
-                    name: product?.product?.name,
-                    quantity: product?.quantity,
-                    price: product?.product?.price
-                  };
-                }),
-                total_amount: this.subTotal,
-                delivery_address: this.formatAddress(this.addresses.find((item: any) => item?.id === this.deliveryForm.get('deliveryAddress')?.value)),
-                payment_method: 'stripe',
-                delivery_type: "local",
-                pickup_date: this.deliveryForm.value.deliveryDate,
-                delivery_time: this.selectedTime,
-                total_tax: this.total_tax,
-                shipping_charge: this.shippingCharges
-              };
-              console.log(JSON.stringify(localDeliveryPayload))
-              await this.ApiService.placeOrder(localDeliveryPayload).then(async (res) => {
-                if (!this.card) {
-                  alert('Card Element is not initialized');
-                  return;
-                }
-                debugger;
-                const { error, paymentIntent }: any = await this?.stripe?.confirmCardPayment(res?.client_secret, {
-                  payment_method: {
-                    card: this.card,
-                    billing_details: {
-                      name: 'John Doe',
-                      email: 'john@example.com',
-                    },
-                  },
-                });
-
-                if (error) {
-                  console.error('Payment authorization failed:', error.message);
-                  this.toaster.Warning(error.message);
-                } else if (paymentIntent?.status === 'requires_capture') {
-                  console.log('Payment authorized, pending capture.');
-                  this.toaster.Success('Payment authorized successfully.');
-                  this.router.navigate(['/order-confirmation'], { queryParams: { order_id: res?.order?.id } });
-                  // optionally call backend to notify
-                }
-              })
-            } else {
-              this.validateForm(this.deliveryForm);
-              if (!this.shippingCharges && this.deliveryForm.valid) {
-                this.toaster.Warning('Please try again after some time.')
-              }
+          let address_added: any = await this.onSubmitAddress();
+          if (this.form.valid) {
+            const value = {
+              full_name: this.form.value.fullName,
+              mobile_number: this.form.value.mobileNumber,
+              pin_code: this.form.value.pinCode,
+              address: this.form.value.address,
+              locality: this.form.value.locality,
+              city: this.form.value.city,
+              state_id: this.form.value.state,
+              landmark: this.form.value.landmark,
+              alternate_phone_number: this.form.value.altPhoneNumber,
+              is_default: this.form.value.defaultAddress ? 1 : 0
             }
+            address_added = await this.ApiService.saveAddress(value)
+          } else { this.validateForm(); }
+          debugger;
+          this.setAddress(event, address_added[0]?.state_id)
+          // await this.fetchAddres(),
+          this.deliveryForm.patchValue({
+            deliveryAddress: address_added[0]?.id
           })
+          console.log(this.deliveryForm.value)
+          if (this.deliveryForm.valid && this.shippingCharges > 0) {
+            const localDeliveryPayload = {
+              user_id: this.contextService.user()?.id,
+              items: this.contextService.cart()?.data?.map((product: any) => {
+                return {
+                  product_id: product?.product?.id,
+                  name: product?.product?.name,
+                  quantity: product?.quantity,
+                  price: product?.product?.price
+                };
+              }),
+              total_amount: this.subTotal,
+              delivery_address: this.formatAddress(this.addresses.find((item: any) => item?.id === this.deliveryForm.get('deliveryAddress')?.value)),
+              payment_method: 'stripe',
+              delivery_type: "local",
+              pickup_date: this.deliveryForm.value.deliveryDate,
+              delivery_time: this.selectedTime,
+              total_tax: this.total_tax,
+              shipping_charge: this.shippingCharges
+            };
+            console.log(JSON.stringify(localDeliveryPayload))
+            await this.ApiService.placeOrder(localDeliveryPayload).then(async (res) => {
+              if (!this.card) {
+                alert('Card Element is not initialized');
+                return;
+              }
+              const { error, paymentIntent }: any = await this?.stripe?.confirmCardPayment(res?.client_secret, {
+                payment_method: {
+                  card: this.card,
+                  billing_details: {
+                    name: 'John Doe',
+                    email: 'john@example.com',
+                  },
+                },
+              });
+
+              if (error) {
+                console.error('Payment authorization failed:', error.message);
+                this.toaster.Warning(error.message);
+              } else if (paymentIntent?.status === 'requires_capture') {
+                console.log('Payment authorized, pending capture.');
+                this.toaster.Success('Payment authorized successfully.');
+                this.router.navigate(['/order-confirmation'], { queryParams: { order_id: res?.order?.id } });
+                // optionally call backend to notify
+              }
+            })
+          } else {
+            this.validateForm(this.deliveryForm);
+            if (!this.shippingCharges && this.deliveryForm.valid) {
+              this.toaster.Warning('Please try again after some time.')
+            }
+          }
         } else {
           if (this.deliveryForm.valid && Number(this.shippingCharges) > 0) {
             const localDeliveryPayload = {
@@ -597,28 +609,37 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
               }),
               total_amount: this.subTotal,
               delivery_address: this.formatAddress(this.addresses.find((item: any) => item?.id === this.deliveryForm.get('deliveryAddress')?.value)),
-              payment_method: this.selectedPaymentMethod,
+              payment_method: 'stripe',
               delivery_type: "local",
               pickup_date: this.deliveryForm.value.deliveryDate,
               delivery_time: this.selectedTime,
               total_tax: this.total_tax,
               shipping_charge: this.shippingCharges,
-              card_details: {
-                number: this.ccForm.value.card_number?.replace(/\s+/g, ''),
-                exp_month: this.ccForm.value.exp_month,
-                exp_year: this.ccForm.value.exp_year,
-                cvc: this.ccForm.value.cvv
-              }
             };
             console.log(JSON.stringify(localDeliveryPayload))
-            await this.ApiService.placeOrder(localDeliveryPayload).then((res) => {
-              console.log(res)
-              const checkoutUrl = res?.checkout_url;
-              if (checkoutUrl) {
-                // Redirect to the checkout URL
-                window.location.href = checkoutUrl;
-              } else {
-                console.error('Checkout URL not found');
+            await this.ApiService.placeOrder(localDeliveryPayload).then(async (res) => {
+              if (!this.card) {
+                alert('Card Element is not initialized');
+                return;
+              }
+              const { error, paymentIntent }: any = await this?.stripe?.confirmCardPayment(res?.client_secret, {
+                payment_method: {
+                  card: this.card,
+                  billing_details: {
+                    name: 'John Doe',
+                    email: 'john@example.com',
+                  },
+                },
+              });
+
+              if (error) {
+                console.error('Payment authorization failed:', error.message);
+                this.toaster.Warning(error.message);
+              } else if (paymentIntent?.status === 'requires_capture') {
+                console.log('Payment authorized, pending capture.');
+                this.toaster.Success('Payment authorized successfully.');
+                this.router.navigate(['/order-confirmation'], { queryParams: { order_id: res?.order?.id } });
+                // optionally call backend to notify
               }
             })
           } else {
@@ -634,16 +655,44 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
     }
   }
 
+  extractBasicAddress(fullAddress: any) {
+    // Split by comma and take the first part
+    const parts = fullAddress.split(',');
+    return parts[0].trim();
+  }
+
+
+
   formatAddress(address: any) {
     if (!address) return null; // Handle case where no address is provided
 
     const { full_name, address: addr, locality, landmark, city, state, pin_code, mobile_number } = address;
-
+    const count = this.contextService.cart()?.data?.reduce((sum: any, item: any) => sum + (item.quantity ?? 0), 0) || 0;
+    // return {
+    //   name: full_name || '',
+    //   address: `${addr || ''}, ${locality || ''}${landmark ? ', ' + landmark : ''}, ${city || ''} - ${pin_code || ''}, ${state || ''}`.replace(/,\s*,/g, ',').replace(/,\s*$/, '').trim(),
+    //   mobile: mobile_number || '' 
+    // };
+    debugger;
     return {
-      name: full_name || '', // Full name
-      address: `${addr || ''}, ${locality || ''}${landmark ? ', ' + landmark : ''}, ${city || ''} - ${pin_code || ''}, ${state || ''}`.replace(/,\s*,/g, ',').replace(/,\s*$/, '').trim(),
-      mobile: mobile_number || '' // Mobile number (optional if required)
-    };
+      docketCode: "LIQUOR",
+      address: {
+        name: full_name,
+        attentionTo: null,
+        address1: this.extractBasicAddress(addr),
+        address2: null,
+        city: city,
+        province: state?.CODE,
+        country: "CA",
+        postalCode: pin_code,
+        isResidential: false
+      },
+      phone: mobile_number,
+      ServiceCode: "G9",
+      totalWeight: 1 * count,
+      Pieces: count,
+      ShipDate: new Date(new Date().setDate(new Date().getDate() + 1))
+    }
   }
 
   formatTime(form: FormGroup, field: string) {
