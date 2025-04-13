@@ -475,7 +475,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
           const storePickupPayload = {
             user_id: this.contextService.user()?.id,
             items: this.contextService.cart()?.data?.map((product: any) => {
-              return { product_id: product?.product?.id, name: product?.product?.name, quantity: product?.quantity, price: product?.product?.price }
+              return { product_id: product?.product?.id, name: product?.product?.name, quantity: product?.quantity, price: product?.product?.price, weight: 1 }
             }),
             total_amount: this.subTotal,
             payment_method: 'stripe',
@@ -549,7 +549,8 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
                     product_id: product?.product?.id,
                     name: product?.product?.name,
                     quantity: product?.quantity,
-                    price: product?.product?.price
+                    price: product?.product?.price,
+                    weight: 1
                   };
                 }),
                 total_amount: this.subTotal,
@@ -602,7 +603,8 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
                   product_id: product?.product?.id,
                   name: product?.product?.name,
                   quantity: product?.quantity,
-                  price: product?.product?.price
+                  price: product?.product?.price,
+                  weight: 1
                 };
               }),
               total_amount: this.subTotal,
