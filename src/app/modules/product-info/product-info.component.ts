@@ -395,6 +395,7 @@ export class ProductInfoComponent extends AppBase implements OnInit {
           this.fetchRelatedProducts(),
         ])
       })
+      window.scrollTo(0, 0);
     });
   }
 
