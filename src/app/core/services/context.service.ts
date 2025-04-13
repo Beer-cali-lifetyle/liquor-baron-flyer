@@ -74,5 +74,11 @@ import {
         localStorage.removeItem('flyers');
       }
     }
+
+    public resetAppState() {
+      this.user.set(null);
+      this.cart.set(null);
+      this.flyers.set([]);
+    }
   }
   

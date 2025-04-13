@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { ContextService } from '../../../core/services/context.service';
 
 @Component({
   selector: 'app-footer',
@@ -9,6 +10,9 @@ import { RouterModule } from '@angular/router';
   styleUrl: './footer.component.scss'
 })
 export class FooterComponent {
+  constructor(private context: ContextService) {
+
+  }
 
   clearSiteData() {
     // ✅ Clear Local Storage
@@ -39,6 +43,8 @@ export class FooterComponent {
         names.forEach((name) => caches.delete(name));
       });
     }
+
+    this.context.resetAppState();
   
     // ✅ Reload the Page to Ensure Full Cleanup
     setTimeout(() => {

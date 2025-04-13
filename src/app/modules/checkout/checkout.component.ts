@@ -11,6 +11,7 @@ import { PaymentComponent } from "../payment/payment.component";
 import { GooglePlacesAutocompleteComponent } from '../../shared/ui/google-places/google-places.component';
 import { loadStripe, Stripe, StripeCardElement } from '@stripe/stripe-js';
 import Swal from 'sweetalert2';
+import { Router } from '@angular/router';
 
 @Pipe({
   name: 'cardNumber',
@@ -61,7 +62,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
   selectedTime: any;
   shippingCharges: number = 0;
   selectedBillingAddress: any;
-  selectedPaymentMethod: any = 'online';
+  selectedPaymentMethod: any = 'card';
   imgBaseUrl: string = environment.api.base_url;
   showPayment: boolean = false;
   CanadianProvincesAndTerritories: any = [];
@@ -82,7 +83,8 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
     private toaster: UiToasterService,
     private cdr: ChangeDetectorRef,
     public contextService: ContextService,
-    private cardPipe: CardNumberPipe
+    private cardPipe: CardNumberPipe,
+    private router: Router
   ) {
     super();
     const now = new Date();
@@ -148,7 +150,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
       console.error('Stripe failed to load.');
       return;
     }
-  
+
     const elements = this.stripe.elements(); // No more TS warning
     this.card = elements?.create('card', { hidePostalCode: true });
     this.card.mount('#card-element');
@@ -272,6 +274,9 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
   async fetchAddres() {
     await this.ApiService.fetchAddress().then((res) => {
       this.addresses = res;
+      if (!(this.addresses.length > 0)) {
+        this.showAddressForm = true;
+      }
       console.log(this.addresses)
     })
   }
@@ -479,9 +484,9 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
             total_tax: this.total_tax,
             card_details: this.selectedPaymentMethod === 'card' ? {
               number: this.ccForm.value.card_number?.replace(/\s+/g, ''),
-              exp_month: this.ccForm.value.exp_month, 
-              exp_year: this.ccForm.value.exp_year,       
-              cvc: this.ccForm.value.cvv               
+              exp_month: this.ccForm.value.exp_month,
+              exp_year: this.ccForm.value.exp_year,
+              cvc: this.ccForm.value.cvv
             } : null
           }
           console.log(JSON.stringify(storePickupPayload))
@@ -499,7 +504,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
                 },
               },
             });
-      
+
             if (error) {
               console.error('Payment authorization failed:', error.message);
               this.toaster.Error(error.message);
@@ -514,14 +519,16 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
         }
         break;
       case 2:
+        debugger;
         if (!this.deliveryForm.get('deliveryAddress')?.value && this.showAddressForm) {
+          debugger;
           await this.onSubmitAddress().then(async (res: any) => {
             this.setAddress(event, res[0]?.state_id)
             await this.fetchAddres(),
-            this.deliveryForm.patchValue({
-              deliveryAddress: res[0]?.id
-            })
-            this.deliveryForm.get('deliveryAddress')?.value
+              this.deliveryForm.patchValue({
+                deliveryAddress: res[0]?.id
+              })
+            console.log(this.deliveryForm.value)
             if (this.deliveryForm.valid && this.shippingCharges > 0) {
               const localDeliveryPayload = {
                 user_id: this.contextService.user()?.id,
@@ -548,6 +555,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
                   alert('Card Element is not initialized');
                   return;
                 }
+                debugger;
                 const { error, paymentIntent }: any = await this?.stripe?.confirmCardPayment(res?.client_secret, {
                   payment_method: {
                     card: this.card,
@@ -557,13 +565,14 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
                     },
                   },
                 });
-          
+
                 if (error) {
                   console.error('Payment authorization failed:', error.message);
-                  alert(error.message);
+                  this.toaster.Warning(error.message);
                 } else if (paymentIntent?.status === 'requires_capture') {
                   console.log('Payment authorized, pending capture.');
-                  alert('Payment authorized successfully! Awaiting capture.');
+                  this.toaster.Success('Payment authorized successfully.');
+                  this.router.navigate(['/order-confirmation'], { queryParams: { order_id: res?.order?.id } });
                   // optionally call backend to notify
                 }
               })
@@ -596,9 +605,9 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
               shipping_charge: this.shippingCharges,
               card_details: {
                 number: this.ccForm.value.card_number?.replace(/\s+/g, ''),
-                exp_month: this.ccForm.value.exp_month, 
-                exp_year: this.ccForm.value.exp_year,       
-                cvc: this.ccForm.value.cvv               
+                exp_month: this.ccForm.value.exp_month,
+                exp_year: this.ccForm.value.exp_year,
+                cvc: this.ccForm.value.cvv
               }
             };
             console.log(JSON.stringify(localDeliveryPayload))
@@ -672,7 +681,6 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
         this.contextService.user.set(res?.user);
         localStorage.setItem('user_id', res?.user?.id);
         localStorage.setItem('user', JSON.stringify(res?.user));
-        this.toaster.Success('Updated successfully')
       })
     }
   }
