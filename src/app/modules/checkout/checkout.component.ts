@@ -263,10 +263,10 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
   }
 
   async fetchTaxes() {
-    await this.ApiService.fetchTax(this.selectedState).then((res) => {
+    await this.ApiService.fetchTax(this.selectedState).then(async (res) => {
       this.tax_percentage = parseFloat(res[0]?.total_tax);
       if (this.activeTab != 1)
-        this.calculateShipping();
+        await this.calculateShipping();
     })
     await this.calculateSubTotal();
   }
@@ -520,7 +520,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
         debugger;
         if (!this.deliveryForm.get('deliveryAddress')?.value && this.showAddressForm) {
           debugger;
-          let address_added: any = await this.onSubmitAddress();
+          let address_added = null;
           if (this.form.valid) {
             const value = {
               full_name: this.form.value.fullName,
@@ -536,65 +536,63 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
             }
             address_added = await this.ApiService.saveAddress(value)
           } else { this.validateForm(); }
-          debugger;
-          this.setAddress(event, address_added[0]?.state_id)
-          // await this.fetchAddres(),
           this.deliveryForm.patchValue({
-            deliveryAddress: address_added[0]?.id
+            deliveryAddress: address_added?.data.id
           })
-          console.log(this.deliveryForm.value)
-          if (this.deliveryForm.valid && this.shippingCharges > 0) {
-            const localDeliveryPayload = {
-              user_id: this.contextService.user()?.id,
-              items: this.contextService.cart()?.data?.map((product: any) => {
-                return {
-                  product_id: product?.product?.id,
-                  name: product?.product?.name,
-                  quantity: product?.quantity,
-                  price: product?.product?.price
-                };
-              }),
-              total_amount: this.subTotal,
-              delivery_address: this.formatAddress(this.addresses.find((item: any) => item?.id === this.deliveryForm.get('deliveryAddress')?.value)),
-              payment_method: 'stripe',
-              delivery_type: "local",
-              pickup_date: this.deliveryForm.value.deliveryDate,
-              delivery_time: this.selectedTime,
-              total_tax: this.total_tax,
-              shipping_charge: this.shippingCharges
-            };
-            console.log(JSON.stringify(localDeliveryPayload))
-            await this.ApiService.placeOrder(localDeliveryPayload).then(async (res) => {
-              if (!this.card) {
-                alert('Card Element is not initialized');
-                return;
-              }
-              const { error, paymentIntent }: any = await this?.stripe?.confirmCardPayment(res?.client_secret, {
-                payment_method: {
-                  card: this.card,
-                  billing_details: {
-                    name: 'John Doe',
-                    email: 'john@example.com',
+          await this.fetchAddres();
+          await this.setAddress(event, address_added?.data.state_id).then(async (res) => {
+            if (this.shippingCharges > 0) {
+              const localDeliveryPayload = {
+                user_id: this.contextService.user()?.id,
+                items: this.contextService.cart()?.data?.map((product: any) => {
+                  return {
+                    product_id: product?.product?.id,
+                    name: product?.product?.name,
+                    quantity: product?.quantity,
+                    price: product?.product?.price
+                  };
+                }),
+                total_amount: this.subTotal,
+                delivery_address: this.formatAddress(this.addresses.find((item: any) => item?.id === this.deliveryForm.get('deliveryAddress')?.value)),
+                payment_method: 'stripe',
+                delivery_type: "local",
+                pickup_date: this.deliveryForm.value.deliveryDate,
+                delivery_time: this.selectedTime,
+                total_tax: this.total_tax,
+                shipping_charge: this.shippingCharges
+              };
+              await this.ApiService.placeOrder(localDeliveryPayload).then(async (res) => {
+                if (!this.card) {
+                  alert('Card Element is not initialized');
+                  return;
+                }
+                const { error, paymentIntent }: any = await this?.stripe?.confirmCardPayment(res?.client_secret, {
+                  payment_method: {
+                    card: this.card,
+                    billing_details: {
+                      name: 'John Doe',
+                      email: 'john@example.com',
+                    },
                   },
-                },
-              });
-
-              if (error) {
-                console.error('Payment authorization failed:', error.message);
-                this.toaster.Warning(error.message);
-              } else if (paymentIntent?.status === 'requires_capture') {
-                console.log('Payment authorized, pending capture.');
-                this.toaster.Success('Payment authorized successfully.');
-                this.router.navigate(['/order-confirmation'], { queryParams: { order_id: res?.order?.id } });
-                // optionally call backend to notify
+                });
+  
+                if (error) {
+                  console.error('Payment authorization failed:', error.message);
+                  this.toaster.Warning(error.message);
+                } else if (paymentIntent?.status === 'requires_capture') {
+                  console.log('Payment authorized, pending capture.');
+                  this.toaster.Success('Payment authorized successfully.');
+                  this.router.navigate(['/order-confirmation'], { queryParams: { order_id: res?.order?.id } });
+                  // optionally call backend to notify
+                }
+              })
+            } else {
+              this.validateForm(this.deliveryForm);
+              if (!this.shippingCharges && this.deliveryForm.valid) {
+                this.toaster.Warning('Please try again after some time.')
               }
-            })
-          } else {
-            this.validateForm(this.deliveryForm);
-            if (!this.shippingCharges && this.deliveryForm.valid) {
-              this.toaster.Warning('Please try again after some time.')
             }
-          }
+          })
         } else {
           if (this.deliveryForm.valid && Number(this.shippingCharges) > 0) {
             const localDeliveryPayload = {
