@@ -488,6 +488,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
           }
           console.log(JSON.stringify(storePickupPayload))
           await this.ApiService.placeOrder(storePickupPayload).then(async (res) => {
+           await this.getCart();
             if (!this.card) {
               alert('Card Element is not initialized');
               return;
@@ -562,6 +563,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
                 shipping_charge: this.shippingCharges
               };
               await this.ApiService.placeOrder(localDeliveryPayload).then(async (res) => {
+                await this.getCart();
                 if (!this.card) {
                   alert('Card Element is not initialized');
                   return;
@@ -616,6 +618,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
             };
             console.log(JSON.stringify(localDeliveryPayload))
             await this.ApiService.placeOrder(localDeliveryPayload).then(async (res) => {
+              await this.getCart();
               if (!this.card) {
                 alert('Card Element is not initialized');
                 return;
