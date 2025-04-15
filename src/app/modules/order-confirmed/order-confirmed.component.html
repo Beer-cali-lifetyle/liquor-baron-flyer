@@ -16,14 +16,24 @@
 
         <div class="confirmation">
           <div class="card-confirm">
-            <img src="assets/image/shipping/map-phone.png" alt="map">
+            <!-- <img src="assets/image/shipping/map-phone.png" alt="map"> -->
+            <div *ngIf="mapUrl">
+              <iframe
+                [src]="mapUrl | safeUrl"
+                width="100%"
+                height="450"
+                style="border:0;"
+                allowfullscreen
+                loading="lazy">
+              </iframe>
+            </div>
             <div class="alert-success alerting">
               <div class="image-green">
                 <img src="assets/image/shipping/green-tick.png" alt="green-tick">
               </div>
               <div class="para-alert">
                 <p class="first-alert">Your Order Is Confirmed</p>
-                <p class="second-alert">Your Order will be delivered on Tuesday, 27 August 2024 1:00 pm </p>
+                <!-- <p class="second-alert">Your Order will be delivered on Tuesday, 27 August 2024 1:00 pm </p> -->
               </div>
             </div>
 
@@ -34,38 +44,57 @@
           <div class="card-confirm">
             <div class="box-confirmed">
               <div class="detailed-confirm">
-                <div class="first-confirm">
+                <!-- <div class="first-confirm">
                   <p class="confirmed"><strong>Contact Information:</strong><br><span>Name: <strong>{{orders?.delivery_address?.name}} </strong><br>
                     Mobile: <strong>{{orders?.delivery_address?.mobile}}</strong></span></p>
-                </div>
+                </div> -->
                 <div class="first-confirm second-confirm">
-                  <p class="confirmed"><strong>Payment Method:</strong><br><span>{{orders?.payment_method | titlecase}}</span></p>
+                  <p class="confirmed"><strong>Payment Method:</strong><br><span>{{orders?.payment_method === 'stripe' ?
+                      'Online' : 'COD'}}</span></p>
                 </div>
               </div>
 
-              <div class="detailed-confirm">
+              <div class="detailed-confirm" *ngIf="orders?.delivery_address">
                 <div class="first-confirm">
-                  <p class="confirmed"><strong>Address:</strong><br>{{orders?.delivery_address?.address}}</p>
+                  <p class="confirmed">
+                    <strong>Address:</strong><br>
+                    {{ orders?.delivery_address?.address?.address1 }},
+                    {{ orders?.delivery_address?.address?.city }},
+                    {{ orders?.delivery_address?.address?.province }},
+                    {{ orders?.delivery_address?.address?.postalCode }}
+                  </p>
                 </div>
-                <div class="first-confirm second-confirm">
-                  <p class="confirmed"><strong>Amount:</strong><br><span>{{orders?.total_amount | currency:'CAD'}}</span></p>
+              </div>
+              <div class="first-confirm second-confirm">
+                <p class="confirmed"><strong>Amount:</strong><br><span>{{orders?.total_amount | currency:'CAD'}}</span>
+                </p>
+              </div>
+
+              <div class="first-confirm second-confirm" *ngIf="orders?.store_detail">
+                <p class="confirmed"><strong>Store:</strong><br>
+                </p>
+                <div class="store-addrss">
+                  <div class="sr-one">
+                    <div class="store-addrss">
+                      <div class="sr-one">
+                        <span><b>Opening Hours:</b>  {{orders?.store_detail?.opening_time}}</span>
+                        <span><b>Closing Hours:</b>  {{orders?.store_detail?.closing_time}}</span>
+                        <span><b>Call Us:</b> {{orders?.store_detail?.call_us}} </span>
+                        <span><b>Email Us:</b> {{orders?.store_detail?.email}}</span>
+                        <span><b>Address:</b>  {{orders?.store_detail?.head_office_address}} </span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              <div class="detailed-confirm">
+              <div class="detailed-confirm mt-2">
                 <div class="first-confirm">
-                  <p class="confirmed"><strong>Shipping Method:</strong><br><span>{{orders?.delivery_type | titlecase}} Delivery</span></p>
+                  <p class="confirmed"><strong>Shipping Method:</strong><br><span>{{orders?.delivery_type === 'local' ?
+                      'Home Delivery' : 'Store Pickup'}}</span></p>
                 </div>
               </div>
             </div>
-            <!-- <div class="alert-success alerting">
-              <div class="image-green">
-                <input type="checkbox" name="" id="">
-              </div>
-              <div class="para-alert">
-                <p class="second-alert">Save this information for faster checkout </p>
-              </div>
-            </div> -->
 
           </div>
         </div>
@@ -74,7 +103,8 @@
 
         <div class="text-check inputting-check success-pot">
           <div class="button-flex button-return">
-            <button type="submit" class="btn btn-primary"> Need Help?<span class="contactor"><a routerLink="/contact">Contact Us</a></span></button>
+            <button type="submit" class="btn btn-primary"> Need Help?<span class="contactor"><a
+                  routerLink="/contact">Contact Us</a></span></button>
           </div>
           <div class="button-flex">
             <button type="submit" class="btn btn-primary" routerLink="/home">Continue Shopping</button>
@@ -92,33 +122,30 @@
     <div class="col-md-6 col-sm-12 mt-md-5">
       <div class="padding-equal-right position-sticky top-0">
         <div class="right-starting">
-          <div class="listing-right mb-1" *ngFor="let item of contextService?.cart()?.data">
+          <div class="listing-right mb-1" *ngFor="let item of orders?.items">
             <div class="img-bottle">
-              <img [src]="imgBaseUrl + item?.product?.product_image" alt="old">
               <p class="one">{{item?.quantity}}</p>
             </div>
-            <p>{{item?.product?.name}}</p>
-            <p>{{item?.product?.price * item?.quantity | currency}}</p>
+            <p>{{item?.name}}</p>
+            <p>{{item?.price * item?.quantity | currency}}</p>
           </div>
         </div>
-        <!-- <div class="apply-but">
-          <input type="text" placeholder="Discount Code">
-          <button type="button">Apply</button>
-        </div> -->
+
 
         <div class="apply-total">
 
-          <!-- <div class="p-total">
-            <p>Subtotal :</p>
-            <p>${{calculateSubTotal(contextService.cart())}}</p>
-          </div> -->
+          <div class="p-total" *ngIf="orders?.total_amount">
+            <p>Tax :</p>
+            <p>${{orders?.total_tax}}</p>
+          </div>
 
-          <!-- <div class="p-total d-total">
+          <div class="p-total d-total" *ngIf="orders?.shipping_charge">
             <p>Shipping :</p>
-            <p>Enter Shipping Address</p>
-          </div> -->
+            <p>${{orders?.shipping_charge}}</p>
+          </div>
+          <hr>
 
-          <div class="p-total free-grand">
+          <div class="p-total free-grand" *ngIf="orders?.total_amount">
             <p><span class="grandone">Total</span></p>
             <p>CAD<span class="cad">${{orders?.total_amount}}</span></p>
           </div>

@@ -2367,7 +2367,7 @@ form.delivery-form textarea::placeholder {
 .listing-right p {
   margin-bottom: 0px;
   font-size: 14px;
-  width: 60%;
+  width: 100%;
 }
 
 .listing-right p:last-child {

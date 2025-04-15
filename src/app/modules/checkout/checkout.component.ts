@@ -339,21 +339,23 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
       const slots = [];
       let [startHour, startMinute] = openingTime.split(":").map(Number);
       let [endHour, endMinute] = closingTime.split(":").map(Number);
+    
       while (
         startHour < endHour ||
         (startHour === endHour && startMinute <= endMinute)
       ) {
-        const period = startHour >= 12 ? "PM" : "AM";
-        const hour12 = startHour % 12 || 12;
-        const formattedTime = `${hour12}:${startMinute
+        const formattedTime = `${startHour.toString().padStart(2, "0")}:${startMinute
           .toString()
-          .padStart(2, "0")} ${period}`;
+          .padStart(2, "0")}`;
         slots.push(formattedTime);
+    
         startHour += 1;
         if (startHour === 24) break;
       }
+    
       return slots;
     }
+    
 
     this.timeSlots = generateTimeSlots(openingTime, closingTime);
   }
@@ -508,6 +510,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
             } else if (paymentIntent?.status === 'requires_capture') {
               console.log('Payment authorized, pending capture.');
               this.toaster.Success('Payment authorized successfully.');
+              this.getCart();
               this.router.navigate(['/order-confirmation'], { queryParams: { order_id: res?.order?.id } });
               // optionally call backend to notify
             }
@@ -583,6 +586,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
                 } else if (paymentIntent?.status === 'requires_capture') {
                   console.log('Payment authorized, pending capture.');
                   this.toaster.Success('Payment authorized successfully.');
+                  this.getCart();
                   this.router.navigate(['/order-confirmation'], { queryParams: { order_id: res?.order?.id } });
                   // optionally call backend to notify
                 }
@@ -638,6 +642,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
               } else if (paymentIntent?.status === 'requires_capture') {
                 console.log('Payment authorized, pending capture.');
                 this.toaster.Success('Payment authorized successfully.');
+                this.getCart();
                 this.router.navigate(['/order-confirmation'], { queryParams: { order_id: res?.order?.id } });
                 // optionally call backend to notify
               }
