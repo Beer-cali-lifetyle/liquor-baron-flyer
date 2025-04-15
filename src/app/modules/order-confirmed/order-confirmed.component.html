@@ -16,7 +16,7 @@
 
         <div class="confirmation">
           <div class="card-confirm">
-            <!-- <img src="assets/image/shipping/map-phone.png" alt="map"> -->
+            <img src="assets/image/shipping/map-phone.png" alt="map" *ngIf="!mapUrl">
             <div *ngIf="mapUrl">
               <iframe
                 [src]="mapUrl | safeUrl"
