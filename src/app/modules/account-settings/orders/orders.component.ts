@@ -80,7 +80,6 @@ export class OrdersComponent implements OnInit {
     event.stopPropagation();
   
     // Add all items to the cart
-    debugger;
     await Promise.all(order?.items.map(async (item: any) => {
       const payload = {
         productId: item?.product_id,

@@ -8,7 +8,7 @@ declare const google: any;
   standalone: true,
   imports: [CommonModule],
   template: `
-    <label class="form-label flex-">Address <span class="text-danger">*</span></label>
+    <label class="form-label" style="font-size: 13px;">Address <span class="text-danger">*</span></label>
     <input #searchInput type="text" class="form-control" [value]="address" placeholder="Enter a location" />
   `,
   styles: [

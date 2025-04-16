@@ -142,6 +142,8 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
     for (let i = currentYear; i <= currentYear + 20; i++) {
       this.years.push(i);
     }
+    this.signUpForm.get('firstName')?.valueChanges.subscribe(() => this.updateFullName());
+    this.signUpForm.get('lastName')?.valueChanges.subscribe(() => this.updateFullName());
   }
 
   async ngAfterViewInit() {
@@ -159,6 +161,19 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
     if (!this.contextService.user()?.is_age_verified) {
       this.initSwal();
     }
+  }
+
+  updateFullName() {
+    const first = this.signUpForm.get('firstName')?.value || '';
+    const last = this.signUpForm.get('lastName')?.value || '';
+    const fullName = `${first} ${last}`.trim();
+    this.form.patchValue({ fullName }, { emitEvent: false });
+  }
+
+  async handleFirstName() {
+    this.form.patchValue({
+      fullName: this.contextService.user()?.name
+    })
   }
 
   formatCardNumber(event: Event) {
@@ -339,7 +354,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
       const slots = [];
       let [startHour, startMinute] = openingTime.split(":").map(Number);
       let [endHour, endMinute] = closingTime.split(":").map(Number);
-    
+
       while (
         startHour < endHour ||
         (startHour === endHour && startMinute <= endMinute)
@@ -348,14 +363,14 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
           .toString()
           .padStart(2, "0")}`;
         slots.push(formattedTime);
-    
+
         startHour += 1;
         if (startHour === 24) break;
       }
-    
+
       return slots;
     }
-    
+
 
     this.timeSlots = generateTimeSlots(openingTime, closingTime);
   }
@@ -448,7 +463,6 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
         declaredValue: this.subTotal,
       };
       const result: any = await this.ApiService.getShippingCharges(body);
-      debugger;
       console.log('Response:', result);
       if (result.error) { this.toaster.Warning('Please add valid proper Address') }
       this.shippingCharges = result?.total ? result.total : result;
@@ -520,9 +534,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
         }
         break;
       case 2:
-        debugger;
         if (!this.deliveryForm.get('deliveryAddress')?.value && this.showAddressForm) {
-          debugger;
           let address_added = null;
           if (this.form.valid) {
             const value = {
@@ -579,7 +591,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
                     },
                   },
                 });
-  
+
                 if (error) {
                   console.error('Payment authorization failed:', error.message);
                   this.toaster.Warning(error.message);
@@ -678,7 +690,6 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
     //   address: `${addr || ''}, ${locality || ''}${landmark ? ', ' + landmark : ''}, ${city || ''} - ${pin_code || ''}, ${state || ''}`.replace(/,\s*,/g, ',').replace(/,\s*$/, '').trim(),
     //   mobile: mobile_number || '' 
     // };
-    debugger;
     return {
       docketCode: "LIQUOR",
       address: {
@@ -836,6 +847,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
 
 
   showAddressFormFunc() {
+    this.handleFirstName();
     this.showAddressForm = true;
     this.deliveryForm.patchValue({
       deliveryAddress: ''

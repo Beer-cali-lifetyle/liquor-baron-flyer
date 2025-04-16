@@ -278,7 +278,6 @@ export class ShopListComponent extends AppBase implements OnInit, AfterViewInit 
 
   async onPageChange(pagenumber: any) {
     this.currentPage = pagenumber;
-    debugger;
     if (!(this.categoryId || this.subcategoryId || this.flyerId) && !(this.selectedBrand || this.selectedCategory)) {
       return await this.ApiService.fetcHlatestProducts({ perPage: this.pageSize, page: this.currentPage }).then((res) => {
         this.products = [...this.products, ...res?.data]

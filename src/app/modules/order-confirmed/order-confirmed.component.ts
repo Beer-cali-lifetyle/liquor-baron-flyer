@@ -68,7 +68,6 @@ export class OrderConfirmedComponent implements OnInit {
         await this.fetchStores();
       }
       this.orders['items'] = JSON.parse(res?.order?.items)
-      debugger;
       console.log(this.orders)
       let fullAddress = '';
 
@@ -89,7 +88,6 @@ export class OrderConfirmedComponent implements OnInit {
 
   async fetchStores() {
     await this.ApiService.fetchStores().then((res) => {
-      debugger;
       this.orders['store_detail'] = res?.data?.data.find((obj: any) => obj.id == this.orders.store);
             const encodedAddress = encodeURIComponent(this.orders?.store_detail?.head_office_address);
       this.mapUrl = `https://www.google.com/maps?q=${encodedAddress}&output=embed`;

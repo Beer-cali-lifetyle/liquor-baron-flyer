@@ -18,7 +18,6 @@ export class PwaPromptComponent implements OnInit {
   @HostListener('window:beforeinstallprompt', ['$event'])
   onBeforeInstallPrompt(event: any) {
     event.preventDefault();
-    debugger;
     this.deferredPrompt = event;
     
     setTimeout(() => {
