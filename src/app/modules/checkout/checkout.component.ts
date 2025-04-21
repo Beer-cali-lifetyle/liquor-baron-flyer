@@ -763,53 +763,53 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
     event.preventDefault();
   }
 
-  cardLogo(e: any) {
-    let firstLetter = this.ccForm.value.card_number.slice(0, 2);
-    switch (firstLetter) {
-      case "34":
-      case "37":
-        this.cardLogoImg = 'assets/images/credit_card/amex.svg';
-        break;
-      case "40":
-      case "41":
-      case "42":
-      case "43":
-      case "44":
-      case "45":
-      case "46":
-      case "47":
-      case "48":
-      case "49":
-        this.cardLogoImg = 'assets/images/credit_card/visa.svg';
-        break;
-      case "51":
-      case "52":
-      case "53":
-      case "54":
-      case "55":
-        this.cardLogoImg = 'assets/images/credit_card/mastercard.svg';
-        break;
-      case "36":
-      case "38":
-      case "30":
-        this.cardLogoImg = 'assets/images/credit_card/diners.svg';
-        break;
-      case "60":
-        this.cardLogoImg = 'assets/images/credit_card/discover.svg';
-        break;
-      case "18":
-      case "21":
-      case "30":
-      case "32":
-      case "33":
-      case "35":
-        this.cardLogoImg = 'assets/images/credit_card/jcb.svg';
-        break;
-      default:
-        this.cardLogoImg = null;
-        break;
-    }
-  }
+  // cardLogo(e: any) {
+  //   let firstLetter = this.ccForm.value.card_number.slice(0, 2);
+  //   switch (firstLetter) {
+  //     case "34":
+  //     case "37":
+  //       this.cardLogoImg = 'assets/images/credit_card/amex.svg';
+  //       break;
+  //     case "40":
+  //     case "41":
+  //     case "42":
+  //     case "43":
+  //     case "44":
+  //     case "45":
+  //     case "46":
+  //     case "47":
+  //     case "48":
+  //     case "49":
+  //       this.cardLogoImg = 'assets/images/credit_card/visa.svg';
+  //       break;
+  //     case "51":
+  //     case "52":
+  //     case "53":
+  //     case "54":
+  //     case "55":
+  //       this.cardLogoImg = 'assets/images/credit_card/mastercard.svg';
+  //       break;
+  //     case "36":
+  //     case "38":
+  //     case "30":
+  //       this.cardLogoImg = 'assets/images/credit_card/diners.svg';
+  //       break;
+  //     case "60":
+  //       this.cardLogoImg = 'assets/images/credit_card/discover.svg';
+  //       break;
+  //     case "18":
+  //     case "21":
+  //     case "30":
+  //     case "32":
+  //     case "33":
+  //     case "35":
+  //       this.cardLogoImg = 'assets/images/credit_card/jcb.svg';
+  //       break;
+  //     default:
+  //       this.cardLogoImg = null;
+  //       break;
+  //   }
+  // }
 
   handleKeyPress(e: any) {
     var x = e.which || e.keyCode;

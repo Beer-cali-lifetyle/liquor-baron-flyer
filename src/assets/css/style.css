@@ -2435,6 +2435,12 @@ form.delivery-form textarea::placeholder {
   position: relative;
 }
 
+.img-bottle img {
+min-height: 3.5em !important;
+max-height: 3.5em !important;
+object-fit: contain;
+}
+
 .img-bottle p.one {
   position: absolute;
   top: -7px;

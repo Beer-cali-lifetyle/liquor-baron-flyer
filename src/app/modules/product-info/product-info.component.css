@@ -1,5 +1,5 @@
 .carousel-inner img {
-  object-fit: cover;
+  object-fit: contain;
   width: 100%;
 }
 
@@ -166,7 +166,7 @@ body {
 .uniform-img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   min-height: 319px !important;
   /* Ensures images fill the area while maintaining aspect ratio */
 }
@@ -260,8 +260,8 @@ body {
 .uniform-img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  max-height: 15em;
+  object-fit: contain;
+  max-height: 400px;
   /* Ensures images fill the area while maintaining aspect ratio */
 }
 
@@ -498,7 +498,7 @@ button.btn-add {
   }
 
   #homepageCarousel img {
-    object-fit: cover;
+    object-fit: contain;
     height: 400px;
   }
 
@@ -620,7 +620,7 @@ button.btn-add {
     width: 100% !important;
     height: 300px !important;
     padding: 0px !important;
-    object-fit: cover !important;
+    object-fit: contain !important;
   }
 
   .qty-container {
@@ -802,7 +802,7 @@ button.btn-add {
     width: 100% !important;
     height: 300px !important;
     padding: 0px !important;
-    object-fit: cover !important;
+    object-fit: contain !important;
   }
 
   .btn-group {
@@ -958,7 +958,7 @@ button.btn-add {
     width: 100% !important;
     height: 250px !important;
     padding: 0px !important;
-    object-fit: cover !important;
+    object-fit: contain !important;
   }
 
   .qty-container {
@@ -1152,7 +1152,7 @@ button.btn-add {
     width: 100% !important;
     height: 250px !important;
     padding: 0px !important;
-    object-fit: cover !important;
+    object-fit: contain !important;
   }
 
   .qty-container {
@@ -1258,7 +1258,7 @@ button.btn-add {
     width: 100% !important;
     height: 300px !important;
     padding: 0px !important;
-    object-fit: cover !important;
+    object-fit: contain !important;
   }
 
   .btn-group {
