@@ -64,7 +64,7 @@ export class ProductInfoComponent extends AppBase implements OnInit {
       name: [''],
       email: [''],
       media: [''],
-      terms: [false, Validators.requiredTrue],
+      terms: [false],
     });
     await this.ApiService.fetchProduct(this.id).then(async (res) => {
       this.productInfo = res;
@@ -395,6 +395,7 @@ export class ProductInfoComponent extends AppBase implements OnInit {
           this.fetchRelatedProducts(),
         ])
       })
+      window.scrollTo(0, 0);
     });
   }
 

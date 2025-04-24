@@ -17,23 +17,23 @@ export class BaseLayoutComponent implements AfterViewInit {
   @ViewChild('header', { read: ElementRef }) header!: ElementRef;
 
   ngAfterViewInit() {
-    this.updateHeaderHeight();
+    // this.updateHeaderHeight();
   }
 
-  @HostListener('window:resize', [])
-  onResize() {
-    this.updateHeaderHeight();
-  }
+  // @HostListener('window:resize', [])
+  // onResize() {
+  //   this.updateHeaderHeight();
+  // }
 
-  private updateHeaderHeight(): void {
-    setTimeout(() => {
-      if (this.header?.nativeElement) {
-        const height = this.header.nativeElement.offsetHeight;
-        console.log("Header Height:", height);
-        document.documentElement.style.setProperty('--header-height', `${height - 25}px`);
-      } else {
-        console.warn("Header reference is not available.");
-      }
-    }, 500); 
-  }
+  // private updateHeaderHeight(): void {
+  //   setTimeout(() => {
+  //     if (this.header?.nativeElement) {
+  //       const height = this.header.nativeElement.offsetHeight;
+  //       console.log("Header Height:", height);
+  //       document.documentElement.style.setProperty('--header-height', `${height}px`);
+  //     } else {
+  //       console.warn("Header reference is not available.");
+  //     }
+  //   }, 500); 
+  // }
 }

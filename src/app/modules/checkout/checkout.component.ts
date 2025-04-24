@@ -142,6 +142,8 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
     for (let i = currentYear; i <= currentYear + 20; i++) {
       this.years.push(i);
     }
+    this.signUpForm.get('firstName')?.valueChanges.subscribe(() => this.updateFullName());
+    this.signUpForm.get('lastName')?.valueChanges.subscribe(() => this.updateFullName());
   }
 
   async ngAfterViewInit() {
@@ -159,6 +161,19 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
     if (!this.contextService.user()?.is_age_verified) {
       this.initSwal();
     }
+  }
+
+  updateFullName() {
+    const first = this.signUpForm.get('firstName')?.value || '';
+    const last = this.signUpForm.get('lastName')?.value || '';
+    const fullName = `${first} ${last}`.trim();
+    this.form.patchValue({ fullName }, { emitEvent: false });
+  }
+
+  async handleFirstName() {
+    this.form.patchValue({
+      fullName: this.contextService.user()?.name
+    })
   }
 
   formatCardNumber(event: Event) {
@@ -339,21 +354,23 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
       const slots = [];
       let [startHour, startMinute] = openingTime.split(":").map(Number);
       let [endHour, endMinute] = closingTime.split(":").map(Number);
+
       while (
         startHour < endHour ||
         (startHour === endHour && startMinute <= endMinute)
       ) {
-        const period = startHour >= 12 ? "PM" : "AM";
-        const hour12 = startHour % 12 || 12;
-        const formattedTime = `${hour12}:${startMinute
+        const formattedTime = `${startHour.toString().padStart(2, "0")}:${startMinute
           .toString()
-          .padStart(2, "0")} ${period}`;
+          .padStart(2, "0")}`;
         slots.push(formattedTime);
+
         startHour += 1;
         if (startHour === 24) break;
       }
+
       return slots;
     }
+
 
     this.timeSlots = generateTimeSlots(openingTime, closingTime);
   }
@@ -446,7 +463,6 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
         declaredValue: this.subTotal,
       };
       const result: any = await this.ApiService.getShippingCharges(body);
-      debugger;
       console.log('Response:', result);
       if (result.error) { this.toaster.Warning('Please add valid proper Address') }
       this.shippingCharges = result?.total ? result.total : result;
@@ -475,7 +491,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
           const storePickupPayload = {
             user_id: this.contextService.user()?.id,
             items: this.contextService.cart()?.data?.map((product: any) => {
-              return { product_id: product?.product?.id, name: product?.product?.name, quantity: product?.quantity, price: product?.product?.price }
+              return { product_id: product?.product?.id, name: product?.product?.name, quantity: product?.quantity, price: product?.product?.price, weight: 1 }
             }),
             total_amount: this.subTotal,
             payment_method: 'stripe',
@@ -509,6 +525,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
             } else if (paymentIntent?.status === 'requires_capture') {
               console.log('Payment authorized, pending capture.');
               this.toaster.Success('Payment authorized successfully.');
+              this.getCart();
               this.router.navigate(['/order-confirmation'], { queryParams: { order_id: res?.order?.id } });
               // optionally call backend to notify
             }
@@ -518,9 +535,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
         }
         break;
       case 2:
-        debugger;
         if (!this.deliveryForm.get('deliveryAddress')?.value && this.showAddressForm) {
-          debugger;
           let address_added = null;
           if (this.form.valid) {
             const value = {
@@ -550,7 +565,8 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
                     product_id: product?.product?.id,
                     name: product?.product?.name,
                     quantity: product?.quantity,
-                    price: product?.product?.price
+                    price: product?.product?.price,
+                    weight: 1
                   };
                 }),
                 total_amount: this.subTotal,
@@ -577,13 +593,14 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
                     },
                   },
                 });
-  
+
                 if (error) {
                   console.error('Payment authorization failed:', error.message);
                   this.toaster.Warning(error.message);
                 } else if (paymentIntent?.status === 'requires_capture') {
                   console.log('Payment authorized, pending capture.');
                   this.toaster.Success('Payment authorized successfully.');
+                  this.getCart();
                   this.router.navigate(['/order-confirmation'], { queryParams: { order_id: res?.order?.id } });
                   // optionally call backend to notify
                 }
@@ -604,7 +621,8 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
                   product_id: product?.product?.id,
                   name: product?.product?.name,
                   quantity: product?.quantity,
-                  price: product?.product?.price
+                  price: product?.product?.price,
+                  weight: 1
                 };
               }),
               total_amount: this.subTotal,
@@ -639,6 +657,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
               } else if (paymentIntent?.status === 'requires_capture') {
                 console.log('Payment authorized, pending capture.');
                 this.toaster.Success('Payment authorized successfully.');
+                this.getCart();
                 this.router.navigate(['/order-confirmation'], { queryParams: { order_id: res?.order?.id } });
                 // optionally call backend to notify
               }
@@ -674,7 +693,6 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
     //   address: `${addr || ''}, ${locality || ''}${landmark ? ', ' + landmark : ''}, ${city || ''} - ${pin_code || ''}, ${state || ''}`.replace(/,\s*,/g, ',').replace(/,\s*$/, '').trim(),
     //   mobile: mobile_number || '' 
     // };
-    debugger;
     return {
       docketCode: "LIQUOR",
       address: {
@@ -748,53 +766,53 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
     event.preventDefault();
   }
 
-  cardLogo(e: any) {
-    let firstLetter = this.ccForm.value.card_number.slice(0, 2);
-    switch (firstLetter) {
-      case "34":
-      case "37":
-        this.cardLogoImg = 'assets/images/credit_card/amex.svg';
-        break;
-      case "40":
-      case "41":
-      case "42":
-      case "43":
-      case "44":
-      case "45":
-      case "46":
-      case "47":
-      case "48":
-      case "49":
-        this.cardLogoImg = 'assets/images/credit_card/visa.svg';
-        break;
-      case "51":
-      case "52":
-      case "53":
-      case "54":
-      case "55":
-        this.cardLogoImg = 'assets/images/credit_card/mastercard.svg';
-        break;
-      case "36":
-      case "38":
-      case "30":
-        this.cardLogoImg = 'assets/images/credit_card/diners.svg';
-        break;
-      case "60":
-        this.cardLogoImg = 'assets/images/credit_card/discover.svg';
-        break;
-      case "18":
-      case "21":
-      case "30":
-      case "32":
-      case "33":
-      case "35":
-        this.cardLogoImg = 'assets/images/credit_card/jcb.svg';
-        break;
-      default:
-        this.cardLogoImg = null;
-        break;
-    }
-  }
+  // cardLogo(e: any) {
+  //   let firstLetter = this.ccForm.value.card_number.slice(0, 2);
+  //   switch (firstLetter) {
+  //     case "34":
+  //     case "37":
+  //       this.cardLogoImg = 'assets/images/credit_card/amex.svg';
+  //       break;
+  //     case "40":
+  //     case "41":
+  //     case "42":
+  //     case "43":
+  //     case "44":
+  //     case "45":
+  //     case "46":
+  //     case "47":
+  //     case "48":
+  //     case "49":
+  //       this.cardLogoImg = 'assets/images/credit_card/visa.svg';
+  //       break;
+  //     case "51":
+  //     case "52":
+  //     case "53":
+  //     case "54":
+  //     case "55":
+  //       this.cardLogoImg = 'assets/images/credit_card/mastercard.svg';
+  //       break;
+  //     case "36":
+  //     case "38":
+  //     case "30":
+  //       this.cardLogoImg = 'assets/images/credit_card/diners.svg';
+  //       break;
+  //     case "60":
+  //       this.cardLogoImg = 'assets/images/credit_card/discover.svg';
+  //       break;
+  //     case "18":
+  //     case "21":
+  //     case "30":
+  //     case "32":
+  //     case "33":
+  //     case "35":
+  //       this.cardLogoImg = 'assets/images/credit_card/jcb.svg';
+  //       break;
+  //     default:
+  //       this.cardLogoImg = null;
+  //       break;
+  //   }
+  // }
 
   handleKeyPress(e: any) {
     var x = e.which || e.keyCode;
@@ -832,6 +850,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
 
 
   showAddressFormFunc() {
+    this.handleFirstName();
     this.showAddressForm = true;
     this.deliveryForm.patchValue({
       deliveryAddress: ''

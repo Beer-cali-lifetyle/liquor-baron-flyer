@@ -36,10 +36,10 @@
           </li>
           <li class="nav-item">
             <a class="nav-link active" aria-current="page" routerLink="/auth/sign-in"
-              *ngIf="(this.contextService.user()?.is_guest === true || contextService.user()?.is_guest === '1') || !(this.contextService.user())" (click)="toggleNavbar()">E-Flyer Sign
+              *ngIf="(this.contextService.user()?.is_guest === true || contextService.user()?.is_guest === '1' || contextService.user()?.is_guest === 1) || !(this.contextService.user())" (click)="toggleNavbar()">E-Flyer Sign
               up</a>
             <a class="nav-link active" aria-current="page" routerLink="my-account"
-              *ngIf="(this.contextService.user()?.is_guest === 'false' || this.contextService.user()?.is_guest === '0')" (click)="toggleNavbar()">E-Flyer Sign up</a>
+              *ngIf="(this.contextService.user()?.is_guest === 'false' || this.contextService.user()?.is_guest === '0' || this.contextService.user()?.is_guest === 0)" (click)="toggleNavbar()">E-Flyer Sign up</a>
           </li>
         </ul>
         <ul class="navbar-nav ms-auto extra-menus">

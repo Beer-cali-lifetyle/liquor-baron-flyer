@@ -39,6 +39,7 @@ export class ShoppingCartComponent extends AppBase implements OnInit {
       }
     });
       await this.getCart();
+      await this.fetchProducts();
   }
 
   async fetchAddres() {

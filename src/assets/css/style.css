@@ -2367,7 +2367,7 @@ form.delivery-form textarea::placeholder {
 .listing-right p {
   margin-bottom: 0px;
   font-size: 14px;
-  width: 60%;
+  width: 100%;
 }
 
 .listing-right p:last-child {
@@ -2433,6 +2433,12 @@ form.delivery-form textarea::placeholder {
 
 .img-bottle {
   position: relative;
+}
+
+.img-bottle img {
+min-height: 3.5em !important;
+max-height: 3.5em !important;
+object-fit: contain;
 }
 
 .img-bottle p.one {

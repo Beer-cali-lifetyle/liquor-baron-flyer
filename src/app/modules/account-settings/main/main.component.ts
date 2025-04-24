@@ -99,11 +99,8 @@ export class MainComponent extends AppBase implements OnInit {
       mobileNumber: ['', [Validators.required, Validators.pattern(/^\+?[1-9]\d{1,14}$/)]],
       pinCode: ['', Validators.required],
       address: ['', Validators.required],
-      locality: ['', Validators.required],
       city: ['', Validators.required],
       state: ['', Validators.required],
-      landmark: [''],
-      altPhoneNumber: ['', Validators.pattern(/^\+?[1-9]\d{1,14}$/)],
       defaultAddress: [true]
     });
     await this.fetchStates();

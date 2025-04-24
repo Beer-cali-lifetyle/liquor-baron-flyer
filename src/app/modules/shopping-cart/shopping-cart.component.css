@@ -103,7 +103,7 @@
   }
 
   .shopping-productss img {
-    object-fit: cover !important;
+    object-fit: contain !important;
     height: 150px;
   }
 
@@ -177,7 +177,7 @@
   }
 
   .shopping-productss img {
-    object-fit: cover !important;
+    object-fit: contain !important;
     height: 150px;
   }
 
@@ -326,7 +326,7 @@
   }
 
   .shopping-productss img {
-    object-fit: cover !important;
+    object-fit: contain !important;
     height: 150px;
   }
 
@@ -479,7 +479,7 @@
   }
 
   .shopping-productss img {
-    object-fit: cover !important;
+    object-fit: contain !important;
     height: 150px;
   }
 
@@ -632,7 +632,7 @@
   }
 
   .shopping-productss img {
-    object-fit: cover !important;
+    object-fit: contain !important;
     height: 150px;
   }
 

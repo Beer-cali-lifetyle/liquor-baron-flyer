@@ -203,14 +203,14 @@
               <div class="col" *ngIf="!(addresses.length > 0) || showAddressForm">
                 <div class="body-forms">
                   <form [formGroup]="form" (ngSubmit)="onSubmitAddress()" class="row g-3 general-info">
-                    <div class="col-md-6 type-form">
+                    <!-- <div class="col-md-6 type-form">
                       <label class="form-label flex-">Full Name <span class="text-danger">*</span></label>
                       <input type="text" class="form-control" formControlName="fullName" placeholder="Full Name">
                       <div *ngIf="form.get('fullName')?.touched && form.get('fullName')?.invalid">
                         <div class="text-danger p-small" *ngIf="form.get('fullName')?.errors?.['required']">Full name is
                           required.</div>
                       </div>
-                    </div>
+                    </div> -->
 
                     <div class="col-md-6 type-form">
                       <label class="form-label flex-">Mobile Number <span class="text-danger">*</span></label>
