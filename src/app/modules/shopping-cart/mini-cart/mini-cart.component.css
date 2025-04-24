@@ -1,78 +1,80 @@
 body {
-    background-color: #f8f9fa;
-  }
+  background-color: #f8f9fa;
+}
 
-  .mini-cart-container {
-    border: 1px solid #ddd;
-    padding: 15px;
-    border-radius: 8px;
-    background-color: #faf1ea;
-  }
+.mini-cart-container {
+  border: 1px solid #ddd;
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #faf1ea;
+}
 
-  .mini-cart-header {
-    background-color: #700a18;
-    color: #fff;
-    padding: 10px;
-    font-weight: bold;
-  }
+.mini-cart-header {
+  background-color: #700a18;
+  color: #fff;
+  padding: 10px;
+  font-weight: bold;
+}
 
-  .cart-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 15px;
-    border-bottom: 1px solid #e0e0e0;
-    padding-bottom: 10px;
-  }
+.cart-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 10px;
+}
 
-  .cart-item img {
-    max-width: 50px;
-    margin-right: 10px;
-  }
+.cart-item img {
+  max-width: 50px;
+  margin-right: 10px;
+  max-height: 4em !important;
+  object-fit: contain;
+}
 
-  .quantity-controls {
-    display: flex;
-    align-items: center;
-  }
+.quantity-controls {
+  display: flex;
+  align-items: center;
+}
 
-  .quantity-controls button {
-    border: none;
-    background-color: transparent;
-    padding: 3px 8px;
-    margin: 0 5px;
-  }
+.quantity-controls button {
+  border: none;
+  background-color: transparent;
+  padding: 3px 8px;
+  margin: 0 5px;
+}
 
-  .also-like-section {
-    margin-top: 20px;
-  }
-  
-  .btn-checkout {
-    background-color: #700a18;
-    color: white;
-  }
+.also-like-section {
+  margin-top: 20px;
+}
 
-  .text-maroon {
-    color: #700a18;
-  }
+.btn-checkout {
+  background-color: #700a18;
+  color: white;
+}
 
-  .subtotal {
-    background-color: #d3d1d1;
-    padding: 10px;
-  }
+.text-maroon {
+  color: #700a18;
+}
 
-  .whitebg {
-    background-color: #f1f1f1;
-    padding: 10px;
-    border-bottom: 1px solid gray;
-  }
+.subtotal {
+  background-color: #d3d1d1;
+  padding: 10px;
+}
 
-  .checkout {
-    background-color: #700a18;
-    color: white;
-    padding: 10px;
-  }
+.whitebg {
+  background-color: #f1f1f1;
+  padding: 10px;
+  border-bottom: 1px solid gray;
+}
+
+.checkout {
+  background-color: #700a18;
+  color: white;
+  padding: 10px;
+}
 
 
-  .remove-cart {
-    cursor: pointer;
-  }
+.remove-cart {
+  cursor: pointer;
+}

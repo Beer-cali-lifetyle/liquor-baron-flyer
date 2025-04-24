@@ -163,7 +163,8 @@
     min-width: 180px; /* Ensure the image doesn't shrink below 180px on larger screens */
     max-width: 100%;  /* Allow image to scale on smaller devices */
     height: auto;
-    object-fit: cover;
+    object-fit: contain;
+    max-height: 7em !important;
   }
   
   /* Ensure the text does not overlap the image */
