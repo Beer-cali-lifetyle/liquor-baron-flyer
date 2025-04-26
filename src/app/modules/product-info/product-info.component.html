@@ -235,8 +235,7 @@
             <div class="col">
               <div class="button-cart-width mb-4 mt-4">
                 <button type="button" (click)="addToCart($event, productInfo?.product?.id, 7)"
-                  *ngIf="!cartInfo?.quantity">Add to
-                  Cart</button>
+                  *ngIf="!cartInfo?.quantity">Add to Cart</button>
                 <button type="button" *ngIf="cartInfo?.quantity" routerLink="/cart">Go to cart</button>
               </div>
             </div>

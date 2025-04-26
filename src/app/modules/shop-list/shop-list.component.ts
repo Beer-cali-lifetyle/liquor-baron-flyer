@@ -86,18 +86,33 @@ export class ShopListComponent extends AppBase implements OnInit, AfterViewInit 
   }
 
   async fetchRandomProducts(data: any) {
-    await this.ApiService.fetcHlatestProducts(data).then(async (res) => {
-      this.products = res?.data || [];
-      this.totalProducts = res?.total;
-      console.log(this.products);
-      await this.getCart();
-      this.subcategoryTitle = 'Browse Everything in Liquor Baron';
-      this.selectedCategory = null;
-      this.selectedBrand = null;
-      this.form.patchValue({
-        selectedCategory: null,
-        selectedBrand: null
-      })
+    this.route.queryParams.subscribe(async (params) => {
+      this.categoryId = params['categoryId'] ? parseInt(params['categoryId']) : null;
+      this.subcategoryId = params['subcategoryId'] ? parseInt(params['subcategoryId']) : null;
+      this.flyerId = params['flyerId'] ? parseInt(params['flyerId']) : null;
+      this.subcategoryTitle = params['title'] || null;
+
+      this.products = []; // Clear previous products before fetching new ones
+      const payload: any = { perPage: this.pageSize, page: this.currentPage };
+
+      if (this.categoryId) {
+        console.log('Category ID:', this.categoryId);
+        payload.categoryId = this.categoryId;
+      } else if (this.subcategoryId) {
+        console.log('Subcategory ID:', this.subcategoryId);
+        payload.subcategoryId = this.subcategoryId;
+      } else if (this.flyerId) {
+        console.log('Flyer ID:', this.flyerId);
+        payload.flyername = this.flyerId;
+      }
+
+      if (Object.keys(payload).length > 2) {
+        await this.fetchproductsWithFilter(payload).then(async () => {
+          await this.getCart();
+        });
+      } else {
+        await this.fetchRandomProducts(payload);
+      }
     });
   }
 

@@ -57,6 +57,9 @@ export class ProductInfoComponent extends AppBase implements OnInit {
   }
 
   async ngOnInit() {
+    this.cartService.cartUpdated$.subscribe(() => {
+      this.getCart();
+    });
     this.form = this.fb.group({
       rating: [null, Validators.required],
       review: ['', Validators.required],
@@ -88,9 +91,10 @@ export class ProductInfoComponent extends AppBase implements OnInit {
       ])
     })
     this.cartService.cartUpdated$.subscribe(() => {
-      this.getCart();  
+      this.getCart();
     });
   }
+
 
   increment() {
 
@@ -118,6 +122,7 @@ export class ProductInfoComponent extends AppBase implements OnInit {
       if (this.quantity === 1) {
         this.quantity = 'Add';
         this.removeItemFromCart();
+        this.cartInfo = null;
       }
     }
   }
@@ -174,7 +179,9 @@ export class ProductInfoComponent extends AppBase implements OnInit {
 
   async getCart() {
     if (this.contextService.user()) {
+      this.cartInfo = null;
       await this.ApiService.getCartProducts().then((res) => {
+        this.quantity = 'Add';
         this.relatedProducts.forEach((product: any) => product['cart_details'] = null);
         this.contextService.cart.set(res);
         res?.data.forEach((dataItem: any) => {

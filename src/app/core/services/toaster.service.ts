@@ -37,7 +37,7 @@ export class UiToasterService {
         // Add the new cart toast
         this.toasts.push({ 
           cart: true, 
-          delay: 50000, 
+          delay: 5000, 
           textOrTpl: '', 
           classname: 'toast-success', 
           iconClass: 'bi bi-check-circle-fill', 
