@@ -200,7 +200,7 @@
             <div class="col">
               <div class="product-descriptions text-white">
                 <p>{{productInfo?.product?.description}}</p>
-                <p class="fw-bold">{{productInfo?.category_name}}</p>
+                <!-- <p class="fw-bold">{{productInfo?.category_name}}</p> -->
               </div>
               <div class="product-description text-white">
                 <p>Price: ${{productInfo?.product?.price}} <span class="saved-perc"
@@ -245,7 +245,7 @@
             <div class="col">
               <ul class="other-pro-details text-white text-decoration-none">
                 <!-- <li>75cl </li> -->
-                <li class="circle-text">42%</li>
+                <li class="circle-text">{{productInfo?.product?.alcohol_volume}}%</li>
                 <li>SKU 790543</li>
               </ul>
               <div class="shipping-truc">
