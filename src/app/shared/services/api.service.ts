@@ -206,6 +206,10 @@ export class ApiService {
     return await this.httpRequest.POST(`/create-checkout-session`, data);
   }
 
+  async confirmOrderPostPayment(data: any) {
+    return await this.httpRequest.POST(`/confirmOrder`, data);
+  }
+
   async fetchOrders(id: any) {
     return await this.httpRequest.GET(`/users/${id}/orders`);
   }

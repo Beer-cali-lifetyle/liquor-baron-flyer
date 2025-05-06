@@ -513,8 +513,8 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
               payment_method: {
                 card: this.card,
                 billing_details: {
-                  name: 'John Doe',
-                  email: 'john@example.com',
+                  name: this.contextService.user()?.name,
+                  email: this.contextService.user()?.email,
                 },
               },
             });
@@ -524,7 +524,13 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
               this.toaster.Error(error.message);
             } else if (paymentIntent?.status === 'requires_capture') {
               console.log('Payment authorized, pending capture.');
-              this.toaster.Success('Payment authorized successfully.');
+              debugger;
+              const confirmPayload = {
+                payment_intent_id: paymentIntent.id,
+                order_id: res?.order?.id, 
+              }
+              await this.ApiService.confirmOrderPostPayment(confirmPayload)
+              this.toaster.Success('Order Placed successfully.');
               this.getCart();
               this.router.navigate(['/order-confirmation'], { queryParams: { order_id: res?.order?.id } });
               // optionally call backend to notify
