@@ -177,6 +177,15 @@ export class ProductInfoComponent extends AppBase implements OnInit {
     this.mainProductImage = e;
   }
 
+  get percent(): number {
+    const product = this.productInfo?.product;
+    if (product?.discount && product?.discount) {
+      return Math.round(((product.discount - product.price) / product.discount) * 100);
+    }
+    return 0;
+  }
+  
+
   async getCart() {
     if (this.contextService.user()) {
       this.cartInfo = null;

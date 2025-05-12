@@ -115,31 +115,32 @@
 
           <div class="row row-product mb-5 you-may-like">
             <h2>You May Also Like </h2>
-            <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 product-card-container cards-porduct" *ngFor="let product of relatedProducts; let i=index">
-      
+            <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12 product-card-container cards-porduct"
+              *ngFor="let product of relatedProducts; let i=index">
+
               <div class="product-card mx-2" (click)="goToProduct(product?.id)">
                 <div class="product-tumb pt-4 pb-1">
                   <img [src]="imgBaseUrl + product?.product_image" class="img-fluid uniform-img" alt="product">
-      
+
                   <div class="badge" [ngClass]="{
                       'bg-auccess': product.producttag === '3', 
                       'badge-yellow': product.producttag !== '3'
                     }">{{product.producttag}}</div>
-      
+
                 </div>
                 <div class="product-details p-2">
                   <h4>{{product?.name}}</h4>
                   <p>{{product?.description}}</p>
                   <div class="product-bottom-details d-flex justify-content-between">
                     <div class="product-price">
-                      <span [class.text-danger]="product?.discount"> ${{ product?.price }}  </span>
+                      <span [class.text-danger]="product?.discount"> ${{ product?.price }} </span>
                       <span *ngIf="product?.discount">
-                        <del>  ${{ product?.discount }}</del>
+                        <del> ${{ product?.discount }}</del>
                       </span>
                     </div>
-                    <div class="bag-container" *ngIf="!product?.cart_details" (click)="addToCart($event, product?.id, i, 1)">
-                      <i class="bi bi-lg bi-bag-plus bag-icon" *ngIf="!product?.product?.cart_details"
-                        >
+                    <div class="bag-container" *ngIf="!product?.cart_details"
+                      (click)="addToCart($event, product?.id, i, 1)">
+                      <i class="bi bi-lg bi-bag-plus bag-icon" *ngIf="!product?.product?.cart_details">
                       </i>
                       <span class="hover-text">Add</span>
                     </div>
@@ -156,7 +157,7 @@
                 </div>
               </div>
             </div>
-      
+
           </div>
 
         </div>
@@ -166,15 +167,18 @@
         <div class="sidebar">
           <div class="row">
             <div class="col">
-              <div class="reviews-ratings d-flex mt-2">
-                <ol class="text-white">
-                  <i class="bi bi-star-fill"></i>
-                  <i class="bi bi-star-fill"></i>
-                  <i class="bi bi-star-fill"></i>
-                  <i class="bi bi-star-fill"></i>
-                  <i class="bi bi-star-fill"></i>
-                </ol>
-                <p class="text-white">&nbsp; {{productInfo?.reviews.length}} Reviews</p>
+              <div class="reviews-ratings d-flex mt-2 product-descriptions justify-content-between">
+                <div class="d-flex">
+                  <ol class="text-white">
+                    <i class="bi bi-star-fill"></i>
+                    <i class="bi bi-star-fill"></i>
+                    <i class="bi bi-star-fill"></i>
+                    <i class="bi bi-star-fill"></i>
+                    <i class="bi bi-star-fill"></i>
+                  </ol>
+                  <p class="text-white">&nbsp; {{productInfo?.reviews.length}} Reviews</p>
+                </div>
+                <p class="text-white text-decoration-underline" (click)="openReviewForm(reviewmodal)">Write an Review</p>
               </div>
             </div>
           </div>
@@ -202,10 +206,10 @@
                 <p>{{productInfo?.product?.description}}</p>
                 <!-- <p class="fw-bold">{{productInfo?.category_name}}</p> -->
               </div>
-              <div class="product-description text-white">
-                <p>Price: ${{productInfo?.product?.price}} <span class="saved-perc"
-                    *ngIf="productInfo?.product?.discount">Saved
-                    {{productInfo?.product?.discount}}%</span></p>
+              <div class="product-descriptions text-white">
+                <h5>Price:<span class=" price-thin" *ngIf="productInfo?.product?.discount"><del> ${{productInfo?.product?.discount}}</del></span> ${{productInfo?.product?.price}} <span class="saved-perc"
+                    *ngIf="productInfo?.product?.discount"><span class="text-mehndi ms-2">    Saved
+                    {{percent}}%</span></span></h5>
               </div>
             </div>
           </div>
@@ -243,18 +247,21 @@
 
           <div class="row">
             <div class="col">
-              <ul class="other-pro-details text-white text-decoration-none">
-                <!-- <li>75cl </li> -->
-                <li class="circle-text">{{productInfo?.product?.alcohol_volume}}%</li>
-                <li>SKU 790543</li>
+              <ul class="d-flex gap-3 text-white small align-items-center ps-4 tiny-list">
+                <li class="circle-text me-2" *ngIf="productInfo?.product?.bottlesize">{{ productInfo?.product?.bottlesize }}</li>
+                <li class="circle-text me-2" *ngIf="productInfo?.product?.alcohol_volume ">{{ productInfo?.product?.alcohol_volume }}%</li>
+                <li class="me-2">SKU {{ productInfo?.product?.sku }}</li>
               </ul>
-              <div class="shipping-truc">
+              
+              <div style="margin-top: 12px; border-bottom: 1px solid #fff; margin-bottom: 20px;"></div>
+
+              <!-- <div class="shipping-truc">
                 <p class="text-white"><i class="bi bi-truck"></i> &nbsp; shipping $9.99 on all orders.</p>
-              </div>
+              </div> -->
             </div>
           </div>
 
-          <hr>
+    
         </div>
 
         <div class="pick-displayer">

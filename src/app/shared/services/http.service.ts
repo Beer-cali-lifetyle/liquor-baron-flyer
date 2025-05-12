@@ -84,8 +84,13 @@ export class HttpServie {
           resolve(response);
         }, (error) => {
           if (!withLoader) this.toggleLoader(false); // Hide loader on error
-          const firstValue: any = Object.values(error?.error)[0];  
+          debugger;
+          let firstValue: any = error?.error?.errors?.email[0] || null;
+          if (!firstValue) {
+            firstValue = Object.values(error?.error || {})[0];
+          }
           this.toaster.Error(firstValue);
+          
           reject(error);
         });
       }  catch (e: any) {

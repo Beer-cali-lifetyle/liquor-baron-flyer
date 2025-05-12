@@ -524,15 +524,14 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
               this.toaster.Error(error.message);
             } else if (paymentIntent?.status === 'requires_capture') {
               console.log('Payment authorized, pending capture.');
-              debugger;
               const confirmPayload = {
-                payment_intent_id: paymentIntent.id,
-                order_id: res?.order?.id, 
+                payment_intent_id: res?.payment_intent_id,
+                order_id: res?.order_id, 
               }
               await this.ApiService.confirmOrderPostPayment(confirmPayload)
               this.toaster.Success('Order Placed successfully.');
               this.getCart();
-              this.router.navigate(['/order-confirmation'], { queryParams: { order_id: res?.order?.id } });
+              this.router.navigate(['/order-confirmation'], { queryParams: { order_id: res?.order_id} });
               // optionally call backend to notify
             }
           })
@@ -604,10 +603,15 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
                   console.error('Payment authorization failed:', error.message);
                   this.toaster.Warning(error.message);
                 } else if (paymentIntent?.status === 'requires_capture') {
-                  console.log('Payment authorized, pending capture.');
-                  this.toaster.Success('Payment authorized successfully.');
+                  debugger;
+                  const confirmPayload = {
+                    payment_intent_id: res?.payment_intent_id,
+                    order_id: res?.order_id, 
+                  }
+                  await this.ApiService.confirmOrderPostPayment(confirmPayload)
+                  this.toaster.Success('Order Placed successfully.');
                   this.getCart();
-                  this.router.navigate(['/order-confirmation'], { queryParams: { order_id: res?.order?.id } });
+                  this.router.navigate(['/order-confirmation'], { queryParams: { order_id: res?.order_id } });
                   // optionally call backend to notify
                 }
               })
@@ -642,6 +646,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
             };
             console.log(JSON.stringify(localDeliveryPayload))
             await this.ApiService.placeOrder(localDeliveryPayload).then(async (res) => {
+
               await this.getCart();
               if (!this.card) {
                 alert('Card Element is not initialized');
@@ -661,10 +666,14 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
                 console.error('Payment authorization failed:', error.message);
                 this.toaster.Warning(error.message);
               } else if (paymentIntent?.status === 'requires_capture') {
-                console.log('Payment authorized, pending capture.');
-                this.toaster.Success('Payment authorized successfully.');
+                const confirmPayload = {
+                  payment_intent_id: res?.payment_intent_id,
+                  order_id: res?.order_id, 
+                }
+                await this.ApiService.confirmOrderPostPayment(confirmPayload)
+                this.toaster.Success('Order Placed successfully.');
                 this.getCart();
-                this.router.navigate(['/order-confirmation'], { queryParams: { order_id: res?.order?.id } });
+                this.router.navigate(['/order-confirmation'], { queryParams: { order_id: res?.order_id } });
                 // optionally call backend to notify
               }
             })
