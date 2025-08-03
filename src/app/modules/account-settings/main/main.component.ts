@@ -145,7 +145,7 @@ export class MainComponent extends AppBase implements OnInit {
   
     this.form.patchValue({
       address: place?.formatted_address || '',
-      pinCode,
+      pinCode: pinCode.replace(/\s+/g, ''), // Remove spaces from pinCode
       city,
       locality
     });
@@ -172,7 +172,7 @@ export class MainComponent extends AppBase implements OnInit {
     this.form.patchValue({
       fullName: item?.full_name,
       mobileNumber: item?.mobile_number,
-      pinCode: item?.pin_code,
+      pinCode: item?.pin_code.replace(/\s+/g, ''),
       address: item?.address,
       locality: item?.locality,
       city: item?.city,
@@ -200,7 +200,7 @@ export class MainComponent extends AppBase implements OnInit {
       const value = {
         full_name: this.form.value.fullName,
         mobile_number: this.form.value.mobileNumber,
-        pin_code: this.form.value.pinCode,
+        pin_code: this.form.value.pinCode.replace(/\s+/g, ''),
         address: this.form.value.address,
         locality: this.form.value.locality,
         city: this.form.value.city,
@@ -236,7 +236,7 @@ export class MainComponent extends AppBase implements OnInit {
     this.form.patchValue({
       fullName: item?.full_name,
       mobileNumber: item?.mobile_number,
-      pinCode: item?.pin_code,
+      pinCode: item?.pin_code.replace(/\s+/g, ''),
       address: item?.address,
       locality: item?.locality,
       city: item?.city,

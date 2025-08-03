@@ -138,6 +138,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
       this.getCart(),
       this.calculateSubTotal(),
     ])
+    this.handleFirstName()
     const currentYear = new Date().getFullYear();
     for (let i = currentYear; i <= currentYear + 20; i++) {
       this.years.push(i);
@@ -213,7 +214,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
 
     this.form.patchValue({
       address: place?.formatted_address || '',
-      pinCode,
+      pinCode: pinCode.replace(/\s+/g, ''),
       city,
       locality
     });
@@ -405,7 +406,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
       const value = {
         full_name: this.form.value.fullName,
         mobile_number: this.form.value.mobileNumber,
-        pin_code: this.form.value.pinCode,
+        pin_code: this.form.value.pinCode.replace(/\s+/g, ''),
         address: this.form.value.address,
         locality: this.form.value.locality,
         city: this.form.value.city,
@@ -504,7 +505,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
           }
           console.log(JSON.stringify(storePickupPayload))
           await this.ApiService.placeOrder(storePickupPayload).then(async (res) => {
-           await this.getCart();
+            await this.getCart();
             if (!this.card) {
               alert('Card Element is not initialized');
               return;
@@ -526,12 +527,12 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
               console.log('Payment authorized, pending capture.');
               const confirmPayload = {
                 payment_intent_id: res?.payment_intent_id,
-                order_id: res?.order_id, 
+                order_id: res?.order_id,
               }
               await this.ApiService.confirmOrderPostPayment(confirmPayload)
               this.toaster.Success('Order Placed successfully.');
               this.getCart();
-              this.router.navigate(['/order-confirmation'], { queryParams: { order_id: res?.order_id} });
+              this.router.navigate(['/order-confirmation'], { queryParams: { order_id: res?.order_id } });
               // optionally call backend to notify
             }
           })
@@ -546,7 +547,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
             const value = {
               full_name: this.form.value.fullName,
               mobile_number: this.form.value.mobileNumber,
-              pin_code: this.form.value.pinCode,
+              pin_code: this.form.value.pinCode.replace(/\s+/g, ''),
               address: this.form.value.address,
               locality: this.form.value.locality,
               city: this.form.value.city,
@@ -606,7 +607,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
                   debugger;
                   const confirmPayload = {
                     payment_intent_id: res?.payment_intent_id,
-                    order_id: res?.order_id, 
+                    order_id: res?.order_id,
                   }
                   await this.ApiService.confirmOrderPostPayment(confirmPayload)
                   this.toaster.Success('Order Placed successfully.');
@@ -668,7 +669,7 @@ export class CheckoutComponent extends AppBase implements OnInit, AfterViewInit 
               } else if (paymentIntent?.status === 'requires_capture') {
                 const confirmPayload = {
                   payment_intent_id: res?.payment_intent_id,
-                  order_id: res?.order_id, 
+                  order_id: res?.order_id,
                 }
                 await this.ApiService.confirmOrderPostPayment(confirmPayload)
                 this.toaster.Success('Order Placed successfully.');
